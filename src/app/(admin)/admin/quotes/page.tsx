@@ -29,7 +29,8 @@ export default function AdminQuotesPage() {
     queryKey: ['admin-quote-requests'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/quote-requests?limit=50');
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -59,6 +60,7 @@ export default function AdminQuotesPage() {
         estimatedDays: Number(estimatedDays),
         revisions: Number(revisions),
         notes: notes.trim() || undefined,
+        sendImmediately: true,
       });
 
       queryClient.invalidateQueries({ queryKey: ['admin-quote-requests'] });

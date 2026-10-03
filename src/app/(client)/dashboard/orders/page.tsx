@@ -13,7 +13,8 @@ export default function ClientOrdersPage() {
     queryKey: ['my-all-orders'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/orders/my?limit=50');
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 

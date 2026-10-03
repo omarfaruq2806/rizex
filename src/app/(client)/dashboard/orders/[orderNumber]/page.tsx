@@ -35,11 +35,12 @@ export default function OrderRoomPage() {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   // 1. Fetch Order Details
-  const { data: order, isLoading: orderLoading } = useQuery({
+  const { data: order, isLoading: orderLoading, error: orderError } = useQuery({
     queryKey: ['order-detail', orderNumber],
+    enabled: !!orderNumber,
     queryFn: async () => {
       const res = await apiClient.get<any>(`/orders/${orderNumber}`);
-      return res.data || res || null;
+      return res.data?.data || res.data || res || null;
     },
   });
 
@@ -50,7 +51,8 @@ export default function OrderRoomPage() {
     refetchInterval: 5000, // Live poll every 5s
     queryFn: async () => {
       const res = await apiClient.get<any>(`/orders/${order.id}/messages?limit=50`);
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -60,7 +62,8 @@ export default function OrderRoomPage() {
     enabled: !!order?.id,
     queryFn: async () => {
       const res = await apiClient.get<any>(`/storage/orders/${order.id}/files`);
-      return res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -148,11 +151,14 @@ export default function OrderRoomPage() {
     );
   }
 
-  if (!order) {
+  if (orderError || !order) {
     return (
-      <div className="text-center py-20 border border-zinc-800 rounded-lg">
-        <h2 className="text-xl font-bold font-mono">Order Not Found</h2>
-        <Button variant="outline" className="mt-4" onClick={() => router.push('/dashboard/orders')}>
+      <div className="text-center py-20 border border-zinc-800 rounded-lg bg-zinc-950 space-y-4">
+        <h2 className="text-xl font-bold font-mono text-white">Order Not Found</h2>
+        <p className="text-xs text-zinc-400">
+          {(orderError as any)?.message || `Could not find project order "${orderNumber}".`}
+        </p>
+        <Button variant="outline" onClick={() => router.push('/dashboard/orders')}>
           ← Back to Orders
         </Button>
       </div>

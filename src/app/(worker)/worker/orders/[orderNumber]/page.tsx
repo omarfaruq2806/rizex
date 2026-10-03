@@ -38,7 +38,7 @@ export default function WorkerOrderWorkspacePage() {
     queryKey: ['worker-order-detail', orderNumber],
     queryFn: async () => {
       const res = await apiClient.get<any>(`/orders/${orderNumber}`);
-      const data = res.data || res || null;
+      const data = res.data?.data || res.data || res || null;
       if (data) {
         setProgressValue(data.progress || 0);
       }
@@ -53,7 +53,8 @@ export default function WorkerOrderWorkspacePage() {
     refetchInterval: 5000,
     queryFn: async () => {
       const res = await apiClient.get<any>(`/orders/${order.id}/messages?limit=50`);
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -63,7 +64,8 @@ export default function WorkerOrderWorkspacePage() {
     enabled: !!order?.id,
     queryFn: async () => {
       const res = await apiClient.get<any>(`/storage/orders/${order.id}/files`);
-      return res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 

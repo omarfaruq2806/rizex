@@ -13,7 +13,8 @@ export default function WorkerDashboardPage() {
     queryKey: ['worker-assigned-orders'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/orders/assigned?limit=50');
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 

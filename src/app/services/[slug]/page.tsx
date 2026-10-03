@@ -109,8 +109,9 @@ export default function ServiceDetailPage() {
 
       const response = await apiClient.post<any>('/quote-requests', {
         serviceId: service.id,
-        projectName,
-        description: projectDescription,
+        projectName: projectName.trim() || undefined,
+        description: projectDescription.trim() || undefined,
+        requirements: requirementValues,
         requirementValues,
       });
 

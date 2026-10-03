@@ -14,7 +14,8 @@ export default function ClientDashboardPage() {
     queryKey: ['my-orders'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/orders/my?limit=5');
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -23,7 +24,8 @@ export default function ClientDashboardPage() {
     queryKey: ['my-quotes'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/quote-requests/my?limit=5');
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 

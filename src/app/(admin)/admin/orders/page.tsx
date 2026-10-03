@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { Card } from '@/components/ui/card';
@@ -26,7 +27,8 @@ export default function AdminOrdersPage() {
     queryKey: ['admin-all-orders'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/orders?limit=50');
-      return res.data?.data || res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -35,7 +37,8 @@ export default function AdminOrdersPage() {
     queryKey: ['admin-team-members'],
     queryFn: async () => {
       const res = await apiClient.get<any>('/team-members');
-      return res.data || res || [];
+      const data = res.data?.data || res.data || res;
+      return Array.isArray(data) ? data : data?.items || [];
     },
   });
 
@@ -174,7 +177,7 @@ export default function AdminOrdersPage() {
                     <td className="p-3 font-mono">
                       {order.progress || 0}%
                     </td>
-                    <td className="p-3 text-right space-x-2">
+                    <td className="p-3 text-right space-x-2 whitespace-nowrap">
                       <Button
                         variant="outline"
                         size="sm"
@@ -182,6 +185,11 @@ export default function AdminOrdersPage() {
                       >
                         {activeAssignment ? 'Reassign' : 'Assign Worker'}
                       </Button>
+                      <Link href={`/dashboard/orders/${order.orderNumber}`}>
+                        <Button variant="secondary" size="sm">
+                          Room →
+                        </Button>
+                      </Link>
                     </td>
                   </tr>
                 );
