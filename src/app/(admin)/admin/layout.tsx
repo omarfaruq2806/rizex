@@ -34,6 +34,7 @@ export default function AdminLayout({
     { label: 'Overview & Stats', href: '/admin' },
     { label: 'Services Catalog', href: '/admin/services' },
     { label: 'Categories', href: '/admin/categories' },
+    { label: 'Users & Team', href: '/admin/users' },
     { label: 'Quote Requests', href: '/admin/quotes' },
     { label: 'Orders & Assignments', href: '/admin/orders' },
     { label: 'Supervision Chat', href: '/admin/chats' },
