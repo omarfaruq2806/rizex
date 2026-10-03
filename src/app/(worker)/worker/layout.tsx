@@ -15,18 +15,19 @@ export default function WorkerLayout({
   const router = useRouter();
   const { user, role, isLoading, isAuthenticated } = useAuth();
 
-  if (isLoading) {
+  React.useEffect(() => {
+    if (!isLoading && (!isAuthenticated || (role !== 'TEAM_MEMBER' && role !== 'ADMIN'))) {
+      router.push('/login?redirect=/worker');
+    }
+  }, [isLoading, isAuthenticated, role, router]);
+
+  if (isLoading || !isAuthenticated || (role !== 'TEAM_MEMBER' && role !== 'ADMIN')) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 animate-pulse space-y-4">
         <div className="h-8 w-48 bg-zinc-900 rounded" />
         <div className="h-64 bg-zinc-900 rounded border border-zinc-800" />
       </div>
     );
-  }
-
-  if (!isAuthenticated || (role !== 'TEAM_MEMBER' && role !== 'ADMIN')) {
-    router.push('/login?redirect=/worker');
-    return null;
   }
 
   return (

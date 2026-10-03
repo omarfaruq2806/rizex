@@ -44,7 +44,7 @@ export default function RegisterPage() {
       });
 
       await refetchUser();
-      router.push('/dashboard');
+      router.push('/');
     } catch (err: any) {
       setError(
         err.message || 'Registration failed. Please try again with a different email.',

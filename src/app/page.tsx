@@ -31,8 +31,9 @@ export default function HomePage() {
   const { data: servicesData, isLoading: servicesLoading } = useQuery({
     queryKey: ['featured-services'],
     queryFn: async () => {
-      const res = await apiClient.get<any>('/services?limit=6');
-      return res.data?.data || res.data || res || [];
+      const res: any = await apiClient.get('/services?limit=6');
+      const payload = res?.data !== undefined ? res.data : res;
+      return payload?.items || (Array.isArray(payload) ? payload : []);
     },
   });
 
@@ -40,12 +41,15 @@ export default function HomePage() {
   const { data: reviewsData } = useQuery({
     queryKey: ['featured-reviews'],
     queryFn: async () => {
-      const res = await apiClient.get<any>('/reviews/featured?limit=3');
-      return res.data || res || [];
+      const res: any = await apiClient.get('/reviews/featured?limit=3');
+      const payload = res?.data !== undefined ? res.data : res;
+      return Array.isArray(payload) ? payload : [];
     },
   });
 
-  const services: ServiceItem[] = Array.isArray(servicesData) ? servicesData : [];
+  const services: ServiceItem[] = Array.isArray(servicesData)
+    ? servicesData
+    : (servicesData as any)?.items || [];
   const reviews: ReviewItem[] = Array.isArray(reviewsData) ? reviewsData : [];
 
   return (

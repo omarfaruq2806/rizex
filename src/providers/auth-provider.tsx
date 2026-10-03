@@ -38,9 +38,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchUserProfile = async () => {
     try {
       setIsLoading(true);
-      const res = await apiClient.get<any>('/auth/me');
-      const data = res.data;
-      const userData = data?.user || (data?.id ? data : null);
+      const res: any = await apiClient.get('/auth/me');
+      const payload = res?.data !== undefined ? res.data : res;
+      const userData = payload?.user !== undefined ? payload.user : (payload?.id ? payload : null);
       if (userData && userData.id) {
         setUser(userData);
       } else {

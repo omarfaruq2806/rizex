@@ -34,8 +34,9 @@ export default function ServicesPage() {
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const res = await apiClient.get<any>('/categories');
-      return res.data || res || [];
+      const res: any = await apiClient.get('/categories');
+      const payload = res?.data !== undefined ? res.data : res;
+      return Array.isArray(payload) ? payload : [];
     },
   });
 
@@ -50,13 +51,16 @@ export default function ServicesPage() {
       if (searchTerm.trim()) {
         url += `&search=${encodeURIComponent(searchTerm.trim())}`;
       }
-      const res = await apiClient.get<any>(url);
-      return res.data?.data || res.data || res || [];
+      const res: any = await apiClient.get(url);
+      const payload = res?.data !== undefined ? res.data : res;
+      return payload?.items || (Array.isArray(payload) ? payload : []);
     },
   });
 
   const categories: Category[] = Array.isArray(categoriesData) ? categoriesData : [];
-  const services: Service[] = Array.isArray(servicesData) ? servicesData : [];
+  const services: Service[] = Array.isArray(servicesData)
+    ? servicesData
+    : (servicesData as any)?.items || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8 flex-1 w-full">

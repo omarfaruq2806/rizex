@@ -30,16 +30,7 @@ export default function LoginPage() {
       });
 
       await refetchUser();
-
-      const userRole = response.data?.user?.role || response.data?.role || 'CLIENT';
-
-      if (userRole === 'ADMIN') {
-        router.push('/admin');
-      } else if (userRole === 'TEAM_MEMBER') {
-        router.push('/worker');
-      } else {
-        router.push('/dashboard');
-      }
+      router.push('/');
     } catch (err: any) {
       setError(
         err.message || 'Invalid email or password. Please check your credentials.',

@@ -15,7 +15,13 @@ export default function AdminLayout({
   const router = useRouter();
   const { user, role, isLoading, isAuthenticated } = useAuth();
 
-  if (isLoading) {
+  React.useEffect(() => {
+    if (!isLoading && (!isAuthenticated || role !== 'ADMIN')) {
+      router.push('/login?redirect=/admin');
+    }
+  }, [isLoading, isAuthenticated, role, router]);
+
+  if (isLoading || !isAuthenticated || role !== 'ADMIN') {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 animate-pulse space-y-4">
         <div className="h-8 w-48 bg-zinc-900 rounded" />
@@ -24,13 +30,10 @@ export default function AdminLayout({
     );
   }
 
-  if (!isAuthenticated || role !== 'ADMIN') {
-    router.push('/login?redirect=/admin');
-    return null;
-  }
-
   const navTabs = [
     { label: 'Overview & Stats', href: '/admin' },
+    { label: 'Services Catalog', href: '/admin/services' },
+    { label: 'Categories', href: '/admin/categories' },
     { label: 'Quote Requests', href: '/admin/quotes' },
     { label: 'Orders & Assignments', href: '/admin/orders' },
     { label: 'Supervision Chat', href: '/admin/chats' },

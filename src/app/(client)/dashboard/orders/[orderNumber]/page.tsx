@@ -203,6 +203,22 @@ export default function OrderRoomPage() {
           </div>
         </div>
 
+        {/* Agency Support & Direct Hotline Banner */}
+        <div className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="space-y-0.5">
+            <span className="font-semibold text-white">Need immediate project assistance or billing support?</span>
+            <p className="text-zinc-400">Our dedicated agency coordinators are active 24/7. Reach us via Hotline/WhatsApp or live chat below.</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 font-mono text-zinc-300">
+            <span className="px-2.5 py-1 bg-zinc-800 border border-zinc-700 rounded text-[11px] text-white">
+              📞 +880 1700-000000
+            </span>
+            <span className="px-2.5 py-1 bg-zinc-800 border border-zinc-700 rounded text-[11px] text-zinc-300">
+              ✉ support@rizex.agency
+            </span>
+          </div>
+        </div>
+
         {/* Progress & Assigned Specialist Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
           <div>
