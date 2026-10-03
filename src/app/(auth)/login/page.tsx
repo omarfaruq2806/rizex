@@ -24,10 +24,20 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.post<any>('/auth/login', {
+      const response: any = await apiClient.post('/auth/login', {
         email,
         password,
       });
+
+      const token =
+        response?.token ||
+        response?.session?.token ||
+        response?.data?.token ||
+        response?.data?.session?.token;
+
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('rizex_auth_token', token);
+      }
 
       await refetchUser();
       router.push('/');

@@ -37,11 +37,21 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      await apiClient.post('/auth/register', {
+      const response: any = await apiClient.post('/auth/register', {
         name,
         email,
         password,
       });
+
+      const token =
+        response?.token ||
+        response?.session?.token ||
+        response?.data?.token ||
+        response?.data?.session?.token;
+
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('rizex_auth_token', token);
+      }
 
       await refetchUser();
       router.push('/');

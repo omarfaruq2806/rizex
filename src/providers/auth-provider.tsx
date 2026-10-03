@@ -63,6 +63,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore logout errors
     } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('rizex_auth_token');
+      }
       setUser(null);
       window.location.href = '/login';
     }
