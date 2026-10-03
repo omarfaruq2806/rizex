@@ -123,7 +123,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeVariant = (role: string): 'primary' | 'outline' | 'secondary' => {
     if (role === 'ADMIN') return 'primary';
     if (role === 'TEAM_MEMBER') return 'outline';
     return 'secondary';
