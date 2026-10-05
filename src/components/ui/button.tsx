@@ -22,22 +22,22 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+      'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs active:scale-[0.98]';
 
     const variants = {
-      primary: 'bg-white text-black hover:bg-zinc-200 active:bg-zinc-300',
+      primary: 'bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 shadow-sm hover:shadow-md hover:shadow-orange-500/25 border border-orange-600/10',
       secondary:
-        'bg-zinc-800 text-white hover:bg-zinc-700 active:bg-zinc-600 border border-zinc-700',
+        'bg-[#0f172a] text-white hover:bg-[#1e293b] active:bg-[#334155] border border-slate-800 shadow-sm',
       outline:
-        'bg-transparent text-white border border-zinc-700 hover:bg-zinc-900 active:bg-zinc-800',
-      ghost: 'bg-transparent text-zinc-300 hover:text-white hover:bg-zinc-900',
-      danger: 'bg-red-600 text-white hover:bg-red-500 active:bg-red-700',
+        'bg-white text-slate-700 border border-slate-200/90 hover:bg-orange-50/50 hover:text-orange-600 hover:border-orange-300 shadow-2xs',
+      ghost: 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-none',
+      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-sm',
     };
 
     const sizes = {
-      sm: 'text-xs px-3 py-1.5',
-      md: 'text-sm px-4 py-2',
-      lg: 'text-base px-6 py-3',
+      sm: 'text-xs px-3 py-1.5 h-8',
+      md: 'text-sm px-4 py-2 h-10',
+      lg: 'text-base px-6 py-3 h-12',
     };
 
     return (

@@ -12,17 +12,17 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const base =
-    'inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium tracking-wide';
+    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium tracking-wide transition-colors';
 
   const variants = {
-    default: 'bg-zinc-800 text-zinc-200 border border-zinc-700',
-    primary: 'bg-white text-black font-semibold border border-white',
-    secondary: 'bg-zinc-900 text-zinc-400 border border-zinc-800',
-    outline: 'border border-zinc-600 text-zinc-300 bg-transparent',
-    neutral: 'bg-zinc-900 text-zinc-400 border border-zinc-800',
-    success: 'bg-zinc-900 text-zinc-100 border border-zinc-400',
-    warning: 'bg-zinc-900 text-zinc-300 border border-zinc-600',
-    danger: 'bg-red-950/40 text-red-400 border border-red-800',
+    default: 'bg-slate-100 text-slate-700 border border-slate-200/80',
+    primary: 'bg-orange-50 text-orange-700 border border-orange-200 font-semibold',
+    secondary: 'bg-slate-900 text-white border border-slate-800 font-medium',
+    outline: 'border border-slate-300 text-slate-700 bg-white shadow-2xs',
+    neutral: 'bg-slate-50 text-slate-600 border border-slate-200',
+    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    warning: 'bg-amber-50 text-amber-700 border border-amber-200',
+    danger: 'bg-rose-50 text-rose-700 border border-rose-200',
   };
 
   return (
