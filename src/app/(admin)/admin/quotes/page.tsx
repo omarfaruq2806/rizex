@@ -9,6 +9,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Modal } from '@/components/ui/modal';
+import {
+  FileText,
+  Send,
+  Sparkles,
+  DollarSign,
+  Clock,
+  RotateCcw,
+  CheckCircle2,
+  FileQuestion,
+  Layers,
+  ArrowRight,
+} from 'lucide-react';
 
 export default function AdminQuotesPage() {
   const queryClient = useQueryClient();
@@ -38,11 +50,19 @@ export default function AdminQuotesPage() {
 
   const handleOpenQuoteModal = (brief: any) => {
     setSelectedBrief(brief);
-    setAmount('');
-    setAdvanceAmount('');
-    setEstimatedDays('7');
-    setRevisions('2');
-    setNotes('');
+    if (brief.quote) {
+      setAmount(String(brief.quote.amount || ''));
+      setAdvanceAmount(String(brief.quote.advanceAmount || ''));
+      setEstimatedDays(String(brief.quote.estimatedDays || '7'));
+      setRevisions(String(brief.quote.revisions || '2'));
+      setNotes(brief.quote.notes || '');
+    } else {
+      setAmount('');
+      setAdvanceAmount('');
+      setEstimatedDays('7');
+      setRevisions('2');
+      setNotes('');
+    }
     setIsQuoteModalOpen(true);
   };
 
@@ -73,74 +93,106 @@ export default function AdminQuotesPage() {
     }
   };
 
+  const getBriefStatusBadge = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return <Badge variant="warning">AWAITING QUOTE</Badge>;
+      case 'QUOTED':
+        return <Badge variant="primary">QUOTED</Badge>;
+      case 'ACCEPTED':
+        return <Badge variant="success">ACCEPTED / ORDERED</Badge>;
+      case 'REJECTED':
+        return <Badge variant="danger">REJECTED</Badge>;
+      case 'CHANGES_REQUESTED':
+        return <Badge variant="warning">CHANGES REQUESTED</Badge>;
+      default:
+        return <Badge variant="neutral">{status}</Badge>;
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold font-mono tracking-tight text-white">
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
           Client Requirement Briefs & Quote Generation
         </h2>
-        <p className="text-xs text-zinc-400">
-          Inspect client dynamic requirements and send customized commercial quotes.
+        <p className="text-xs text-slate-500 mt-1">
+          Inspect client responses to service questionnaires and generate customized commercial proposals
         </p>
       </div>
 
       {isLoading ? (
-        <div className="h-64 bg-zinc-950 border border-zinc-800 rounded-lg animate-pulse" />
+        <div className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
       ) : briefs.length > 0 ? (
-        <div className="border border-zinc-800 rounded-lg overflow-hidden bg-zinc-950">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 font-mono uppercase">
-              <tr>
-                <th className="p-3">Client</th>
-                <th className="p-3">Service</th>
-                <th className="p-3">Project Title</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Quote Details</th>
-                <th className="p-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-900">
-              {briefs.map((b) => (
-                <tr key={b.id} className="hover:bg-zinc-900/30 transition-colors">
-                  <td className="p-3">
-                    <span className="font-semibold text-white block">{b.client?.name}</span>
-                    <span className="text-[10px] text-zinc-500 font-mono">{b.client?.email}</span>
-                  </td>
-                  <td className="p-3 font-mono text-zinc-300">
-                    {b.service?.name}
-                  </td>
-                  <td className="p-3 text-zinc-200">
-                    {b.projectName || 'Specification Brief'}
-                  </td>
-                  <td className="p-3">
-                    <Badge variant="outline">{b.status}</Badge>
-                  </td>
-                  <td className="p-3 font-mono">
-                    {b.quote ? (
-                      <span className="text-zinc-200 font-bold">
-                        {b.quote.amount} {b.quote.currency} ({b.quote.status})
-                      </span>
-                    ) : (
-                      <span className="text-zinc-500 italic">No Quote Sent</span>
-                    )}
-                  </td>
-                  <td className="p-3 text-right">
-                    <Button
-                      variant={b.quote ? 'outline' : 'primary'}
-                      size="sm"
-                      onClick={() => handleOpenQuoteModal(b)}
-                    >
-                      {b.quote ? 'Update Quote' : 'Create Quote →'}
-                    </Button>
-                  </td>
+        <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-100 font-mono uppercase tracking-wider text-[11px]">
+                <tr>
+                  <th className="p-4">Client</th>
+                  <th className="p-4">Service</th>
+                  <th className="p-4">Project Title</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4">Commercial Quote</th>
+                  <th className="p-4 text-right">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {briefs.map((b) => (
+                  <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="p-4">
+                      <span className="font-semibold text-slate-900 block">{b.client?.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono">{b.client?.email}</span>
+                    </td>
+                    <td className="p-4 font-mono font-medium text-slate-800">
+                      {b.service?.name}
+                    </td>
+                    <td className="p-4 text-slate-700 font-medium">
+                      {b.projectName || 'Custom Project Brief'}
+                    </td>
+                    <td className="p-4">
+                      {getBriefStatusBadge(b.status)}
+                    </td>
+                    <td className="p-4 font-mono">
+                      {b.quote ? (
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-slate-900 block">
+                            ৳{Number(b.quote.amount || 0).toLocaleString()} {b.quote.currency}
+                          </span>
+                          <span className="text-[10px] text-slate-500">
+                            Advance: ৳{Number(b.quote.advanceAmount || 0).toLocaleString()} • {b.quote.estimatedDays} days
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 italic">No Quote Sent</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <Button
+                        variant={b.quote ? 'outline' : 'primary'}
+                        size="sm"
+                        className="text-xs gap-1.5"
+                        onClick={() => handleOpenQuoteModal(b)}
+                      >
+                        <Send className="w-3 h-3" />
+                        <span>{b.quote ? 'Update Quote' : 'Create Quote →'}</span>
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
-        <Card className="border-zinc-800 bg-zinc-950 p-12 text-center">
-          <p className="text-xs text-zinc-400">No client requirement briefs submitted yet.</p>
+        <Card className="p-12 text-center border-slate-200/90 bg-white">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+            <FileQuestion className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-800">No Requirement Briefs Yet</h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            When clients fill out dynamic service questionnaires, their briefs will appear here for pricing and review.
+          </p>
         </Card>
       )}
 
@@ -148,25 +200,31 @@ export default function AdminQuotesPage() {
       <Modal
         isOpen={isQuoteModalOpen}
         onClose={() => setIsQuoteModalOpen(false)}
-        title="Generate Custom Commercial Quote"
+        title="Generate Commercial Proposal & Quote"
         description={`For ${selectedBrief?.client?.name} (${selectedBrief?.service?.name})`}
+        maxWidth="xl"
       >
         <form onSubmit={handleGenerateQuote} className="space-y-4 pt-2">
+          {/* Submitted Client Questionnaire Responses */}
           {selectedBrief?.requirementValues && selectedBrief.requirementValues.length > 0 && (
-            <div className="p-3 bg-black border border-zinc-900 rounded space-y-2 max-h-40 overflow-y-auto">
-              <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold block">
-                Client Submitted Brief:
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 max-h-56 overflow-y-auto">
+              <span className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider block">
+                📋 Client Submitted Answers & Specifications:
               </span>
-              {selectedBrief.requirementValues.map((rv: any) => (
-                <div key={rv.id} className="text-xs">
-                  <strong className="text-zinc-400">{rv.field?.label || 'Field'}:</strong>{' '}
-                  <span className="text-zinc-200">{JSON.stringify(rv.value)}</span>
-                </div>
-              ))}
+              <div className="space-y-2">
+                {selectedBrief.requirementValues.map((rv: any) => (
+                  <div key={rv.id} className="text-xs p-2.5 bg-white border border-slate-100 rounded-xl space-y-0.5">
+                    <span className="text-slate-500 font-medium block">{rv.field?.label || 'Question'}:</span>
+                    <span className="text-slate-900 font-semibold block">
+                      {typeof rv.value === 'object' ? JSON.stringify(rv.value) : String(rv.value || 'N/A')}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Total Quote Amount (BDT) *"
               type="number"
@@ -185,7 +243,7 @@ export default function AdminQuotesPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Estimated Timeline (Days) *"
               type="number"
@@ -205,13 +263,14 @@ export default function AdminQuotesPage() {
           </div>
 
           <Textarea
-            label="Commercial & Scope Terms / Notes"
-            placeholder="Specify milestone deliverables, payment terms, or technology stack..."
+            label="Commercial Scope Terms & Notes"
+            placeholder="Specify milestones, deliverable formats, technology stack, or payment terms..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            rows={3}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
@@ -223,8 +282,10 @@ export default function AdminQuotesPage() {
               type="submit"
               variant="primary"
               isLoading={isSubmitting}
+              className="gap-1.5"
             >
-              Send Quote to Client →
+              <Send className="w-4 h-4" />
+              <span>Send Commercial Quote →</span>
             </Button>
           </div>
         </form>

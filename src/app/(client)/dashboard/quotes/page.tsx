@@ -9,6 +9,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  RotateCcw,
+  Sparkles,
+  Send,
+  XCircle,
+  Plus,
+} from 'lucide-react';
 
 export default function ClientQuotesPage() {
   const router = useRouter();
@@ -31,7 +42,7 @@ export default function ClientQuotesPage() {
   const briefs: any[] = Array.isArray(quotesData) ? quotesData : [];
 
   const handleAcceptQuote = async (quoteId: string) => {
-    if (!confirm('Are you sure you want to accept this quote and start the order?')) return;
+    if (!confirm('Are you sure you want to accept this commercial proposal and initiate project execution?')) return;
 
     setIsProcessing(true);
     try {
@@ -40,7 +51,7 @@ export default function ClientQuotesPage() {
       queryClient.invalidateQueries({ queryKey: ['my-quotes-full'] });
       queryClient.invalidateQueries({ queryKey: ['my-orders'] });
 
-      alert('Quote accepted! Your project order has been created.');
+      alert('Quote accepted! Your project order room has been created.');
       if (order?.orderNumber) {
         router.push(`/dashboard/orders/${order.orderNumber}`);
       } else {
@@ -75,7 +86,7 @@ export default function ClientQuotesPage() {
   };
 
   const handleRejectQuote = async (quoteId: string) => {
-    if (!confirm('Are you sure you want to reject this quote?')) return;
+    if (!confirm('Are you sure you want to reject this proposal?')) return;
 
     setIsProcessing(true);
     try {
@@ -93,18 +104,18 @@ export default function ClientQuotesPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h2 className="text-xl font-bold font-mono tracking-tight text-white">
-          Requirement Briefs & Proposals
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          Requirement Briefs & Commercial Proposals
         </h2>
-        <p className="text-xs text-zinc-400">
-          Track submitted briefs and review customized agency quotes.
+        <p className="text-xs text-slate-500">
+          Track submitted requirement briefs, compare milestone terms, and approve custom agency quotes
         </p>
       </div>
 
       {isLoading ? (
         <div className="space-y-4 animate-pulse">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-40 bg-zinc-950 border border-zinc-800 rounded-lg" />
+            <div key={i} className="h-40 bg-white border border-slate-200/90 rounded-2xl" />
           ))}
         </div>
       ) : briefs.length > 0 ? (
@@ -112,17 +123,17 @@ export default function ClientQuotesPage() {
           {briefs.map((req) => {
             const quote = req.quote;
             return (
-              <Card key={req.id} className="border-zinc-800 bg-zinc-950 p-5">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-900">
+              <Card key={req.id} className="border-slate-200/90 bg-white p-6 shadow-xs hover:border-orange-300 transition-all">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Badge variant="neutral">{req.service?.name || 'Service'}</Badge>
-                      <Badge variant="outline">{req.status}</Badge>
+                      <Badge variant="neutral" className="text-[10px]">{req.service?.name || 'Service'}</Badge>
+                      <Badge variant={quote ? 'primary' : 'outline'} className="text-[10px]">{req.status}</Badge>
                     </div>
-                    <CardTitle className="text-base font-mono mt-1">
+                    <CardTitle className="text-base font-bold text-slate-900 mt-1">
                       {req.projectName || 'Project Specification Brief'}
                     </CardTitle>
-                    <span className="text-xs text-zinc-500 font-mono">
+                    <span className="text-xs text-slate-400 font-mono block">
                       Submitted on {new Date(req.createdAt).toLocaleDateString()}
                     </span>
                   </div>
@@ -136,12 +147,15 @@ export default function ClientQuotesPage() {
                             size="sm"
                             disabled={isProcessing}
                             onClick={() => handleAcceptQuote(quote.id)}
+                            className="gap-1.5 text-xs shadow-xs"
                           >
-                            Accept & Start Order
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Accept & Start Project</span>
                           </Button>
                           <Button
-                            variant="secondary"
+                            variant="outline"
                             size="sm"
+                            className="text-xs"
                             onClick={() => {
                               setSelectedQuote(quote);
                               setModalType('REQUEST_CHANGES');
@@ -152,7 +166,7 @@ export default function ClientQuotesPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:text-red-300"
+                            className="text-xs text-slate-400 hover:text-rose-600 hover:bg-rose-50"
                             onClick={() => handleRejectQuote(quote.id)}
                           >
                             Reject
@@ -163,57 +177,57 @@ export default function ClientQuotesPage() {
                       )}
                     </div>
                   ) : (
-                    <Badge variant="neutral">QUOTE PENDING</Badge>
+                    <Badge variant="warning">UNDER MANAGER EVALUATION</Badge>
                   )}
                 </div>
 
                 {/* Quote Breakdown if Available */}
                 {quote ? (
-                  <div className="mt-4 pt-2 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-zinc-900/50 p-4 border border-zinc-800 rounded">
+                  <div className="mt-4 pt-2 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-orange-50/50 p-4 border border-orange-100 rounded-2xl">
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-mono block">
+                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
                         Total Amount
                       </span>
-                      <span className="text-sm font-bold font-mono text-white">
-                        {quote.amount} {quote.currency || 'BDT'}
+                      <span className="text-base font-extrabold font-mono text-slate-900">
+                        ৳{Number(quote.amount || 0).toLocaleString()} {quote.currency || 'BDT'}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-mono block">
+                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
                         Advance Required
                       </span>
-                      <span className="text-sm font-bold font-mono text-zinc-300">
-                        {quote.advanceAmount} {quote.currency || 'BDT'}
+                      <span className="text-sm font-bold font-mono text-slate-700">
+                        ৳{Number(quote.advanceAmount || 0).toLocaleString()} {quote.currency || 'BDT'}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-mono block">
+                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
                         Est. Timeline
                       </span>
-                      <span className="text-sm font-bold font-mono text-zinc-300">
+                      <span className="text-sm font-bold font-mono text-slate-700">
                         {quote.estimatedDays || 7} Days
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-zinc-500 uppercase font-mono block">
-                        Revisions Included
+                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
+                        Included Revisions
                       </span>
-                      <span className="text-sm font-bold font-mono text-zinc-300">
+                      <span className="text-sm font-bold font-mono text-slate-700">
                         {quote.revisions} Revisions
                       </span>
                     </div>
 
                     {quote.notes && (
-                      <div className="col-span-2 sm:col-span-4 mt-2 pt-2 border-t border-zinc-800 text-xs text-zinc-400">
-                        <strong className="text-zinc-300 font-mono">Manager Notes:</strong> {quote.notes}
+                      <div className="col-span-2 sm:col-span-4 mt-2 pt-3 border-t border-orange-200/50 text-xs text-slate-600">
+                        <strong className="text-slate-900 font-mono font-bold">Terms & Scope Notes:</strong> {quote.notes}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <p className="mt-3 text-xs text-zinc-500">
+                  <p className="mt-3 text-xs text-slate-500 italic bg-slate-50 p-3 rounded-xl border border-slate-100">
                     Our technical lead is currently reviewing your dynamic requirements. You will receive a structured proposal here shortly.
                   </p>
                 )}
@@ -222,10 +236,17 @@ export default function ClientQuotesPage() {
           })}
         </div>
       ) : (
-        <Card className="border-zinc-800 bg-zinc-950 p-12 text-center space-y-4">
-          <p className="text-sm text-zinc-400">You haven&apos;t submitted any requirement briefs yet.</p>
-          <Button variant="primary" onClick={() => router.push('/services')}>
-            Explore Services & Submit a Brief
+        <Card className="border-slate-200/90 bg-white p-12 text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+            <FileText className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-800">No Requirement Briefs Submitted Yet</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Browse our catalog and submit a custom intake brief to receive an upfront structured quote.
+          </p>
+          <Button variant="primary" size="sm" onClick={() => router.push('/services')} className="gap-1.5 text-xs">
+            <Plus className="w-3.5 h-3.5" />
+            <span>Explore Services & Submit Brief</span>
           </Button>
         </Card>
       )}
@@ -234,19 +255,21 @@ export default function ClientQuotesPage() {
       <Modal
         isOpen={modalType === 'REQUEST_CHANGES'}
         onClose={() => setModalType(null)}
-        title="Request Quote Modifications"
-        description="Specify adjustments needed for timeline, budget, scope, or milestones."
+        title="Request Proposal Modifications"
+        description="Specify needed adjustments for timeline, budget, scope, or milestone deliverables"
+        maxWidth="md"
       >
         <form onSubmit={handleRequestChanges} className="space-y-4 pt-2">
           <Textarea
             label="Modification Notes *"
-            placeholder="Explain what changes you would like to see in this quote..."
+            placeholder="Explain what adjustments or additions you need in this proposal..."
             value={changeNotes}
             onChange={(e) => setChangeNotes(e.target.value)}
+            rows={4}
             required
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
@@ -258,8 +281,10 @@ export default function ClientQuotesPage() {
               type="submit"
               variant="primary"
               isLoading={isProcessing}
+              className="gap-1.5"
             >
-              Send Request
+              <Send className="w-3.5 h-3.5" />
+              <span>Send Modification Request</span>
             </Button>
           </div>
         </form>

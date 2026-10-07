@@ -6,6 +6,14 @@ import { apiClient } from '@/lib/api-client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Star,
+  Trash2,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
 
 export default function AdminReviewsPage() {
   const queryClient = useQueryClient();
@@ -44,78 +52,111 @@ export default function AdminReviewsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold font-mono tracking-tight text-white">
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
           Client Reviews & Ratings Moderation
         </h2>
-        <p className="text-xs text-zinc-400">
-          Moderate client feedback before displaying publicly on the landing page and service catalog.
+        <p className="text-xs text-slate-500 mt-1">
+          Moderate verified customer feedback before featuring testimonials on the public landing page and catalog
         </p>
       </div>
 
       {isLoading ? (
-        <div className="h-64 bg-zinc-950 border border-zinc-800 rounded-lg animate-pulse" />
+        <div className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
       ) : reviews.length > 0 ? (
-        <div className="border border-zinc-800 rounded-lg overflow-hidden bg-zinc-950">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 font-mono uppercase">
-              <tr>
-                <th className="p-3">Client</th>
-                <th className="p-3">Order / Service</th>
-                <th className="p-3">Rating</th>
-                <th className="p-3">Comment</th>
-                <th className="p-3">Status</th>
-                <th className="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-900">
-              {reviews.map((rev) => (
-                <tr key={rev.id} className="hover:bg-zinc-900/30 transition-colors">
-                  <td className="p-3">
-                    <span className="font-semibold text-white block">{rev.client?.name}</span>
-                    <span className="text-[10px] text-zinc-500 font-mono">{rev.client?.email}</span>
-                  </td>
-                  <td className="p-3 font-mono text-zinc-300">
-                    <span className="block font-bold">{rev.order?.orderNumber}</span>
-                    <span className="text-[10px] text-zinc-500">{rev.order?.service?.name}</span>
-                  </td>
-                  <td className="p-3 font-mono font-bold text-white">
-                    {'★'.repeat(rev.rating)} ({rev.rating}/5)
-                  </td>
-                  <td className="p-3 text-zinc-300 max-w-xs truncate">
-                    {rev.comment || '<No text comment>'}
-                  </td>
-                  <td className="p-3">
-                    <Badge variant={rev.isPublished ? 'success' : 'neutral'}>
-                      {rev.isPublished ? 'PUBLISHED' : 'HIDDEN'}
-                    </Badge>
-                  </td>
-                  <td className="p-3 text-right space-x-2">
-                    <Button
-                      variant={rev.isPublished ? 'outline' : 'primary'}
-                      size="sm"
-                      onClick={() => handleTogglePublish(rev.id, rev.isPublished)}
-                    >
-                      {rev.isPublished ? 'Hide' : 'Publish'}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-400 hover:text-red-300"
-                      onClick={() => handleDeleteReview(rev.id)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
+        <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-100 font-mono uppercase tracking-wider text-[11px]">
+                <tr>
+                  <th className="p-4">Client</th>
+                  <th className="p-4">Order & Service</th>
+                  <th className="p-4">Rating</th>
+                  <th className="p-4">Feedback / Comment</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {reviews.map((rev) => (
+                  <tr key={rev.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="p-4">
+                      <span className="font-semibold text-slate-900 block">{rev.client?.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono">{rev.client?.email}</span>
+                    </td>
+                    <td className="p-4 font-mono text-slate-700">
+                      <span className="block font-bold text-slate-900">{rev.order?.orderNumber}</span>
+                      <span className="text-[11px] text-slate-500">{rev.order?.service?.name}</span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1 text-amber-500 font-mono font-bold">
+                        {Array.from({ length: 5 }).map((_, idx) => (
+                          <Star
+                            key={idx}
+                            className={`w-3.5 h-3.5 ${
+                              idx < rev.rating
+                                ? 'text-amber-500 fill-amber-500'
+                                : 'text-slate-200 fill-slate-200'
+                            }`}
+                          />
+                        ))}
+                        <span className="text-slate-800 text-xs ml-1">({rev.rating}/5)</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-slate-700 max-w-sm">
+                      <p className="line-clamp-2 italic text-xs leading-relaxed">
+                        {rev.comment ? `"${rev.comment}"` : '<No written text comment>'}
+                      </p>
+                    </td>
+                    <td className="p-4">
+                      <Badge variant={rev.isPublished ? 'success' : 'neutral'}>
+                        {rev.isPublished ? 'PUBLISHED' : 'HIDDEN'}
+                      </Badge>
+                    </td>
+                    <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                      <Button
+                        variant={rev.isPublished ? 'outline' : 'primary'}
+                        size="sm"
+                        className="text-xs gap-1"
+                        onClick={() => handleTogglePublish(rev.id, rev.isPublished)}
+                      >
+                        {rev.isPublished ? (
+                          <>
+                            <EyeOff className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Hide</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Publish</span>
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-500 hover:text-rose-600 hover:bg-rose-50"
+                        onClick={() => handleDeleteReview(rev.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
-        <Card className="border-zinc-800 bg-zinc-950 p-12 text-center">
-          <p className="text-xs text-zinc-400">No client reviews submitted yet.</p>
+        <Card className="p-12 text-center border-slate-200/90 bg-white">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
+            <Star className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-800">No Client Reviews Yet</h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            Once completed projects receive ratings and reviews from clients, they will appear here for public moderation.
+          </p>
         </Card>
       )}
     </div>

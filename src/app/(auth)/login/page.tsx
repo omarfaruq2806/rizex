@@ -8,6 +8,7 @@ import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { LogIn, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -51,25 +52,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center px-4 py-16 bg-black">
+    <div className="flex-1 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
-        <Card className="border-zinc-800 bg-zinc-950">
-          <CardHeader>
-            <div className="text-center space-y-1">
-              <span className="font-mono text-sm tracking-widest text-zinc-500 uppercase">
-                Access Portal
-              </span>
-              <CardTitle className="text-2xl font-bold">Sign In to RizeX</CardTitle>
-              <CardDescription>
-                Enter your credentials to access your dashboard
-              </CardDescription>
+        <Card className="border-slate-200/90 bg-white p-6 sm:p-8 shadow-md">
+          <CardHeader className="text-center space-y-1.5 pb-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-orange-50 text-orange-600 border border-orange-200 mx-auto">
+              <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+              <span>ACCESS PORTAL</span>
             </div>
+            <CardTitle className="text-2xl font-extrabold text-slate-900 tracking-tight">Sign In to RizeX</CardTitle>
+            <CardDescription className="text-xs text-slate-500">
+              Enter your credentials to access your project dashboard
+            </CardDescription>
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {error && (
-                <div className="p-3 bg-red-950/40 border border-red-800 text-red-300 text-xs rounded">
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
                   {error}
                 </div>
               )}
@@ -97,20 +97,21 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full mt-2"
+                className="w-full mt-2 gap-2 shadow-xs"
                 isLoading={isLoading}
               >
-                Sign In
+                <LogIn className="w-4 h-4" />
+                <span>Sign In</span>
               </Button>
             </CardContent>
 
-            <CardFooter className="justify-center text-xs text-zinc-400">
+            <CardFooter className="justify-center text-xs text-slate-500 pt-4 mt-2 border-t border-slate-100">
               Don&apos;t have an account?{' '}
               <Link
                 href="/register"
-                className="text-white hover:underline font-medium ml-1"
+                className="text-orange-600 hover:text-orange-700 hover:underline font-semibold ml-1.5"
               >
-                Sign Up
+                Create an account
               </Link>
             </CardFooter>
           </form>

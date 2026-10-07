@@ -9,6 +9,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Modal } from '@/components/ui/modal';
+import {
+  Layers,
+  Plus,
+  Edit2,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  Hash,
+  Sparkles,
+} from 'lucide-react';
 
 interface Category {
   id: string;
@@ -138,28 +148,34 @@ export default function AdminCategoriesPage() {
       {/* Header with Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold font-mono text-white">Service Categories</h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            Organize digital agency offerings into structured domains
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Service Categories</h2>
+          <p className="text-xs text-slate-500 mt-1">
+            Organize digital agency offerings into structured domains for catalog browsing
           </p>
         </div>
 
-        <Button variant="primary" onClick={handleOpenCreateModal}>
-          + Add New Category
+        <Button variant="primary" onClick={handleOpenCreateModal} className="gap-2">
+          <Plus className="w-4 h-4" />
+          <span>Add New Category</span>
         </Button>
       </div>
 
-      {/* Categories Grid / List */}
+      {/* Categories Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-44 bg-zinc-900 border border-zinc-800 rounded-lg animate-pulse" />
+            <div key={i} className="h-48 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <Card className="border-zinc-800 bg-zinc-950 p-12 text-center">
-          <p className="text-zinc-400 font-mono text-sm">No service categories found.</p>
-          <p className="text-xs text-zinc-600 mt-1">Create your first category to group digital services.</p>
+        <Card className="p-12 text-center border-slate-200/90 bg-white">
+          <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mx-auto mb-3">
+            <Layers className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-800">No Service Categories Found</h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            Create your first category (e.g. Web Development, UI/UX Design, SEO) to group digital services.
+          </p>
           <Button variant="primary" size="sm" className="mt-4" onClick={handleOpenCreateModal}>
             Create Category
           </Button>
@@ -167,48 +183,58 @@ export default function AdminCategoriesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((cat) => (
-            <Card key={cat.id} className="border-zinc-800 bg-zinc-950 flex flex-col justify-between">
+            <Card
+              key={cat.id}
+              className="border-slate-200/90 bg-white flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition-all group"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <CardTitle className="text-lg font-bold font-mono text-white">
+                  <div className="space-y-1">
+                    <CardTitle className="text-base font-bold text-slate-900 group-hover:text-orange-600 transition-colors">
                       {cat.name}
                     </CardTitle>
-                    <span className="font-mono text-xs text-zinc-500">/{cat.slug}</span>
+                    <span className="font-mono text-xs text-slate-400 block">/{cat.slug}</span>
                   </div>
-                  <Badge variant={cat.isActive ? 'outline' : 'secondary'}>
+                  <Badge variant={cat.isActive ? 'success' : 'neutral'}>
                     {cat.isActive ? 'ACTIVE' : 'INACTIVE'}
                   </Badge>
                 </div>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px]">
+                <p className="text-xs text-slate-600 line-clamp-2 min-h-[32px]">
                   {cat.description || 'No description provided.'}
                 </p>
 
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2 border-t border-zinc-900">
-                  <span>Services: {cat._count?.services ?? 0}</span>
-                  <span>Order: {cat.sortOrder}</span>
+                <div className="flex items-center justify-between text-xs font-mono text-slate-500 pt-3 border-t border-slate-100">
+                  <span className="flex items-center gap-1">
+                    <Layers className="w-3.5 h-3.5 text-slate-400" />
+                    <strong>{cat._count?.services ?? 0}</strong> Services
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Hash className="w-3.5 h-3.5 text-slate-400" />
+                    Order: {cat.sortOrder}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 gap-1.5 text-xs"
                     onClick={() => handleOpenEditModal(cat)}
                   >
-                    Edit
+                    <Edit2 className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Edit</span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-zinc-500 hover:text-red-400"
+                    className="text-slate-500 hover:text-rose-600 hover:bg-rose-50"
                     onClick={() => handleDelete(cat.id, cat.name)}
                     disabled={deleteMutation.isPending}
                   >
-                    Delete
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </CardContent>
@@ -222,22 +248,23 @@ export default function AdminCategoriesPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingCategory ? 'Edit Category' : 'Create New Category'}
+        description="Organize services into clear distinct catalog categories"
       >
         <form
           onSubmit={(e) => {
             e.preventDefault();
             saveMutation.mutate();
           }}
-          className="space-y-4"
+          className="space-y-4 pt-2"
         >
           {formError && (
-            <div className="p-3 bg-red-950/40 border border-red-800 text-red-300 text-xs rounded">
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
               {formError}
             </div>
           )}
 
           <Input
-            label="Category Name"
+            label="Category Name *"
             placeholder="e.g. Web Development"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
@@ -245,7 +272,7 @@ export default function AdminCategoriesPage() {
           />
 
           <Input
-            label="URL Slug"
+            label="URL Slug *"
             placeholder="e.g. web-development"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
@@ -262,14 +289,14 @@ export default function AdminCategoriesPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Icon (e.g. Code, Layout, Shield)"
+              label="Lucide Icon (e.g. Code, Layout)"
               placeholder="Code"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
             />
 
             <Input
-              label="Display Order (Sort)"
+              label="Display Order (Sort Index)"
               type="number"
               placeholder="0"
               value={sortOrder}
@@ -277,20 +304,20 @@ export default function AdminCategoriesPage() {
             />
           </div>
 
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
             <input
               type="checkbox"
               id="isActiveCategory"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-white focus:ring-zinc-700"
+              className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
             />
-            <label htmlFor="isActiveCategory" className="text-xs text-zinc-300 select-none">
-              Category is active and visible publicly
+            <label htmlFor="isActiveCategory" className="text-xs font-medium text-slate-700 select-none cursor-pointer">
+              Category is active and visible publicly in catalog
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"

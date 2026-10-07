@@ -9,6 +9,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Modal } from '@/components/ui/modal';
+import {
+  Package,
+  Plus,
+  Search,
+  Sparkles,
+  Edit2,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  Sliders,
+  Layers,
+  HelpCircle,
+  Clock,
+  RotateCcw,
+  Check,
+} from 'lucide-react';
 
 interface Category {
   id: string;
@@ -290,9 +306,7 @@ export default function AdminServicesPage() {
     }
   };
 
-  // ==========================================
   // REQUIREMENT FIELDS LOGIC
-  // ==========================================
   const handleOpenFieldsManager = (service: Service) => {
     setSelectedServiceForFields(service);
     resetFieldForm();
@@ -405,24 +419,28 @@ export default function AdminServicesPage() {
       {/* Header & Main Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold font-mono text-white">Services Catalog & Briefs</h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            Configure agency service offerings, pricing, timelines & dynamic intake questions
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Services & Dynamic Briefs</h2>
+          <p className="text-xs text-slate-500 mt-1">
+            Configure agency offerings, pricing baselines, delivery estimates & interactive requirement forms
           </p>
         </div>
 
-        <Button variant="primary" onClick={handleOpenCreateService}>
-          + Create New Service
+        <Button variant="primary" onClick={handleOpenCreateService} className="gap-2">
+          <Plus className="w-4 h-4" />
+          <span>Create New Service</span>
         </Button>
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 bg-zinc-950 p-4 rounded-lg border border-zinc-800">
-        <div className="flex-1 w-full">
-          <Input
+      <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
             placeholder="Search services by title or slug..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all"
           />
         </div>
 
@@ -430,7 +448,7 @@ export default function AdminServicesPage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-zinc-500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-700 focus:outline-none focus:border-orange-500 focus:bg-white transition-all cursor-pointer font-medium"
           >
             <option value="ALL">All Categories ({categories.length})</option>
             {categories.map((c) => (
@@ -446,12 +464,18 @@ export default function AdminServicesPage() {
       {isServicesLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 bg-zinc-900 border border-zinc-800 rounded-lg animate-pulse" />
+            <div key={i} className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : filteredServices.length === 0 ? (
-        <Card className="border-zinc-800 bg-zinc-950 p-12 text-center">
-          <p className="text-zinc-400 font-mono text-sm">No services found matching your criteria.</p>
+        <Card className="p-12 text-center border-slate-200/90 bg-white">
+          <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mx-auto mb-3">
+            <Package className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-800">No Services Found</h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            {searchQuery ? 'Try changing your search keywords or category filter.' : 'Create your first service offering to start accepting client requirement briefs.'}
+          </p>
           <Button variant="primary" size="sm" className="mt-4" onClick={handleOpenCreateService}>
             Create Service
           </Button>
@@ -461,11 +485,11 @@ export default function AdminServicesPage() {
           {filteredServices.map((service) => (
             <Card
               key={service.id}
-              className="border-zinc-800 bg-zinc-950 flex flex-col justify-between hover:border-zinc-700 transition-colors"
+              className="border-slate-200/90 bg-white flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition-all group"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                  <span className="font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 font-semibold">
                     {service.category?.name || 'Category'}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -474,32 +498,32 @@ export default function AdminServicesPage() {
                         FEATURED
                       </Badge>
                     )}
-                    <Badge variant={service.isActive ? 'outline' : 'secondary'} className="text-[10px]">
+                    <Badge variant={service.isActive ? 'success' : 'neutral'} className="text-[10px]">
                       {service.isActive ? 'ACTIVE' : 'INACTIVE'}
                     </Badge>
                   </div>
                 </div>
 
-                <CardTitle className="text-lg font-bold font-mono text-white mt-2">
+                <CardTitle className="text-base font-bold text-slate-900 mt-2 group-hover:text-orange-600 transition-colors">
                   {service.name}
                 </CardTitle>
-                <span className="font-mono text-xs text-zinc-500">/services/{service.slug}</span>
+                <span className="font-mono text-xs text-slate-400 block">/services/{service.slug}</span>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px]">
+                <p className="text-xs text-slate-600 line-clamp-2 min-h-[32px]">
                   {service.description || 'No description provided.'}
                 </p>
 
                 {/* Specs Grid */}
-                <div className="grid grid-cols-2 gap-2 py-2 border-y border-zinc-900 font-mono text-[11px] text-zinc-400">
+                <div className="grid grid-cols-2 gap-2 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-100 font-mono text-xs">
                   <div>
-                    <span className="text-zinc-600 block text-[9px] uppercase">Starting Price</span>
-                    <span className="font-semibold text-white">৳{Number(service.startingPrice || 0).toLocaleString()}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-medium">Starting Price</span>
+                    <span className="font-bold text-slate-900">৳{Number(service.startingPrice || 0).toLocaleString()}</span>
                   </div>
                   <div>
-                    <span className="text-zinc-600 block text-[9px] uppercase">Brief Fields</span>
-                    <span className="font-semibold text-zinc-300">
+                    <span className="text-slate-400 block text-[10px] uppercase font-medium">Brief Questions</span>
+                    <span className="font-bold text-slate-900">
                       {service._count?.requirementFields ?? service.requirementFields?.length ?? 0} Fields
                     </span>
                   </div>
@@ -510,20 +534,22 @@ export default function AdminServicesPage() {
                   <Button
                     variant="primary"
                     size="sm"
-                    className="w-full text-xs"
+                    className="w-full text-xs gap-1.5"
                     onClick={() => handleOpenFieldsManager(service)}
                   >
-                    ⚡ Dynamic Brief Builder ({service._count?.requirementFields ?? service.requirementFields?.length ?? 0})
+                    <Sliders className="w-3.5 h-3.5" />
+                    <span>Dynamic Brief Builder ({service._count?.requirementFields ?? service.requirementFields?.length ?? 0})</span>
                   </Button>
 
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-xs gap-1"
                       onClick={() => handleOpenEditService(service)}
                     >
-                      Edit
+                      <Edit2 className="w-3 h-3 text-slate-500" />
+                      <span>Edit</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -536,10 +562,10 @@ export default function AdminServicesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-zinc-500 hover:text-red-400 text-xs"
+                      className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 text-xs px-2"
                       onClick={() => handleDeleteService(service.id, service.name)}
                     >
-                      Delete
+                      <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   </div>
                 </div>
@@ -549,13 +575,13 @@ export default function AdminServicesPage() {
         </div>
       )}
 
-      {/* ======================================================== */}
       {/* SERVICE CREATE / EDIT MODAL */}
-      {/* ======================================================== */}
       <Modal
         isOpen={isServiceModalOpen}
         onClose={() => setIsServiceModalOpen(false)}
         title={editingService ? 'Edit Service' : 'Create New Agency Service'}
+        description="Configure public offering specifications, pricing baseline, and scope"
+        maxWidth="lg"
       >
         <form
           onSubmit={(e) => {
@@ -565,18 +591,18 @@ export default function AdminServicesPage() {
           className="space-y-4 max-h-[75vh] overflow-y-auto pr-1"
         >
           {serviceFormError && (
-            <div className="p-3 bg-red-950/40 border border-red-800 text-red-300 text-xs rounded">
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
               {serviceFormError}
             </div>
           )}
 
-          <div className="space-y-1">
-            <label className="text-xs font-mono text-zinc-400">Category *</label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-700 block">Category *</label>
             <select
               value={categoryId || (categories[0]?.id || '')}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-zinc-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-orange-500 focus:bg-white transition-all font-medium"
             >
               {categories.length === 0 ? (
                 <option value="" disabled>
@@ -593,7 +619,7 @@ export default function AdminServicesPage() {
           </div>
 
           <Input
-            label="Service Title"
+            label="Service Title *"
             placeholder="e.g. Full-Stack Web Application"
             value={serviceName}
             onChange={(e) => handleServiceNameChange(e.target.value)}
@@ -601,7 +627,7 @@ export default function AdminServicesPage() {
           />
 
           <Input
-            label="URL Slug"
+            label="URL Slug *"
             placeholder="e.g. fullstack-web-application"
             value={serviceSlug}
             onChange={(e) => setServiceSlug(e.target.value)}
@@ -609,7 +635,7 @@ export default function AdminServicesPage() {
           />
 
           <Textarea
-            label="Short Description (Summary)"
+            label="Short Description (Summary) *"
             placeholder="1-2 sentences summarizing the offering..."
             value={shortDesc}
             onChange={(e) => setShortDesc(e.target.value)}
@@ -618,7 +644,7 @@ export default function AdminServicesPage() {
           />
 
           <Textarea
-            label="Full Description & Scope of Work"
+            label="Full Description & Scope of Work *"
             placeholder="Detailed description of what is included in this service..."
             value={fullDesc}
             onChange={(e) => setFullDesc(e.target.value)}
@@ -628,7 +654,7 @@ export default function AdminServicesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
-              label="Starting Price (BDT)"
+              label="Starting Price (BDT) *"
               type="number"
               placeholder="5000"
               value={basePrice}
@@ -636,7 +662,7 @@ export default function AdminServicesPage() {
               required
             />
             <Input
-              label="Delivery (Days)"
+              label="Delivery (Days) *"
               type="number"
               placeholder="5"
               value={estimatedDays}
@@ -644,7 +670,7 @@ export default function AdminServicesPage() {
               required
             />
             <Input
-              label="Revisions Limit"
+              label="Revisions Limit *"
               type="number"
               placeholder="2"
               value={maxRevisions}
@@ -668,29 +694,29 @@ export default function AdminServicesPage() {
             />
           </div>
 
-          <div className="flex items-center gap-6 pt-2">
-            <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
+          <div className="flex items-center gap-6 p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
-                className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-white"
+                className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
               />
               Active (Visible publicly)
             </label>
 
-            <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-white"
+                className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
               />
               Featured on Homepage
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button type="button" variant="outline" onClick={() => setIsServiceModalOpen(false)}>
               Cancel
             </Button>
@@ -701,36 +727,42 @@ export default function AdminServicesPage() {
         </form>
       </Modal>
 
-      {/* ======================================================== */}
       {/* DYNAMIC REQUIREMENT FIELDS BUILDER MODAL */}
-      {/* ======================================================== */}
       <Modal
         isOpen={isFieldsModalOpen}
         onClose={() => setIsFieldsModalOpen(false)}
         title={`Dynamic Brief Builder: ${selectedServiceForFields?.name || ''}`}
+        description="Configure interactive questions clients must answer when submitting project requirement briefs"
+        maxWidth="2xl"
       >
         <div className="space-y-6 max-h-[80vh] overflow-y-auto pr-1">
           {/* Information Banner */}
-          <div className="p-3 bg-zinc-900 border border-zinc-800 rounded text-xs text-zinc-300">
-            💡 When clients click <strong>&quot;Submit Requirement Brief&quot;</strong> for this service,
-            they will fill out the exact fields configured below.
+          <div className="p-3.5 bg-orange-50/70 border border-orange-200/80 rounded-xl text-xs text-orange-800 flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+            <div>
+              When clients click <strong>&quot;Submit Requirement Brief&quot;</strong> for this service,
+              they will fill out the exact fields configured below.
+            </div>
           </div>
 
           {/* Form to Add / Edit a Field */}
-          <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-lg space-y-4">
-            <h4 className="text-sm font-bold font-mono text-white">
-              {editingField ? 'Edit Question / Field' : '+ Add New Question / Field'}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+            <h4 className="text-sm font-bold text-slate-900 flex items-center justify-between">
+              <span>{editingField ? 'Edit Question / Field' : '+ Add New Question / Field'}</span>
+              {editingField && (
+                <span className="text-xs font-normal text-slate-500 font-mono">Editing #{editingField.name}</span>
+              )}
             </h4>
 
             {fieldFormError && (
-              <div className="p-2.5 bg-red-950/40 border border-red-800 text-red-300 text-xs rounded">
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
                 {fieldFormError}
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
-                label="Question / Field Label"
+                label="Question / Field Label *"
                 placeholder="e.g. What is your brand name or project goal?"
                 value={fieldLabel}
                 onChange={(e) => handleFieldLabelChange(e.target.value)}
@@ -738,7 +770,7 @@ export default function AdminServicesPage() {
               />
 
               <Input
-                label="Field Machine Key"
+                label="Field Machine Key *"
                 placeholder="e.g. brand_name"
                 value={fieldName}
                 onChange={(e) => setFieldName(e.target.value)}
@@ -747,12 +779,12 @@ export default function AdminServicesPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs font-mono text-zinc-400">Input Type</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-700 block">Input Type *</label>
                 <select
                   value={fieldType}
                   onChange={(e) => setFieldType(e.target.value as any)}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-zinc-500"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-orange-500 transition-all font-medium"
                 >
                   {FIELD_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -763,7 +795,7 @@ export default function AdminServicesPage() {
               </div>
 
               <Input
-                label="Display Order (Sort)"
+                label="Display Order (Sort Index)"
                 type="number"
                 placeholder="0"
                 value={fieldSortOrder}
@@ -773,7 +805,7 @@ export default function AdminServicesPage() {
 
             {['SELECT', 'RADIO', 'CHECKBOX'].includes(fieldType) && (
               <Input
-                label="Options (Comma-separated values)"
+                label="Choices / Options (Comma-separated values) *"
                 placeholder="Option 1, Option 2, Option 3"
                 value={fieldOptions}
                 onChange={(e) => setFieldOptions(e.target.value)}
@@ -784,7 +816,7 @@ export default function AdminServicesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
                 label="Placeholder Text (Optional)"
-                placeholder="e.g. e.g. Acme Corp"
+                placeholder="e.g. Acme Corp"
                 value={fieldPlaceholder}
                 onChange={(e) => setFieldPlaceholder(e.target.value)}
               />
@@ -797,12 +829,12 @@ export default function AdminServicesPage() {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={fieldIsRequired}
                   onChange={(e) => setFieldIsRequired(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-white"
+                  className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                 />
                 Mandatory / Required Field
               </label>
@@ -833,39 +865,41 @@ export default function AdminServicesPage() {
 
           {/* Configured Fields List */}
           <div className="space-y-3">
-            <h4 className="text-xs font-mono uppercase tracking-widest text-zinc-400">
+            <h4 className="text-xs font-mono uppercase tracking-wider text-slate-500 font-semibold">
               Configured Requirement Fields ({fields.length})
             </h4>
 
             {fields.length === 0 ? (
-              <p className="text-xs text-zinc-500 font-mono py-4 text-center">
-                No requirement fields configured yet. Add your first question above.
-              </p>
+              <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                <p className="text-xs text-slate-500">
+                  No requirement fields configured yet. Add your first intake question above.
+                </p>
+              </div>
             ) : (
               <div className="space-y-2">
                 {fields.map((f, idx) => (
                   <div
                     key={f.id}
-                    className="p-3 bg-zinc-900/80 border border-zinc-800 rounded flex items-center justify-between gap-3 hover:border-zinc-700 transition-colors"
+                    className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:border-orange-300 hover:shadow-xs transition-all"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs text-zinc-500 w-5 text-center">
+                      <span className="font-mono text-xs text-slate-400 w-6 text-center font-bold">
                         #{idx + 1}
                       </span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-white">{f.label}</span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                          <span className="text-sm font-semibold text-slate-900">{f.label}</span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-medium">
                             {f.type}
                           </span>
                           {f.isRequired && (
-                            <Badge variant="outline" className="text-[9px] text-amber-400 border-amber-800">
+                            <Badge variant="warning" className="text-[9px]">
                               REQUIRED
                             </Badge>
                           )}
                         </div>
-                        <span className="text-[11px] font-mono text-zinc-500 block mt-0.5">
-                          key: {f.name} {f.options && `• options: ${JSON.stringify(f.options)}`}
+                        <span className="text-[11px] font-mono text-slate-400 block mt-0.5">
+                          key: <code className="text-slate-700">{f.name}</code> {f.options && `• options: ${JSON.stringify(f.options)}`}
                         </span>
                       </div>
                     </div>
@@ -874,7 +908,7 @@ export default function AdminServicesPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-zinc-300 hover:text-white h-7 px-2"
+                        className="text-xs text-slate-600 hover:text-slate-900 h-8 px-2.5"
                         onClick={() => handleEditField(f)}
                       >
                         Edit
@@ -882,7 +916,7 @@ export default function AdminServicesPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-zinc-500 hover:text-red-400 h-7 px-2"
+                        className="text-xs text-slate-500 hover:text-rose-600 hover:bg-rose-50 h-8 px-2.5"
                         onClick={() => deleteFieldMutation.mutate(f.id)}
                       >
                         Delete

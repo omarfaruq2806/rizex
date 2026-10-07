@@ -11,6 +11,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Modal } from '@/components/ui/modal';
+import {
+  MessageSquare,
+  FileText,
+  Download,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  RotateCcw,
+  Star,
+  Send,
+  Phone,
+  Mail,
+  ArrowLeft,
+  Briefcase,
+  Layers,
+  Sparkles,
+} from 'lucide-react';
 
 export default function OrderRoomPage() {
   const params = useParams();
@@ -145,17 +162,17 @@ export default function OrderRoomPage() {
   if (orderLoading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-10 w-64 bg-zinc-900 rounded" />
-        <div className="h-40 bg-zinc-900 border border-zinc-800 rounded-lg" />
+        <div className="h-10 w-64 bg-slate-200 rounded-xl" />
+        <div className="h-40 bg-white border border-slate-200 rounded-2xl" />
       </div>
     );
   }
 
   if (orderError || !order) {
     return (
-      <div className="text-center py-20 border border-zinc-800 rounded-lg bg-zinc-950 space-y-4">
-        <h2 className="text-xl font-bold font-mono text-white">Order Not Found</h2>
-        <p className="text-xs text-zinc-400">
+      <div className="text-center py-20 border border-slate-200/90 rounded-2xl bg-white space-y-4">
+        <h2 className="text-xl font-bold text-slate-900">Order Not Found</h2>
+        <p className="text-xs text-slate-500">
           {(orderError as any)?.message || `Could not find project order "${orderNumber}".`}
         </p>
         <Button variant="outline" onClick={() => router.push('/dashboard/orders')}>
@@ -169,57 +186,70 @@ export default function OrderRoomPage() {
 
   return (
     <div className="space-y-8">
+      {/* Back Link */}
+      <button
+        onClick={() => router.push('/dashboard/orders')}
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to My Orders</span>
+      </button>
+
       {/* 1. ORDER SUMMARY & STATUS CARD */}
-      <Card className="border-zinc-800 bg-zinc-950 p-6 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-900">
+      <Card className="border-slate-200/90 bg-white p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xl font-bold text-white tracking-wide">
+              <span className="font-mono text-xl font-extrabold text-slate-900 tracking-tight">
                 {order.orderNumber}
               </span>
-              <Badge variant="outline">{order.status}</Badge>
+              <Badge variant="primary" className="text-xs">{order.status}</Badge>
             </div>
-            <h1 className="text-lg font-semibold text-zinc-200 mt-1">{order.title}</h1>
-            <span className="text-xs text-zinc-500 font-mono">
-              Service: {order.service?.name} | Created on {new Date(order.createdAt).toLocaleDateString()}
+            <h1 className="text-xl font-bold text-slate-900 mt-1">{order.title}</h1>
+            <span className="text-xs text-slate-500 font-mono">
+              Service: {order.service?.name} • Created on {new Date(order.createdAt).toLocaleDateString()}
             </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             {order.status === 'REVIEW' && (
               <>
-                <Button variant="primary" size="sm" onClick={handleApproveDelivery}>
-                  ✓ Approve Delivery
+                <Button variant="primary" size="sm" onClick={handleApproveDelivery} className="gap-1.5 shadow-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Approve Final Delivery</span>
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="sm"
                   onClick={() => setRevisionModalOpen(true)}
+                  className="gap-1.5"
                 >
-                  Request Revision
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Request Revision</span>
                 </Button>
               </>
             )}
 
             {order.status === 'COMPLETED' && !order.review && (
-              <Button variant="primary" size="sm" onClick={() => setReviewModalOpen(true)}>
-                ★ Leave a Review
+              <Button variant="primary" size="sm" onClick={() => setReviewModalOpen(true)} className="gap-1.5">
+                <Star className="w-3.5 h-3.5" />
+                <span>Leave a Review</span>
               </Button>
             )}
           </div>
         </div>
 
         {/* Agency Support & Direct Hotline Banner */}
-        <div className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="p-4 bg-orange-50/60 border border-orange-200/70 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
           <div className="space-y-0.5">
-            <span className="font-semibold text-white">Need immediate project assistance or billing support?</span>
-            <p className="text-zinc-400">Our dedicated agency coordinators are active 24/7. Reach us via Hotline/WhatsApp or live chat below.</p>
+            <span className="font-bold text-orange-950 block">Need immediate project assistance or technical coordination?</span>
+            <p className="text-orange-800">Our agency project leads are available 24/7. Reach us via Hotline/WhatsApp or live chat below.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 font-mono text-zinc-300">
-            <span className="px-2.5 py-1 bg-zinc-800 border border-zinc-700 rounded text-[11px] text-white">
+          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span className="px-3 py-1 bg-white border border-orange-200 rounded-xl font-bold text-orange-800 shadow-2xs">
               📞 +880 1700-000000
             </span>
-            <span className="px-2.5 py-1 bg-zinc-800 border border-zinc-700 rounded text-[11px] text-zinc-300">
+            <span className="px-3 py-1 bg-white border border-orange-200 rounded-xl font-bold text-slate-700 shadow-2xs">
               ✉ support@rizex.agency
             </span>
           </div>
@@ -227,74 +257,81 @@ export default function OrderRoomPage() {
 
         {/* Progress & Assigned Specialist Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          <div>
-            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
               Project Execution Progress
             </span>
             <div className="flex items-center gap-3">
-              <div className="flex-1 bg-zinc-900 h-2 rounded-full overflow-hidden border border-zinc-800">
+              <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
                 <div
-                  className="bg-white h-full transition-all duration-500"
+                  className="bg-orange-500 h-full transition-all duration-500 rounded-full"
                   style={{ width: `${order.progress || 0}%` }}
                 />
               </div>
-              <span className="font-mono text-sm font-bold text-white">
+              <span className="font-mono text-sm font-extrabold text-slate-900">
                 {order.progress || 0}%
               </span>
             </div>
           </div>
 
-          <div>
-            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
               Assigned Lead Specialist
             </span>
-            <span className="text-sm font-medium text-white block">
-              {activeWorker ? activeWorker.name : 'Assignment Pending'}
+            <span className="text-sm font-bold text-slate-900 block">
+              {activeWorker ? activeWorker.name : 'Assignment In-Progress'}
             </span>
-            <span className="text-[11px] text-zinc-500 font-mono">
-              {activeWorker ? activeWorker.email : 'Team manager will assign shortly'}
+            <span className="text-xs text-slate-500 font-mono block">
+              {activeWorker ? activeWorker.email : 'Team manager will assign lead specialist'}
             </span>
           </div>
 
-          <div>
-            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
-              Commercial Terms
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
+              Commercial Contract
             </span>
-            <span className="text-sm font-mono font-bold text-white block">
-              {order.quote?.amount || '0.00'} {order.quote?.currency || 'BDT'}
+            <span className="text-sm font-mono font-extrabold text-slate-900 block">
+              ৳{Number(order.quote?.amount || 0).toLocaleString()} {order.quote?.currency || 'BDT'}
             </span>
-            <span className="text-[11px] text-zinc-400 font-mono">
-              {order.quote?.revisions || 0} Revisions Allowed
+            <span className="text-xs text-slate-500 font-mono block">
+              {order.quote?.revisions || 0} Revisions Included
             </span>
           </div>
         </div>
       </Card>
 
       {/* 2. TAB CONTROLS */}
-      <div className="flex border-b border-zinc-800 gap-6">
-        {[
-          { key: 'CHAT', label: `Direct Project Chat (${messages.length})` },
-          { key: 'FILES', label: `Files & Deliverables (${files.length})` },
-          { key: 'DELIVERY', label: 'Deliverables & Revisions' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as any)}
-            className={`pb-3 text-sm font-mono transition-colors border-b-2 -mb-px cursor-pointer ${
-              activeTab === tab.key
-                ? 'border-white text-white font-bold'
-                : 'border-transparent text-zinc-500 hover:text-zinc-300'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 p-1.5 shadow-xs overflow-x-auto">
+        <div className="flex items-center gap-1.5 min-w-max">
+          {[
+            { key: 'CHAT', label: `Direct Project Chat (${messages.length})`, icon: MessageSquare },
+            { key: 'FILES', label: `Files & Assets (${files.length})`, icon: FileText },
+            { key: 'DELIVERY', label: 'Deliverables & Revision Log', icon: Sparkles },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as any)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
+                  isActive
+                    ? 'bg-slate-900 text-white shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-orange-400' : 'text-slate-400'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* 3. CHAT TAB CONTENT */}
       {activeTab === 'CHAT' && (
-        <Card className="border-zinc-800 bg-zinc-950 p-6 space-y-4">
-          <div className="h-80 overflow-y-auto space-y-3 p-4 bg-black border border-zinc-900 rounded-lg">
+        <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
+          <div className="h-96 overflow-y-auto space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
             {messages.length > 0 ? (
               messages.map((msg) => {
                 const isMe = msg.senderId === user?.id;
@@ -303,22 +340,22 @@ export default function OrderRoomPage() {
                     key={msg.id}
                     className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                   >
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-[11px] font-mono text-zinc-400 font-semibold">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold text-slate-800">
                         {isMe ? 'You' : msg.sender?.name}
                       </span>
-                      <Badge variant="outline" className="text-[9px] py-0 px-1">
+                      <Badge variant={isMe ? 'primary' : 'neutral'} className="text-[9px] py-0 px-1.5">
                         {msg.sender?.role || 'USER'}
                       </Badge>
-                      <span className="text-[10px] text-zinc-600 font-mono">
+                      <span className="text-[10px] text-slate-400 font-mono">
                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     <div
-                      className={`p-3 rounded-lg text-xs max-w-lg leading-relaxed ${
+                      className={`p-3.5 rounded-2xl text-xs max-w-lg leading-relaxed shadow-2xs ${
                         isMe
-                          ? 'bg-zinc-800 text-white'
-                          : 'bg-zinc-900 border border-zinc-800 text-zinc-200'
+                          ? 'bg-slate-900 text-white rounded-tr-sm'
+                          : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'
                       }`}
                     >
                       {msg.content}
@@ -327,21 +364,23 @@ export default function OrderRoomPage() {
                 );
               })
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-zinc-500">
-                No messages yet. Send a message below to start collaborating.
+              <div className="h-full flex flex-col items-center justify-center text-xs text-slate-400">
+                <MessageSquare className="w-8 h-8 text-slate-300 mb-2" />
+                <span>No messages yet. Send a message below to start collaborating with your specialist.</span>
               </div>
             )}
           </div>
 
           <form onSubmit={handleSendMessage} className="flex gap-3">
             <Input
-              placeholder="Type your message to the assigned team member..."
+              placeholder="Type your message to the assigned lead specialist..."
               value={chatMessage}
               onChange={(e) => setChatMessage(e.target.value)}
               disabled={isSendingMessage}
             />
-            <Button type="submit" variant="primary" isLoading={isSendingMessage}>
-              Send
+            <Button type="submit" variant="primary" isLoading={isSendingMessage} className="gap-1.5">
+              <Send className="w-3.5 h-3.5" />
+              <span>Send</span>
             </Button>
           </form>
         </Card>
@@ -349,19 +388,21 @@ export default function OrderRoomPage() {
 
       {/* 4. FILES TAB CONTENT */}
       {activeTab === 'FILES' && (
-        <Card className="border-zinc-800 bg-zinc-950 p-6 space-y-4">
+        <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold font-mono text-white">Project Assets & Files</h3>
-            <span className="text-xs text-zinc-500 font-mono">Cloudflare R2 Storage</span>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Project Assets & Deliverable Files</h3>
+              <p className="text-xs text-slate-500">Secure storage & delivery artifacts powered by Cloudflare R2</p>
+            </div>
           </div>
 
           {files.length > 0 ? (
-            <div className="divide-y divide-zinc-900 border border-zinc-900 rounded-lg overflow-hidden">
+            <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden bg-white">
               {files.map((file) => (
-                <div key={file.id} className="p-3 bg-zinc-950 flex items-center justify-between hover:bg-zinc-900/40">
-                  <div className="space-y-0.5">
-                    <span className="text-xs font-medium text-white block">{file.name}</span>
-                    <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                <div key={file.id} className="p-4 flex items-center justify-between hover:bg-slate-50/70 transition-colors">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-slate-900 block">{file.name}</span>
+                    <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
                       <Badge variant="neutral">{file.category}</Badge>
                       <span>Uploaded by {file.uploader?.name}</span>
                     </div>
@@ -372,15 +413,19 @@ export default function OrderRoomPage() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button variant="outline" size="sm">
-                      Download ↓
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download</span>
                     </Button>
                   </a>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-zinc-500 py-6 text-center">No files attached to this order yet.</p>
+            <div className="p-12 text-center border border-slate-200 rounded-2xl bg-slate-50">
+              <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs text-slate-500">No files attached to this order yet.</p>
+            </div>
           )}
         </Card>
       )}
@@ -388,36 +433,38 @@ export default function OrderRoomPage() {
       {/* 5. DELIVERY TAB CONTENT */}
       {activeTab === 'DELIVERY' && (
         <div className="space-y-6">
-          <Card className="border-zinc-800 bg-zinc-950 p-6 space-y-4">
-            <h3 className="text-sm font-bold font-mono text-white">Deliverable Submission Status</h3>
+          <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900">Deliverable Submission Status</h3>
             {order.delivery ? (
-              <div className="p-4 bg-zinc-900 border border-zinc-800 rounded space-y-3">
+              <div className="p-4 bg-emerald-50/60 border border-emerald-200/70 rounded-2xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-zinc-400">
+                  <span className="text-xs font-mono font-bold text-emerald-800">
                     Submitted on {new Date(order.delivery.submittedAt).toLocaleString()}
                   </span>
-                  <Badge variant="outline">{order.delivery.status}</Badge>
+                  <Badge variant="success">{order.delivery.status}</Badge>
                 </div>
-                <p className="text-xs text-zinc-200">
-                  {order.delivery.message || 'The team has delivered the project assets for your review.'}
+                <p className="text-xs text-emerald-900 leading-relaxed">
+                  {order.delivery.message || 'The team has delivered the final project assets for your review and approval.'}
                 </p>
               </div>
             ) : (
-              <p className="text-xs text-zinc-500 italic">Work is currently in progress. Final delivery will appear here.</p>
+              <p className="text-xs text-slate-500 italic bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                Work is currently under active execution. Final deliverable artifacts will appear here upon completion.
+              </p>
             )}
           </Card>
 
           {order.revisions && order.revisions.length > 0 && (
-            <Card className="border-zinc-800 bg-zinc-950 p-6 space-y-4">
-              <h3 className="text-sm font-bold font-mono text-white">Revision Request History</h3>
+            <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900">Revision Request History</h3>
               <div className="space-y-3">
                 {order.revisions.map((rev: any, index: number) => (
-                  <div key={rev.id || index} className="p-3 bg-zinc-900/50 border border-zinc-800 rounded text-xs space-y-1">
+                  <div key={rev.id || index} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-white font-mono">Revision #{index + 1}: {rev.reason}</span>
-                      <Badge variant="outline">{rev.status}</Badge>
+                      <span className="font-bold text-slate-900">Revision #{index + 1}: {rev.reason}</span>
+                      <Badge variant="warning">{rev.status}</Badge>
                     </div>
-                    <p className="text-zinc-400">{rev.description}</p>
+                    <p className="text-slate-600 leading-relaxed">{rev.description}</p>
                   </div>
                 ))}
               </div>
@@ -430,13 +477,14 @@ export default function OrderRoomPage() {
       <Modal
         isOpen={revisionModalOpen}
         onClose={() => setRevisionModalOpen(false)}
-        title="Request Work Revision"
-        description="Specify the adjustments needed. Please be as descriptive as possible."
+        title="Request Project Revision"
+        description="Specify the adjustments needed. Our team will iterate immediately."
+        maxWidth="md"
       >
         <form onSubmit={handleRequestRevision} className="space-y-4 pt-2">
           <Input
-            label="Revision Reason / Focus Area *"
-            placeholder="e.g. Color Palette & Mobile Responsiveness"
+            label="Revision Focus Area *"
+            placeholder="e.g. Typography, Color Scheme, or Responsive Layout"
             value={revisionReason}
             onChange={(e) => setRevisionReason(e.target.value)}
             required
@@ -444,13 +492,14 @@ export default function OrderRoomPage() {
 
           <Textarea
             label="Detailed Description of Requested Changes *"
-            placeholder="Provide granular feedback on what should be changed..."
+            placeholder="Provide granular feedback on what should be modified..."
             value={revisionDescription}
             onChange={(e) => setRevisionDescription(e.target.value)}
+            rows={4}
             required
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
@@ -473,20 +522,21 @@ export default function OrderRoomPage() {
       <Modal
         isOpen={reviewModalOpen}
         onClose={() => setReviewModalOpen(false)}
-        title="Leave a Rating & Review"
-        description="Share your feedback on the execution and communication quality."
+        title="Leave a Rating & Client Review"
+        description="Share your feedback on project quality, timeliness, and communication"
+        maxWidth="md"
       >
         <form onSubmit={handleSubmitReview} className="space-y-4 pt-2">
-          <div className="w-full">
-            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+          <div className="w-full space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">
               Rating (1 to 5 Stars) *
             </label>
             <select
-              className="w-full bg-zinc-950 text-white border border-zinc-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-zinc-400"
+              className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all font-medium cursor-pointer"
               value={reviewRating}
               onChange={(e) => setReviewRating(Number(e.target.value))}
             >
-              <option value="5">★★★★★ 5 Stars (Exceptional)</option>
+              <option value="5">★★★★★ 5 Stars (Exceptional Deliverable)</option>
               <option value="4">★★★★☆ 4 Stars (Very Good)</option>
               <option value="3">★★★☆☆ 3 Stars (Satisfactory)</option>
               <option value="2">★★☆☆☆ 2 Stars (Needs Improvement)</option>
@@ -495,13 +545,14 @@ export default function OrderRoomPage() {
           </div>
 
           <Textarea
-            label="Your Review / Comments"
-            placeholder="Write a brief comment about your experience..."
+            label="Your Review / Testimonial Comments"
+            placeholder="Write a brief comment about your experience working with our agency..."
             value={reviewComment}
             onChange={(e) => setReviewComment(e.target.value)}
+            rows={3}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"

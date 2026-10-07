@@ -11,6 +11,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Modal } from '@/components/ui/modal';
+import {
+  FileText,
+  Send,
+  Sparkles,
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  Zap,
+} from 'lucide-react';
 
 interface RequirementField {
   id: string;
@@ -128,8 +138,8 @@ export default function ServiceDetailPage() {
   if (isLoading) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-16 space-y-6 animate-pulse">
-        <div className="h-8 w-48 bg-zinc-900 rounded" />
-        <div className="h-40 bg-zinc-900 rounded border border-zinc-800" />
+        <div className="h-8 w-48 bg-slate-200 rounded-xl" />
+        <div className="h-40 bg-white rounded-2xl border border-slate-200" />
       </div>
     );
   }
@@ -137,8 +147,8 @@ export default function ServiceDetailPage() {
   if (!service) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-2xl font-bold font-mono">Service Not Found</h2>
-        <p className="text-zinc-400 text-sm">The requested service could not be located.</p>
+        <h2 className="text-2xl font-bold text-slate-900">Service Not Found</h2>
+        <p className="text-slate-500 text-sm">The requested service could not be located in our catalog.</p>
         <Button variant="outline" onClick={() => router.push('/services')}>
           ← Back to Catalog
         </Button>
@@ -150,48 +160,61 @@ export default function ServiceDetailPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 flex-1 w-full">
-      {/* Service Header Info */}
-      <div className="space-y-4 border-b border-zinc-800 pb-8">
-        <div className="flex items-center gap-3">
-          {service.category && <Badge variant="neutral">{service.category.name}</Badge>}
-          <span className="text-xs font-mono text-zinc-500">Service ID: {service.slug}</span>
+      {/* Back button */}
+      <button
+        onClick={() => router.push('/services')}
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to Services Catalog</span>
+      </button>
+
+      {/* Service Header Info Banner */}
+      <div className="rounded-3xl bg-white border border-slate-200/90 p-8 shadow-xs space-y-5">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            {service.category && (
+              <Badge variant="primary" className="text-xs uppercase font-semibold">
+                {service.category.name}
+              </Badge>
+            )}
+            <span className="text-xs font-mono text-slate-400">/{service.slug}</span>
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-orange-50 border border-orange-200/60 text-xs font-mono font-bold text-orange-700">
+            <span>Starting Base: ৳{Number(service.startingPrice || 0).toLocaleString()}</span>
+          </div>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-white">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
           {service.name}
         </h1>
 
-        <p className="text-sm sm:text-base text-zinc-400 max-w-3xl leading-relaxed">
-          {service.description || 'Specialized digital service. Submit your custom project requirements below to receive a detailed quote and timeline.'}
+        <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
+          {service.description || 'Specialized digital service. Submit your custom project requirements below to receive an upfront quote and timeline.'}
         </p>
-
-        <div className="pt-2 flex items-baseline gap-2">
-          <span className="text-xs font-mono text-zinc-500 uppercase">Estimated Starting Base:</span>
-          <span className="text-lg font-bold font-mono text-white">
-            {service.startingPrice ? `${service.startingPrice} ${service.currency || 'BDT'}` : 'Custom Scope Quote'}
-          </span>
-        </div>
       </div>
 
       {/* Dynamic Requirement Form */}
-      <div>
-        <div className="mb-6 space-y-1">
-          <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">
-            Project Specification
-          </span>
-          <h2 className="text-2xl font-bold font-mono tracking-tight text-white">
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-orange-600 uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>PROJECT SPECIFICATION</span>
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
             Submit Your Requirement Brief
           </h2>
-          <p className="text-xs text-zinc-400">
-            Fill in the details below. Our team will review your specifications and generate a tailored quote.
+          <p className="text-xs text-slate-500">
+            Fill in your project requirements below. Our agency team will evaluate your brief and issue a detailed proposal.
           </p>
         </div>
 
-        <Card className="border-zinc-800 bg-zinc-950 p-6">
+        <Card className="border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* General Project Name */}
             <Input
-              label="Project / Initiative Name *"
+              label="Project / Initiative Title *"
               placeholder="e.g. Next-Gen Mobile App Redesign"
               value={projectName}
               onChange={(e) => {
@@ -209,17 +232,18 @@ export default function ServiceDetailPage() {
 
             {/* General Project Description */}
             <Textarea
-              label="Project Overview & Objectives"
-              placeholder="Describe what you want to achieve, target audience, and key deliverables..."
+              label="Project Overview & Goal"
+              placeholder="Describe what you want to achieve, target audience, brand aesthetic, and key deliverables..."
               value={projectDescription}
               onChange={(e) => setProjectDescription(e.target.value)}
+              rows={3}
             />
 
             {/* Dynamic Custom Fields */}
             {fields.length > 0 && (
-              <div className="pt-4 border-t border-zinc-800 space-y-5">
-                <h3 className="text-sm font-semibold font-mono uppercase tracking-wider text-zinc-300">
-                  Service Specific Requirements
+              <div className="pt-6 border-t border-slate-100 space-y-5">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                  Service Specific Questions ({fields.length})
                 </h3>
 
                 {fields.map((field) => {
@@ -236,6 +260,7 @@ export default function ServiceDetailPage() {
                         value={dynamicValues[field.id] || ''}
                         onChange={(e) => handleFieldChange(field.id, e.target.value)}
                         error={error}
+                        rows={3}
                       />
                     );
                   }
@@ -243,12 +268,12 @@ export default function ServiceDetailPage() {
                   if (field.type === 'SELECT') {
                     const options = Array.isArray(field.options) ? field.options : [];
                     return (
-                      <div key={field.id} className="w-full">
-                        <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                      <div key={field.id} className="w-full space-y-1.5">
+                        <label className="block text-xs font-semibold text-slate-700">
                           {label}
                         </label>
                         <select
-                          className="w-full bg-zinc-950 text-white border border-zinc-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-zinc-400"
+                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all font-medium cursor-pointer"
                           value={dynamicValues[field.id] || ''}
                           onChange={(e) => handleFieldChange(field.id, e.target.value)}
                         >
@@ -259,7 +284,7 @@ export default function ServiceDetailPage() {
                             </option>
                           ))}
                         </select>
-                        {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
+                        {error && <p className="text-xs text-rose-500 mt-1">{error}</p>}
                       </div>
                     );
                   }
@@ -281,12 +306,13 @@ export default function ServiceDetailPage() {
             )}
 
             {/* Submit Button */}
-            <div className="pt-4 border-t border-zinc-800 flex items-center justify-between">
-              <span className="text-xs text-zinc-500">
-                You will review and approve the quote before any work begins.
+            <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs text-slate-500">
+                🔒 You will review and approve the proposal before any project begins.
               </span>
-              <Button type="submit" variant="primary" size="md" isLoading={isSubmitting}>
-                Submit Requirement Brief →
+              <Button type="submit" variant="primary" size="md" isLoading={isSubmitting} className="gap-2 w-full sm:w-auto">
+                <Send className="w-4 h-4" />
+                <span>Submit Requirement Brief →</span>
               </Button>
             </div>
           </form>
@@ -300,21 +326,22 @@ export default function ServiceDetailPage() {
           setSuccessModalOpen(false);
           router.push('/dashboard/quotes');
         }}
-        title="Requirement Brief Submitted!"
+        title="Requirement Brief Submitted Successfully!"
         description="Your project specifications have been transmitted to our management team."
+        maxWidth="md"
       >
         <div className="space-y-4 pt-2">
-          <p className="text-xs text-zinc-300 leading-relaxed">
-            We have received your requirement details. Our team is preparing a custom quote covering estimated timeline, milestones, advance terms, and allowed revisions.
+          <p className="text-xs text-slate-600 leading-relaxed">
+            We have received your requirement brief. Our project manager will review your answers and formulate a custom quote covering estimated timeline, milestone breakdown, advance terms, and revision limits.
           </p>
 
-          <div className="flex gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex gap-3 pt-4 border-t border-slate-100">
             <Button
               variant="primary"
               className="flex-1"
               onClick={() => router.push('/dashboard/quotes')}
             >
-              Go to My Quotes
+              View My Quotes
             </Button>
             <Button
               variant="outline"
@@ -323,7 +350,7 @@ export default function ServiceDetailPage() {
                 router.push('/services');
               }}
             >
-              Explore More Services
+              Back to Services
             </Button>
           </div>
         </div>
