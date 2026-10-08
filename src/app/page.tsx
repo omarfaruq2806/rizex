@@ -221,9 +221,9 @@ export default async function HomePage() {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.14] max-w-4xl font-sans">
-              High Velocity Digital Services. <br className="hidden sm:inline" />
+              Grow Your Business With RizeX <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 bg-clip-text text-transparent">
-                Transparent Brief to Delivery.
+                Fast, Transparent & Secure.
               </span>
             </h1>
 
