@@ -25,13 +25,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs active:scale-[0.98]';
 
     const variants = {
-      primary: 'bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 shadow-sm hover:shadow-md hover:shadow-orange-500/25 border border-orange-600/10',
+      primary: 'bg-orange-600 text-white hover:bg-orange-700 active:bg-orange-800 shadow-sm hover:shadow-md hover:shadow-orange-600/25 border border-orange-700/20 font-semibold',
       secondary:
         'bg-[#0f172a] text-white hover:bg-[#1e293b] active:bg-[#334155] border border-slate-800 shadow-sm',
       outline:
-        'bg-white text-slate-700 border border-slate-200/90 hover:bg-orange-50/50 hover:text-orange-600 hover:border-orange-300 shadow-2xs',
-      ghost: 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-none',
-      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-sm',
+        'bg-white text-slate-800 border border-slate-200 hover:bg-orange-50/70 hover:text-orange-700 hover:border-orange-300 shadow-2xs font-semibold',
+      ghost: 'bg-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100 shadow-none font-medium',
+      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-sm font-semibold',
     };
 
     const sizes = {

@@ -34,7 +34,7 @@ export function Navbar() {
           </Link>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
             <Link
               href="/services"
               className="hover:text-orange-600 transition-colors"
@@ -55,14 +55,14 @@ export function Navbar() {
             </Link>
             <Link
               href="/#estimator"
-              className="hover:text-orange-600 transition-colors text-slate-500"
+              className="hover:text-orange-600 transition-colors"
             >
               Estimate Cost
             </Link>
             {isAuthenticated && role === 'CLIENT' && (
               <Link
                 href="/dashboard/quotes"
-                className="hover:text-orange-600 transition-colors font-medium text-orange-600"
+                className="hover:text-orange-700 transition-colors font-semibold text-orange-700"
               >
                 My Quotes
               </Link>

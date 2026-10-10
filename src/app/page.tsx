@@ -210,11 +210,11 @@ export default async function HomePage() {
 
           <div className="max-w-6xl mx-auto flex flex-col items-center text-center relative z-10">
             {/* Badge Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200/80 text-orange-700 text-xs font-semibold shadow-2xs mb-8 hover:bg-orange-100/70 transition-colors backdrop-blur-md">
-              <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200/80 text-orange-800 text-xs font-semibold shadow-2xs mb-8 hover:bg-orange-100/70 transition-colors backdrop-blur-md">
+              <span className="flex h-2 w-2 rounded-full bg-orange-600 animate-pulse" />
               <span>Next-Generation Digital Service Agency</span>
-              <span className="text-orange-300 font-normal">|</span>
-              <span className="inline-flex items-center gap-1 font-medium text-orange-600">
+              <span className="text-orange-400 font-normal">|</span>
+              <span className="inline-flex items-center gap-1 font-semibold text-orange-800">
                 Explore Catalog <ArrowRight className="w-3 h-3" />
               </span>
             </div>
@@ -234,14 +234,14 @@ export default async function HomePage() {
 
             {/* CTAs */}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
-              <Link href="/services" className="w-full sm:w-auto">
+              <Link href="/services" className="w-full sm:w-auto" aria-label="Explore Services Catalog">
                 <Button size="lg" variant="primary" className="w-full sm:w-auto px-8 text-sm font-semibold shadow-md shadow-orange-500/20 gap-2 h-11">
                   Explore Services Catalog <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="#estimator" className="w-full sm:w-auto">
+              <Link href="#estimator" className="w-full sm:w-auto" aria-label="Estimate Project Cost">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto px-6 text-sm font-medium h-11 gap-2">
-                  <Calculator className="w-4 h-4 text-orange-500" />
+                  <Calculator className="w-4 h-4 text-orange-600" />
                   Estimate Project Cost
                 </Button>
               </Link>
@@ -251,21 +251,21 @@ export default async function HomePage() {
             <div className="mt-14 pt-8 border-t border-slate-200/80 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="space-y-1 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
                 <div className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono">99.4%</div>
-                <div className="text-xs font-medium text-slate-500">On-Time Delivery</div>
+                <div className="text-xs font-medium text-slate-600">On-Time Delivery</div>
               </div>
               <div className="space-y-1 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="text-2xl sm:text-3xl font-bold text-orange-600 font-mono">&lt; 2 Hours</div>
-                <div className="text-xs font-medium text-slate-500">Quote Turnaround</div>
+                <div className="text-2xl sm:text-3xl font-bold text-orange-700 font-mono">&lt; 2 Hours</div>
+                <div className="text-xs font-medium text-slate-600">Quote Turnaround</div>
               </div>
               <div className="space-y-1 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
                 <div className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono">100%</div>
-                <div className="text-xs font-medium text-slate-500">Escrow Milestone Protection</div>
+                <div className="text-xs font-medium text-slate-600">Escrow Milestone Protection</div>
               </div>
               <div className="space-y-1 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="text-2xl sm:text-3xl font-bold text-amber-500 font-mono flex items-center justify-center gap-1">
-                  4.9 <Star className="w-4 h-4 fill-amber-400 text-amber-400 inline" />
+                <div className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono flex items-center justify-center gap-1">
+                  4.9 <Star className="w-4 h-4 fill-amber-500 text-amber-500 inline" />
                 </div>
-                <div className="text-xs font-medium text-slate-500">Verified Client Rating</div>
+                <div className="text-xs font-medium text-slate-600">Verified Client Rating</div>
               </div>
             </div>
 
@@ -276,31 +276,31 @@ export default async function HomePage() {
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="h-11 w-11 rounded-2xl bg-orange-50 border border-orange-200/80 flex items-center justify-center text-orange-600 font-bold shadow-xs">
+                  <div className="h-11 w-11 rounded-2xl bg-orange-50 border border-orange-200/80 flex items-center justify-center text-orange-700 font-bold shadow-xs">
                     <Code2 className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-slate-900 text-base">Fintech SaaS Platform Deliverable</h3>
+                      <div className="font-semibold text-slate-900 text-base">Fintech SaaS Platform Deliverable</div>
                       <Badge variant="primary" className="text-[10px]">Active Order</Badge>
                     </div>
                     <p className="text-xs text-slate-500">Order #RZ-8492 • Milestone 2 of 3 in progress</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="success" className="gap-1 px-3 py-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Milestone 1 Escrow Released
+                  <Badge variant="success" className="gap-1 px-3 py-1 text-emerald-800 bg-emerald-50 border-emerald-200">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" /> Milestone 1 Escrow Released
                   </Badge>
                 </div>
               </div>
 
               {/* Progress Bar */}
               <div className="mt-6 space-y-2">
-                <div className="flex justify-between text-xs text-slate-600">
+                <div className="flex justify-between text-xs text-slate-700">
                   <span className="font-medium flex items-center gap-1.5">
-                    <Workflow className="w-3.5 h-3.5 text-orange-600" /> Real-time Milestone Progress
+                    <Workflow className="w-3.5 h-3.5 text-orange-700" /> Real-time Milestone Progress
                   </span>
-                  <span className="font-bold text-orange-600 font-mono">68% Completed</span>
+                  <span className="font-bold text-orange-700 font-mono">68% Completed</span>
                 </div>
                 <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
                   <div className="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-500" style={{ width: '68%' }} />
@@ -310,25 +310,25 @@ export default async function HomePage() {
               {/* Milestone Steps Mini-Grid */}
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
-                  <div className="flex items-center gap-2 text-emerald-600 text-xs font-semibold mb-1">
+                  <div className="flex items-center gap-2 text-emerald-700 text-xs font-semibold mb-1">
                     <Check className="w-3.5 h-3.5" /> Milestone 1
                   </div>
                   <div className="text-xs font-medium text-slate-800">UI/UX & Architecture</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Approved & Funds Released</div>
+                  <div className="text-[11px] text-slate-600 mt-0.5">Approved & Funds Released</div>
                 </div>
-                <div className="p-3.5 bg-orange-50/60 border border-orange-200/80 rounded-xl">
-                  <div className="flex items-center gap-2 text-orange-700 text-xs font-semibold mb-1">
-                    <Clock className="w-3.5 h-3.5 animate-spin" /> Milestone 2
+                <div className="p-3.5 bg-orange-50/70 border border-orange-200 rounded-xl">
+                  <div className="flex items-center gap-2 text-orange-800 text-xs font-semibold mb-1">
+                    <Clock className="w-3.5 h-3.5 animate-spin text-orange-700" /> Milestone 2
                   </div>
                   <div className="text-xs font-medium text-slate-900">API & Frontend Integration</div>
-                  <div className="text-[11px] text-orange-600 font-medium mt-0.5">In Review • Escrow Secured</div>
+                  <div className="text-[11px] text-orange-800 font-medium mt-0.5">In Review • Escrow Secured</div>
                 </div>
-                <div className="p-3.5 bg-white border border-slate-200/80 rounded-xl opacity-75">
-                  <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold mb-1">
-                    <span className="w-2 h-2 rounded-full bg-slate-300" /> Milestone 3
+                <div className="p-3.5 bg-white border border-slate-200/80 rounded-xl">
+                  <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold mb-1">
+                    <span className="w-2 h-2 rounded-full bg-slate-400" /> Milestone 3
                   </div>
                   <div className="text-xs font-medium text-slate-700">QA, Security & Cloud Deploy</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Scheduled Next</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">Scheduled Next</div>
                 </div>
               </div>
             </div>
@@ -338,18 +338,18 @@ export default async function HomePage() {
         {/* 2. TECH STACK MARQUEE / CAPABILITIES */}
         <section className="py-7 px-4 border-b border-slate-200/80 bg-white">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-orange-600 uppercase tracking-wider shrink-0">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-orange-700 uppercase tracking-wider shrink-0">
               <Cpu className="w-4 h-4" /> Production Tech Stack
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               {TECH_STACK_ITEMS.map((tech) => (
                 <div
                   key={tech.name}
-                  className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center gap-2 hover:border-orange-300 hover:text-orange-600 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center gap-2 hover:border-orange-300 hover:text-orange-700 transition-colors"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-orange-600" />
                   <span className="font-semibold text-slate-900">{tech.name}</span>
-                  <span className="text-[10px] text-slate-400 hidden sm:inline">({tech.role})</span>
+                  <span className="text-[10px] text-slate-600 hidden sm:inline font-medium">({tech.role})</span>
                 </div>
               ))}
             </div>
@@ -422,22 +422,22 @@ export default async function HomePage() {
                   >
                     <div>
                       <div className="flex items-center justify-between mb-5">
-                        <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                        <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-700 group-hover:bg-orange-600 group-hover:text-white transition-colors">
                           <Icon className="w-6 h-6" />
                         </div>
-                        <span className="font-mono text-3xl font-bold text-slate-300 group-hover:text-orange-500 transition-colors">
+                        <span className="font-mono text-3xl font-bold text-slate-500 group-hover:text-orange-700 transition-colors">
                           {item.step}
                         </span>
                       </div>
                       <h3 className="text-base font-bold text-slate-900 mb-2">
                         {item.title}
                       </h3>
-                      <p className="text-xs text-slate-500 leading-relaxed">
+                      <p className="text-xs text-slate-600 leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center text-xs font-semibold text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center text-xs font-semibold text-orange-700 opacity-0 group-hover:opacity-100 transition-opacity">
                       Learn more <ChevronRight className="w-3.5 h-3.5 ml-1" />
                     </div>
                   </div>
@@ -456,13 +456,13 @@ export default async function HomePage() {
                 <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
                   Featured Capabilities
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                <p className="text-xs sm:text-sm text-slate-600 mt-1">
                   Explore popular services or request a customized package tailored to your exact tech requirements.
                 </p>
               </div>
-              <Link href="/services">
+              <Link href="/services" aria-label="View all services catalog">
                 <Button variant="outline" size="sm" className="font-medium gap-1.5 text-xs shadow-2xs">
-                  View All Catalog <ArrowRight className="w-3.5 h-3.5 text-orange-600" />
+                  View All Catalog <ArrowRight className="w-3.5 h-3.5 text-orange-700" />
                 </Button>
               </Link>
             </div>
@@ -487,7 +487,7 @@ export default async function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="p-8 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-4 hover:border-orange-200 hover:bg-white hover:shadow-md transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
+                <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-700">
                   <Layers className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Dynamic Spec Forms</h3>
@@ -496,16 +496,16 @@ export default async function HomePage() {
                 </p>
                 <ul className="space-y-2 text-xs text-slate-600 pt-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600" /> Custom tech stack selection
+                    <CheckCircle2 className="w-4 h-4 text-orange-700" /> Custom tech stack selection
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600" /> File & asset attachments
+                    <CheckCircle2 className="w-4 h-4 text-orange-700" /> File & asset attachments
                   </li>
                 </ul>
               </div>
 
               <div className="p-8 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-4 hover:border-orange-200 hover:bg-white hover:shadow-md transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
+                <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-700">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Milestone-Based Escrow</h3>
@@ -514,16 +514,16 @@ export default async function HomePage() {
                 </p>
                 <ul className="space-y-2 text-xs text-slate-600 pt-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600" /> Itemized stage pricing
+                    <CheckCircle2 className="w-4 h-4 text-orange-700" /> Itemized stage pricing
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600" /> 100% money back on non-delivery
+                    <CheckCircle2 className="w-4 h-4 text-orange-700" /> 100% money back on non-delivery
                   </li>
                 </ul>
               </div>
 
               <div className="p-8 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-4 hover:border-orange-200 hover:bg-white hover:shadow-md transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
+                <div className="h-12 w-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-700">
                   <MessageSquare className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Dedicated Collaboration</h3>
@@ -532,10 +532,10 @@ export default async function HomePage() {
                 </p>
                 <ul className="space-y-2 text-xs text-slate-600 pt-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600" /> Scoped order discussions
+                    <CheckCircle2 className="w-4 h-4 text-orange-700" /> Scoped order discussions
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600" /> Granular revision requests
+                    <CheckCircle2 className="w-4 h-4 text-orange-700" /> Granular revision requests
                   </li>
                 </ul>
               </div>
@@ -561,9 +561,9 @@ export default async function HomePage() {
                 <Card key={rev.id} className="bg-white border-slate-200/90 rounded-2xl p-6 shadow-2xs flex flex-col justify-between hover:shadow-md transition-all">
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-1 text-amber-400">
+                      <div className="flex items-center gap-1 text-amber-500">
                         {Array.from({ length: rev.rating || 5 }).map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-amber-400" />
+                          <Star key={i} className="w-4 h-4 fill-amber-500" />
                         ))}
                       </div>
                       {rev.order?.service && (
@@ -578,12 +578,12 @@ export default async function HomePage() {
                   </div>
 
                   <div className="pt-4 border-t border-slate-100 flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-orange-100 text-orange-700 font-bold flex items-center justify-center text-xs">
+                    <div className="h-9 w-9 rounded-full bg-orange-100 text-orange-800 font-bold flex items-center justify-center text-xs">
                       {rev.client?.name ? rev.client.name.charAt(0) : 'C'}
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-slate-900">{rev.client?.name || 'Verified Client'}</h4>
-                      <p className="text-[11px] text-slate-500">{rev.order?.title || 'Verified Project'}</p>
+                      <div className="text-xs font-semibold text-slate-900">{rev.client?.name || 'Verified Client'}</div>
+                      <p className="text-[11px] text-slate-600">{rev.order?.title || 'Verified Project'}</p>
                     </div>
                   </div>
                 </Card>

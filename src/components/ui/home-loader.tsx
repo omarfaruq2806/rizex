@@ -9,6 +9,7 @@ interface HomeLoaderProps {
 
 export function HomeLoader({ onComplete }: HomeLoaderProps) {
   const [animationStage, setAnimationStage] = useState<number>(0);
+  const [shouldRender, setShouldRender] = useState<boolean>(true);
 
   // 0: Initial - Only "X" centered
   // 1: Move "X" to right & Fade in "Rize" from left
@@ -17,26 +18,37 @@ export function HomeLoader({ onComplete }: HomeLoaderProps) {
   // 4: Completely unmounted
 
   useEffect(() => {
-    // Stage 1: Shift X to right and reveal Rize
+    // Check if splash was already shown in this session
+    if (typeof window !== 'undefined' && sessionStorage.getItem('rizex_splash_shown')) {
+      setShouldRender(false);
+      onComplete?.();
+      return;
+    }
+
+    // Stage 1: Shift X to right and reveal Rize (200ms)
     const t1 = setTimeout(() => {
       setAnimationStage(1);
-    }, 800);
+    }, 200);
 
-    // Stage 2: Glow/Pulse active logo
+    // Stage 2: Glow/Pulse active logo (450ms)
     const t2 = setTimeout(() => {
       setAnimationStage(2);
-    }, 1400);
+    }, 450);
 
-    // Stage 3: Smooth Exit
+    // Stage 3: Smooth Exit (700ms)
     const t3 = setTimeout(() => {
       setAnimationStage(3);
-    }, 2100);
+    }, 700);
 
-    // Stage 4: Unmount and callback
+    // Stage 4: Unmount and callback (950ms)
     const t4 = setTimeout(() => {
       setAnimationStage(4);
+      setShouldRender(false);
+      try {
+        sessionStorage.setItem('rizex_splash_shown', '1');
+      } catch {}
       onComplete?.();
-    }, 2800);
+    }, 950);
 
     return () => {
       clearTimeout(t1);
@@ -46,7 +58,7 @@ export function HomeLoader({ onComplete }: HomeLoaderProps) {
     };
   }, [onComplete]);
 
-  if (animationStage === 4) return null;
+  if (!shouldRender || animationStage === 4) return null;
 
   return (
     <div
@@ -115,7 +127,7 @@ export function HomeLoader({ onComplete }: HomeLoaderProps) {
             <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full animate-[pulse_1s_ease-in-out_infinite]" />
           </div>
 
-          <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-semibold">
+          <span className="text-[10px] uppercase font-mono tracking-widest text-slate-600 font-bold">
             Digital Service Agency Platform
           </span>
         </div>

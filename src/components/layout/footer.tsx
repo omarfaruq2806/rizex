@@ -28,7 +28,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Platform</h4>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Platform</p>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/services" className="hover:text-orange-600 transition-colors">
@@ -55,7 +55,7 @@ export function Footer() {
 
           {/* Portal Access */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Portals</h4>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Portals</p>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/dashboard" className="hover:text-orange-600 transition-colors">
@@ -82,7 +82,7 @@ export function Footer() {
 
           {/* Trust & Support */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Security & Escrow</h4>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">Security & Escrow</p>
             <ul className="space-y-2 text-xs">
               <li className="hover:text-orange-600 cursor-pointer transition-colors">
                 Milestone Escrow Protection
