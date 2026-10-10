@@ -112,7 +112,9 @@ export default function RootLayout({
             <Footer />
           </AuthProvider>
         </QueryProvider>
-        <Analytics />
+        {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
+          <Analytics />
+        )}
       </body>
     </html>
   );

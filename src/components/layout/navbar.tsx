@@ -30,7 +30,15 @@ export function Navbar() {
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 group">
             {/* RizeX Logo */}
-            <Image src="/logos/rizexlogo.png" alt="RizeX Logo" width={110} height={40} className="h-8 w-auto object-contain" />
+            <Image
+              src="/logos/rizexlogo.png"
+              alt="RizeX Logo"
+              width={110}
+              height={40}
+              priority
+              loading="eager"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
 
           {/* Navigation Links */}
@@ -108,8 +116,13 @@ export function Navbar() {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button variant="primary" size="sm" className="text-xs font-semibold gap-1.5 shadow-md shadow-orange-500/20">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <Button 
+                  variant="primary" 
+                  size="sm" 
+                  aria-label="Get Started with RizeX"
+                  className="text-xs font-bold text-white bg-orange-600 hover:bg-orange-700 gap-1.5 shadow-md shadow-orange-600/20"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-white" aria-hidden="true" />
                   Get Started
                 </Button>
               </Link>
