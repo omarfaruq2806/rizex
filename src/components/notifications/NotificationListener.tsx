@@ -16,7 +16,10 @@ export function NotificationListener() {
 
     const apiBaseUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
-    const sseUrl = `${apiBaseUrl}/notifications/sse`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('rizex_auth_token') : null;
+    const sseUrl = token
+      ? `${apiBaseUrl}/notifications/sse?token=${encodeURIComponent(token)}`
+      : `${apiBaseUrl}/notifications/sse`;
 
     // Connect to Server-Sent Events stream with withCredentials: true
     let eventSource: EventSource | null = null;

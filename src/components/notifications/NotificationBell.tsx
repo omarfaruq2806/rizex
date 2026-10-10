@@ -110,9 +110,12 @@ export function NotificationBell() {
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
       const res: any = await apiClient.get('/notifications/unread-count');
-      return res?.data?.count ?? res?.count ?? 0;
+      if (typeof res?.count === 'number') return res.count;
+      if (typeof res?.data?.count === 'number') return res.data.count;
+      if (typeof res === 'number') return res;
+      return 0;
     },
-    refetchInterval: 30000, // Background poll every 30s as fallback
+    refetchInterval: 15000, // Background poll every 15s
   });
 
   const unreadCount = unreadData || 0;
@@ -124,7 +127,10 @@ export function NotificationBell() {
       const res: any = await apiClient.get(
         `/notifications?unreadOnly=${filter === 'unread'}&limit=20`
       );
-      return res?.data?.items || res?.items || [];
+      if (Array.isArray(res?.items)) return res.items;
+      if (Array.isArray(res?.data?.items)) return res.data.items;
+      if (Array.isArray(res)) return res;
+      return [];
     },
     enabled: isOpen,
   });
