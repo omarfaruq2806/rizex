@@ -5,6 +5,8 @@ import { QueryProvider } from '@/providers/query-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
+import { NotificationListener } from '@/components/notifications/NotificationListener';
+import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
@@ -107,6 +109,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-slate-50/70 text-slate-900 font-sans selection:bg-orange-500 selection:text-white">
         <QueryProvider>
           <AuthProvider>
+            <NotificationListener />
+            <Toaster position="top-right" richColors closeButton />
             <Navbar />
             <main className="flex-1 flex flex-col">{children}</main>
             <Footer />
