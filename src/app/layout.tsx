@@ -5,6 +5,7 @@ import { QueryProvider } from '@/providers/query-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
+import { FloatingContactWidget } from '@/components/layout/FloatingContactWidget';
 import { NotificationListener } from '@/components/notifications/NotificationListener';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/next';
@@ -114,6 +115,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1 flex flex-col">{children}</main>
             <Footer />
+            <FloatingContactWidget />
           </AuthProvider>
         </QueryProvider>
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
