@@ -53,7 +53,7 @@ export default function AdminLayout({
     { label: 'Services', href: '/admin/services', icon: Package },
     { label: 'Categories', href: '/admin/categories', icon: Layers },
     { label: 'Users & Team', href: '/admin/users', icon: Users },
-    { label: 'Quote Requests', href: '/admin/quotes', icon: FileText },
+    { label: 'Inquiries & Quotes', href: '/admin/quotes', icon: FileText },
     { label: 'Orders & Workload', href: '/admin/orders', icon: FolderKanban },
     { label: 'Live Supervision Chat', href: '/admin/chats', icon: MessageSquare },
     { label: 'Reviews', href: '/admin/reviews', icon: Star },

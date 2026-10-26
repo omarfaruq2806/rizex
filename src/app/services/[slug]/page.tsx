@@ -1,37 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/providers/auth-provider';
 import { apiClient } from '@/lib/api-client';
+import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Modal } from '@/components/ui/modal';
 import {
-  FileText,
-  Send,
-  Sparkles,
   ArrowLeft,
+  Sparkles,
+  Send,
+  MessageSquare,
   CheckCircle2,
   Clock,
   ShieldCheck,
-  Zap,
+  User,
+  Mail,
+  Phone,
+  DollarSign,
+  FileText,
 } from 'lucide-react';
-
-interface RequirementField {
-  id: string;
-  name: string;
-  label: string;
-  type: 'TEXT' | 'TEXTAREA' | 'NUMBER' | 'EMAIL' | 'URL' | 'SELECT' | 'RADIO' | 'CHECKBOX' | 'FILE';
-  placeholder?: string;
-  description?: string;
-  isRequired: boolean;
-  options?: string[] | null;
-}
 
 interface ServiceDetail {
   id: string;
@@ -40,23 +33,30 @@ interface ServiceDetail {
   description?: string;
   startingPrice?: number | string;
   currency?: string;
-  category?: { name: string };
-  requirementFields?: RequirementField[];
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 }
 
-export default function ServiceDetailPage() {
+export default function ServiceInquiryPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
+  // Form State
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
   const [projectName, setProjectName] = useState('');
+  const [budget, setBudget] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
-  const [dynamicValues, setDynamicValues] = useState<Record<string, any>>({});
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const [createdRequestId, setCreatedRequestId] = useState<string | null>(null);
+  const [submittedData, setSubmittedData] = useState<any | null>(null);
 
   // Fetch service details
   const { data: serviceData, isLoading } = useQuery({
@@ -69,41 +69,49 @@ export default function ServiceDetailPage() {
 
   const service: ServiceDetail | null = serviceData;
 
-  const handleFieldChange = (fieldId: string, value: any) => {
-    setDynamicValues((prev) => ({ ...prev, [fieldId]: value }));
-    if (formErrors[fieldId]) {
-      setFormErrors((prev) => {
-        const copy = { ...prev };
-        delete copy[fieldId];
-        return copy;
-      });
+  // Prefill user details if logged in & budget from service
+  useEffect(() => {
+    if (user) {
+      if (user.name) setGuestName(user.name);
+      if (user.email) setGuestEmail(user.email);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (service?.startingPrice && !budget) {
+      setBudget(String(service.startingPrice));
+    }
+    if (service?.name && !projectName) {
+      setProjectName(`${service.name} Project`);
+    }
+  }, [service]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isAuthenticated && !authLoading) {
-      router.push(`/login?redirect=/services/${slug}`);
-      return;
-    }
-
     if (!service) return;
 
-    // Validate required fields
+    // Validate
     const errors: Record<string, string> = {};
-    if (!projectName.trim()) {
-      errors.projectName = 'Project name is required';
+
+    const finalName = isAuthenticated ? user?.name : guestName.trim();
+    if (!finalName) {
+      errors.name = 'Your name is required';
     }
 
-    service.requirementFields?.forEach((field) => {
-      if (field.isRequired) {
-        const val = dynamicValues[field.id];
-        if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
-          errors[field.id] = `${field.label} is required`;
-        }
-      }
-    });
+    const finalEmail = isAuthenticated ? user?.email : guestEmail.trim();
+    if (!finalEmail) {
+      errors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(finalEmail)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!guestPhone.trim()) {
+      errors.phone = 'WhatsApp or contact number is required';
+    }
+
+    if (!projectDescription.trim()) {
+      errors.description = 'Please provide a short description of your project';
+    }
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -112,24 +120,28 @@ export default function ServiceDetailPage() {
 
     setIsSubmitting(true);
     try {
-      const requirementValues = Object.entries(dynamicValues).map(([fieldId, value]) => ({
-        fieldId,
-        value,
-      }));
-
-      const response = await apiClient.post<any>('/quote-requests', {
+      const payload = {
         serviceId: service.id,
-        projectName: projectName.trim() || undefined,
-        description: projectDescription.trim() || undefined,
-        requirements: requirementValues,
-        requirementValues,
+        projectName: projectName.trim() || `${service.name} Project`,
+        description: projectDescription.trim(),
+        guestName: finalName || undefined,
+        guestEmail: finalEmail || undefined,
+        guestPhone: guestPhone.trim() || undefined,
+        budget: budget ? `৳${budget}` : undefined,
+      };
+
+      await apiClient.post<any>('/quote-requests', payload);
+
+      setSubmittedData({
+        name: finalName,
+        phone: guestPhone.trim(),
+        serviceName: service.name,
+        projectName: projectName.trim() || service.name,
       });
 
-      const requestId = response.data?.data?.id || response.data?.id || 'new';
-      setCreatedRequestId(requestId);
       setSuccessModalOpen(true);
     } catch (err: any) {
-      alert(err.message || 'Failed to submit requirement brief. Please try again.');
+      alert(err.message || 'Failed to submit quote request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -137,7 +149,7 @@ export default function ServiceDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-16 space-y-6 animate-pulse">
+      <div className="max-w-4xl mx-auto px-4 py-16 space-y-6 animate-pulse">
         <div className="h-8 w-48 bg-slate-200 rounded-xl" />
         <div className="h-40 bg-white rounded-2xl border border-slate-200" />
       </div>
@@ -146,7 +158,7 @@ export default function ServiceDetailPage() {
 
   if (!service) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-20 text-center space-y-4">
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
         <h2 className="text-2xl font-bold text-slate-900">Service Not Found</h2>
         <p className="text-slate-500 text-sm">The requested service could not be located in our catalog.</p>
         <Button variant="outline" onClick={() => router.push('/services')}>
@@ -156,10 +168,14 @@ export default function ServiceDetailPage() {
     );
   }
 
-  const fields = service.requirementFields || [];
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801700000000';
+  const whatsappMessage = encodeURIComponent(
+    `Hello RizeX Team, I just requested a quote on your website for "${service.name}".\n\nName: ${submittedData?.name || guestName}\nProject: ${submittedData?.projectName || projectName}\nBudget: ৳${budget || service.startingPrice || 'Custom'}`
+  );
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 flex-1 w-full">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 flex-1 w-full">
       {/* Back button */}
       <button
         onClick={() => router.push('/services')}
@@ -169,9 +185,10 @@ export default function ServiceDetailPage() {
         <span>Back to Services Catalog</span>
       </button>
 
-      {/* Service Header Info Banner */}
-      <div className="rounded-3xl bg-white border border-slate-200/90 p-8 shadow-xs space-y-5">
-        <div className="flex items-center justify-between flex-wrap gap-3">
+      {/* Service Header Info Card */}
+      <div className="rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-100/30 blur-3xl pointer-events-none -z-0" />
+        <div className="flex items-center justify-between flex-wrap gap-3 relative z-10">
           <div className="flex items-center gap-2">
             {service.category && (
               <Badge variant="primary" className="text-xs uppercase font-semibold">
@@ -181,170 +198,222 @@ export default function ServiceDetailPage() {
             <span className="text-xs font-mono text-slate-400">/{service.slug}</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-orange-50 border border-orange-200/60 text-xs font-mono font-bold text-orange-700">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-orange-50 border border-orange-200/80 text-xs font-mono font-bold text-orange-700">
             <span>Starting Base: ৳{Number(service.startingPrice || 0).toLocaleString()}</span>
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight relative z-10">
           {service.name}
         </h1>
 
-        <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
-          {service.description || 'Specialized digital service. Submit your custom project requirements below to receive an upfront quote and timeline.'}
+        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl relative z-10">
+          {service.description || 'Specialized digital service deliverable with custom milestones, structured progress tracking, and dedicated specialists.'}
         </p>
+
+        {/* Value Props Strip */}
+        <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+          <span className="flex items-center gap-1.5 font-medium text-slate-700">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> No Advance Signup Required
+          </span>
+          <span className="flex items-center gap-1.5 font-medium text-slate-700">
+            <Clock className="w-4 h-4 text-orange-600" /> Fast Response Within 2 Hours
+          </span>
+          <span className="flex items-center gap-1.5 font-medium text-slate-700">
+            <ShieldCheck className="w-4 h-4 text-blue-600" /> Escrow Milestone Security
+          </span>
+        </div>
       </div>
 
-      {/* Dynamic Requirement Form */}
-      <div className="space-y-6">
-        <div className="space-y-1">
+      {/* Simplified Inquiry Form */}
+      <Card className="border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
+        <div className="space-y-1 mb-6">
           <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-orange-600 uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>PROJECT SPECIFICATION</span>
+            <span>INSTANT PROJECT INQUIRY</span>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Submit Your Requirement Brief
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Tell Us What You Want To Build
           </h2>
           <p className="text-xs text-slate-500">
-            Fill in your project requirements below. Our agency team will evaluate your brief and issue a detailed proposal.
+            Submit your contact details and brief. Our team will review your scope and discuss pricing, milestones, and delivery timeline with you.
           </p>
         </div>
 
-        <Card className="border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* General Project Name */}
-            <Input
-              label="Project / Initiative Title *"
-              placeholder="e.g. Next-Gen Mobile App Redesign"
-              value={projectName}
-              onChange={(e) => {
-                setProjectName(e.target.value);
-                if (formErrors.projectName) {
-                  setFormErrors((prev) => {
-                    const copy = { ...prev };
-                    delete copy.projectName;
-                    return copy;
-                  });
-                }
-              }}
-              error={formErrors.projectName}
-            />
-
-            {/* General Project Description */}
-            <Textarea
-              label="Project Overview & Goal"
-              placeholder="Describe what you want to achieve, target audience, brand aesthetic, and key deliverables..."
-              value={projectDescription}
-              onChange={(e) => setProjectDescription(e.target.value)}
-              rows={3}
-            />
-
-            {/* Dynamic Custom Fields */}
-            {fields.length > 0 && (
-              <div className="pt-6 border-t border-slate-100 space-y-5">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
-                  Service Specific Questions ({fields.length})
-                </h3>
-
-                {fields.map((field) => {
-                  const error = formErrors[field.id];
-                  const label = `${field.label} ${field.isRequired ? '*' : ''}`;
-
-                  if (field.type === 'TEXTAREA') {
-                    return (
-                      <Textarea
-                        key={field.id}
-                        label={label}
-                        placeholder={field.placeholder || ''}
-                        helperText={field.description || undefined}
-                        value={dynamicValues[field.id] || ''}
-                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                        error={error}
-                        rows={3}
-                      />
-                    );
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Contact Details Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Input
+                label="Your Full Name *"
+                placeholder="e.g. Tanvir Ahmed"
+                value={isAuthenticated && user?.name ? user.name : guestName}
+                disabled={isAuthenticated && !!user?.name}
+                onChange={(e) => {
+                  setGuestName(e.target.value);
+                  if (formErrors.name) {
+                    setFormErrors((prev) => {
+                      const copy = { ...prev };
+                      delete copy.name;
+                      return copy;
+                    });
                   }
-
-                  if (field.type === 'SELECT') {
-                    const options = Array.isArray(field.options) ? field.options : [];
-                    return (
-                      <div key={field.id} className="w-full space-y-1.5">
-                        <label className="block text-xs font-semibold text-slate-700">
-                          {label}
-                        </label>
-                        <select
-                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all font-medium cursor-pointer"
-                          value={dynamicValues[field.id] || ''}
-                          onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                        >
-                          <option value="">Select an option...</option>
-                          {options.map((opt: string) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                        {error && <p className="text-xs text-rose-500 mt-1">{error}</p>}
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <Input
-                      key={field.id}
-                      type={field.type === 'NUMBER' ? 'number' : field.type === 'EMAIL' ? 'email' : 'text'}
-                      label={label}
-                      placeholder={field.placeholder || ''}
-                      helperText={field.description || undefined}
-                      value={dynamicValues[field.id] || ''}
-                      onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                      error={error}
-                    />
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs text-slate-500">
-                🔒 You will review and approve the proposal before any project begins.
-              </span>
-              <Button type="submit" variant="primary" size="md" isLoading={isSubmitting} className="gap-2 w-full sm:w-auto">
-                <Send className="w-4 h-4" />
-                <span>Submit Requirement Brief →</span>
-              </Button>
+                }}
+                error={formErrors.name}
+              />
             </div>
-          </form>
-        </Card>
-      </div>
+
+            <div>
+              <Input
+                label="Email Address *"
+                type="email"
+                placeholder="e.g. tanvir@company.com"
+                value={isAuthenticated && user?.email ? user.email : guestEmail}
+                disabled={isAuthenticated && !!user?.email}
+                onChange={(e) => {
+                  setGuestEmail(e.target.value);
+                  if (formErrors.email) {
+                    setFormErrors((prev) => {
+                      const copy = { ...prev };
+                      delete copy.email;
+                      return copy;
+                    });
+                  }
+                }}
+                error={formErrors.email}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Input
+                label="WhatsApp / Phone Number *"
+                placeholder="e.g. 017XXXXXXXX"
+                value={guestPhone}
+                onChange={(e) => {
+                  setGuestPhone(e.target.value);
+                  if (formErrors.phone) {
+                    setFormErrors((prev) => {
+                      const copy = { ...prev };
+                      delete copy.phone;
+                      return copy;
+                    });
+                  }
+                }}
+                error={formErrors.phone}
+                helperText="We will reach out via WhatsApp for fast discussion"
+              />
+            </div>
+
+            <div>
+              <Input
+                label="Estimated Target Budget (৳ BDT)"
+                type="number"
+                placeholder="e.g. 20000"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                helperText={`Service starting price: ৳${Number(service.startingPrice || 0).toLocaleString()}`}
+              />
+            </div>
+          </div>
+
+          {/* Project Title */}
+          <Input
+            label="Project Title"
+            placeholder="e.g. Custom E-commerce Website / SaaS Platform"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+          />
+
+          {/* Project Description */}
+          <Textarea
+            label="Project Overview & Requirements *"
+            placeholder="Describe what you want to achieve, key features, reference websites, or deliverables you need..."
+            value={projectDescription}
+            onChange={(e) => {
+              setProjectDescription(e.target.value);
+              if (formErrors.description) {
+                setFormErrors((prev) => {
+                  const copy = { ...prev };
+                  delete copy.description;
+                  return copy;
+                });
+              }
+            }}
+            rows={4}
+            error={formErrors.description}
+          />
+
+          {/* Submit Action Button */}
+          <div className="pt-2">
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full sm:w-auto px-8 gap-2 font-semibold shadow-md shadow-orange-600/20"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>Transmitting Inquiry...</>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" /> Request Quote & Discuss Project
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </Card>
 
       {/* Success Modal */}
       <Modal
         isOpen={successModalOpen}
         onClose={() => {
           setSuccessModalOpen(false);
-          router.push('/dashboard/quotes');
+          router.push('/services');
         }}
-        title="Requirement Brief Submitted Successfully!"
-        description="Your project specifications have been transmitted to our management team."
+        title="Inquiry Received Successfully! 🚀"
+        description="Our technical management team has received your project inquiry."
         maxWidth="md"
       >
-        <div className="space-y-4 pt-2">
-          <p className="text-xs text-slate-600 leading-relaxed">
-            We have received your requirement brief. Our project manager will review your answers and formulate a custom quote covering estimated timeline, milestone breakdown, advance terms, and revision limits.
-          </p>
+        <div className="space-y-5 pt-2">
+          <div className="p-4 rounded-2xl bg-orange-50/70 border border-orange-200/80 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-orange-900">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>Project: {submittedData?.projectName}</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Thank you, <span className="font-semibold text-slate-900">{submittedData?.name}</span>! We have saved your project inquiry. Our technical manager will review your scope and get in touch within 2 hours.
+            </p>
+          </div>
 
-          <div className="flex gap-3 pt-4 border-t border-slate-100">
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={() => router.push('/dashboard/quotes')}
+          {/* WhatsApp Direct Connect Button */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-slate-500">Want an instant response?</p>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
             >
-              View My Quotes
-            </Button>
+              <MessageSquare className="w-4 h-4" /> Connect Directly on WhatsApp
+            </a>
+          </div>
+
+          <div className="flex gap-3 pt-3 border-t border-slate-100">
+            {isAuthenticated ? (
+              <Button
+                variant="outline"
+                className="flex-1 text-xs"
+                onClick={() => router.push('/dashboard/quotes')}
+              >
+                View in Client Dashboard
+              </Button>
+            ) : null}
             <Button
               variant="outline"
+              className="flex-1 text-xs"
               onClick={() => {
                 setSuccessModalOpen(false);
                 router.push('/services');
