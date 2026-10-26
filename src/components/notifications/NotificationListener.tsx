@@ -37,7 +37,7 @@ export function NotificationListener() {
           // Invalidate React Query cache
           queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-          // Trigger modern Toast popup with sonner
+          // 1. Trigger modern in-app Toast popup with sonner
           toast(notification.title, {
             description: notification.message || undefined,
             duration: 5000,
@@ -48,6 +48,28 @@ export function NotificationListener() {
                 }
               : undefined,
           });
+
+          // 2. Also trigger native OS/Browser notification if permitted
+          if (
+            typeof window !== 'undefined' &&
+            'Notification' in window &&
+            Notification.permission === 'granted'
+          ) {
+            try {
+              const browserNotif = new Notification(notification.title, {
+                body: notification.message || undefined,
+                icon: '/favicon.ico',
+              });
+              browserNotif.onclick = () => {
+                window.focus();
+                if (notification.linkUrl) {
+                  router.push(notification.linkUrl);
+                }
+              };
+            } catch (e) {
+              console.debug('Native notification error:', e);
+            }
+          }
         } catch (err) {
           console.debug('Failed to parse SSE notification payload:', err);
         }
