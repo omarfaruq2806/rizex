@@ -1,205 +1,305 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-  --secondary: #0f172a;
-  --secondary-foreground: #ffffff;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #ea580c;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #f97316;
-  --radius: 0.85rem;
-
+  --navy-deepest: #080402;
+  --navy-section: #140A03;
+  --navy-card: #1A0D04;
+  --orange-primary: #FFA500;
+  --orange-light: #FFB733;
+  --text-primary: #FFFFFF;
+  --text-muted: #F5F7FA;
+  
+  --background: #080402;
+  --foreground: #FFFFFF;
+  --card: #140A03;
+  --card-foreground: #FFFFFF;
+  --popover: #1A0D04;
+  --popover-foreground: #FFFFFF;
+  --primary: #FFA500;
+  --primary-foreground: #080402;
+  --secondary: #1A0D04;
+  --secondary-foreground: #FFFFFF;
+  --muted: #140A03;
+  --muted-foreground: #F5F7FA;
+  --accent: #FFA500;
+  --accent-foreground: #080402;
+  --destructive: #FFA500;
+  --destructive-foreground: #080402;
+  --border: rgba(255, 165, 0, 0.15);
+  --input: rgba(255, 165, 0, 0.15);
+  --ring: #FFA500;
+  --radius: 1.25rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
 }
 
 body {
-  background-color: #f8fafc;
-  color: #0f172a;
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  background-color: #080402;
+  background-image: 
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(255, 165, 0, 0.28) 0%, transparent 70%),
+    radial-gradient(circle 800px at 5% 35%, rgba(255, 140, 0, 0.16) 0%, transparent 60%),
+    radial-gradient(circle 850px at 95% 65%, rgba(255, 165, 0, 0.18) 0%, transparent 60%),
+    radial-gradient(circle 750px at 20% 80%, rgba(255, 120, 0, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 45% at 50% 100%, rgba(255, 165, 0, 0.22) 0%, transparent 70%);
+  background-attachment: fixed;
+  color: #FFFFFF;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
-/* Custom background patterns */
-.bg-grid-pattern {
-  background-size: 32px 32px;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* Architectural Blueprint Box Grid (Horizontal & Vertical intersecting lines forming clean square boxes) */
+.bg-box-grid,
+.bg-faint-grid {
+  background-size: 56px 56px;
   background-image:
-    linear-gradient(to right, rgba(226, 232, 240, 0.7) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(226, 232, 240, 0.7) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 165, 0, 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 165, 0, 0.085) 1px, transparent 1px);
 }
 
-.bg-dot-pattern {
-  background-image: radial-gradient(rgba(249, 115, 22, 0.2) 1px, transparent 1px);
-  background-size: 24px 24px;
+.bg-box-grid-prominent {
+  background-size: 56px 56px;
+  background-image:
+    linear-gradient(to right, rgba(255, 165, 0, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 165, 0, 0.12) 1px, transparent 1px);
 }
 
-.bg-dot-pattern-blue {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.15) 1px, transparent 1px);
-  background-size: 24px 24px;
+.bg-subtle-noise {
+  background-image: radial-gradient(rgba(255, 165, 0, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-/* Glassmorphism Classes for Light Theme */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+/* RizeX Glassmorphism System Hierarchy */
+
+/* Level 1: Navbar, floating chips, subtle bars */
+.glass-level-1 {
+  background: rgba(255, 165, 0, 0.04);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 165, 0, 0.14);
+  box-shadow: 0 4px 20px rgba(8, 4, 2, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.glass-orange-light {
-  background: rgba(255, 247, 237, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(253, 186, 116, 0.5);
+/* Level 2: Standard Cards, Bento Grid, Pricing, Testimonials, FAQ */
+.glass-level-2 {
+  background: linear-gradient(180deg, rgba(255, 165, 0, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 165, 0, 0.18);
+  box-shadow: 0 8px 32px rgba(8, 4, 2, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
 }
 
-.glass-navy-light {
-  background: rgba(241, 245, 249, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(203, 213, 225, 0.8);
+/* Level 3: Featured pricing, Modals, Large CTA banner */
+.glass-level-3 {
+  background: linear-gradient(180deg, rgba(255, 165, 0, 0.14) 0%, rgba(255, 165, 0, 0.05) 100%);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid rgba(255, 165, 0, 0.55);
+  box-shadow: 0 16px 48px rgba(8, 4, 2, 0.9), 0 0 40px rgba(255, 165, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-radius: 24px;
 }
 
-/* Glow Effects */
-.glow-orange {
-  box-shadow: 0 10px 30px -5px rgba(249, 115, 22, 0.25);
+/* Glass fallback for browsers lacking backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .glass-level-1 {
+    background: rgba(20, 10, 3, 0.92) !important;
+  }
+  .glass-level-2 {
+    background: rgba(20, 10, 3, 0.95) !important;
+  }
+  .glass-level-3 {
+    background: rgba(26, 13, 4, 0.95) !important;
+  }
 }
 
-.glow-orange-sm {
-  box-shadow: 0 4px 20px -3px rgba(249, 115, 22, 0.18);
+/* Cursor-Follow Spotlight Card */
+.glass-spotlight {
+  position: relative;
+  isolation: isolate;
 }
 
-.glow-navy {
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.15);
+.glass-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    380px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+    rgba(255, 165, 0, 0.18),
+    transparent 65%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 1;
 }
 
-/* Text Gradients */
-.text-gradient-orange {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.glass-spotlight:hover::before {
+  opacity: 1;
 }
 
-.text-gradient-navy {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Interactive Card Hover Mechanics */
+.glass-card-interactive {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Loader Specific Keyframes & Animations */
-@keyframes drawStroke1 {
+.glass-card-interactive:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 165, 0, 0.55);
+  box-shadow: 0 14px 40px -10px rgba(8, 4, 2, 0.9), 0 0 28px rgba(255, 165, 0, 0.3);
+}
+
+/* Atmospheric Orange Glows & Arcs (Heavily blurred 120-200px) */
+.glow-orb-orange {
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.38) 0%, rgba(255, 140, 0, 0.14) 55%, transparent 75%);
+  filter: blur(140px);
+}
+
+.glow-orb-orange-lg {
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.46) 0%, rgba(255, 120, 0, 0.18) 50%, transparent 75%);
+  filter: blur(180px);
+}
+
+.hero-glowing-arc {
+  background: radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255, 165, 0, 0.58) 0%, rgba(255, 140, 0, 0.22) 50%, transparent 80%);
+  filter: blur(65px);
+}
+
+/* Shimmer Sweep on Buttons */
+.btn-shimmer-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+}
+
+.btn-shimmer-container:hover::after {
+  animation: shimmerSweep 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes shimmerSweep {
   0% {
-    stroke-dashoffset: 140;
-    opacity: 0;
+    left: -100%;
   }
-
-  20% {
-    opacity: 1;
-  }
-
   100% {
-    stroke-dashoffset: 0;
-    opacity: 1;
+    left: 200%;
   }
 }
 
-@keyframes drawStroke2 {
-  0% {
-    stroke-dashoffset: 140;
-    opacity: 0;
+/* Floating Animations for Chips & Elements */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
   }
-
-  30% {
-    stroke-dashoffset: 140;
-    opacity: 0;
-  }
-
-  40% {
-    opacity: 1;
-  }
-
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 1;
+  50% {
+    transform: translateY(-8px);
   }
 }
 
-@keyframes fillXGlow {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
+@keyframes floatDelayed {
+  0%, 100% {
+    transform: translateY(0px);
   }
-
-  60% {
-    opacity: 0;
-    transform: scale(0.92);
+  50% {
+    transform: translateY(8px);
   }
+}
 
-  85% {
-    opacity: 1;
-    transform: scale(1.08);
-  }
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
 
-  100% {
-    opacity: 1;
+.animate-float-delayed {
+  animation: floatDelayed 6.5s ease-in-out infinite 1s;
+}
+
+@keyframes glowPulseSlow {
+  0%, 100% {
+    opacity: 0.3;
     transform: scale(1);
   }
-}
-
-@keyframes pulseGlowRing {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.6;
-  }
-
   50% {
-    transform: scale(1.25);
-    opacity: 0.15;
-  }
-
-  100% {
-    transform: scale(1.45);
-    opacity: 0;
+    opacity: 0.55;
+    transform: scale(1.05);
   }
 }
 
-.animate-stroke-1 {
-  stroke-dasharray: 140;
-  animation: drawStroke1 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.animate-glow-pulse {
+  animation: glowPulseSlow 4.5s ease-in-out infinite;
 }
 
-.animate-stroke-2 {
-  stroke-dasharray: 140;
-  animation: drawStroke2 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Multi-layer atmospheric gradient backdrops */
+.bg-gradient-aurora {
+  background: radial-gradient(
+    ellipse 85% 60% at 50% -10%,
+    rgba(255, 165, 0, 0.32) 0%,
+    rgba(255, 110, 0, 0.16) 35%,
+    rgba(255, 60, 0, 0.06) 60%,
+    transparent 85%
+  );
 }
 
-.animate-x-fill {
-  animation: fillXGlow 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+.bg-gradient-radial-orange {
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 165, 0, 0.22) 0%,
+    rgba(255, 110, 0, 0.08) 45%,
+    transparent 70%
+  );
 }
 
-.animate-pulse-ring {
-  animation: pulseGlowRing 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+.bg-gradient-beam-flow {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 165, 0, 0.22) 25%,
+    rgba(255, 190, 60, 0.45) 50%,
+    rgba(255, 165, 0, 0.22) 75%,
+    transparent 100%
+  );
 }
 
-/* Smooth transitions */
+.bg-card-gradient-glow {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 165, 0, 0.12) 0%,
+    rgba(255, 100, 0, 0.04) 40%,
+    rgba(20, 10, 3, 0.85) 100%
+  );
+}
+
+/* Ensure focus states use orange focus rings */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFA500, 0 0 0 4px rgba(8, 4, 2, 0.9);
+}
+
 * {
   border-color: var(--border);
 }

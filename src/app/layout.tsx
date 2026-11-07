@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/providers/query-provider';
 import { AuthProvider } from '@/providers/auth-provider';
@@ -10,15 +10,17 @@ import { NotificationListener } from '@/components/notifications/NotificationLis
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/next';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: '--font-heading',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const inter = Inter({
+  variable: '--font-body',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -104,10 +106,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${plusJakarta.variable} ${inter.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col bg-slate-50/70 text-slate-900 font-sans selection:bg-orange-500 selection:text-white">
+      <body className="min-h-full flex flex-col bg-[#080402] text-white font-sans selection:bg-[#FFA500] selection:text-[#080402]">
         <QueryProvider>
           <AuthProvider>
             <NotificationListener />

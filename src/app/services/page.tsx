@@ -1,216 +1,397 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-  Package,
-  Search,
-  ArrowRight,
   Sparkles,
-  Layers,
+  ArrowRight,
+  Code2,
+  Palette,
+  Cpu,
+  TrendingUp,
+  Search,
+  X,
+  PackageCheck,
   Clock,
   CheckCircle2,
-  SlidersHorizontal,
 } from 'lucide-react';
 
-interface Category {
+// Helper for card mouse move spotlight effect
+const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+  e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+};
+
+export interface ServiceCategoryCard {
   id: string;
   name: string;
   slug: string;
+  description: string;
+  startingPriceText: string;
+  badge: string;
+  hasActivePackages: boolean;
+  iconName: 'Code2' | 'Palette' | 'Cpu' | 'TrendingUp';
+  platformsCount?: number;
 }
 
-interface Service {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  startingPrice?: number | string;
-  currency?: string;
-  categoryId?: string;
-  category?: { name: string };
-  isFeatured?: boolean;
+// Fallback catalog categories in case backend is initializing
+const DEFAULT_CATALOG: ServiceCategoryCard[] = [
+  {
+    id: 'cat-web',
+    name: 'Web Development',
+    slug: 'web-development',
+    description:
+      'High-performance Next.js web applications and manageable WordPress solutions engineered for speed, SEO, and frictionless conversion.',
+    startingPriceText: 'Starting from ৳10,000',
+    badge: 'ACTIVE • 2 PLATFORMS',
+    hasActivePackages: true,
+    iconName: 'Code2',
+    platformsCount: 2,
+  },
+  {
+    id: 'cat-uiux',
+    name: 'UI/UX & Design',
+    slug: 'ui-ux-design',
+    description:
+      'Bespoke Figma design systems, interactive journey prototypes, mobile app UI, and high-conversion landing page architectures.',
+    startingPriceText: 'VIP Consultation',
+    badge: 'LAUNCHING SOON',
+    hasActivePackages: false,
+    iconName: 'Palette',
+  },
+  {
+    id: 'cat-ai',
+    name: 'AI Automation',
+    slug: 'ai-automation',
+    description:
+      'Autonomous AI agent pipelines, CRM webhook workflows, customer support automation, and intelligent lead generation agents.',
+    startingPriceText: 'VIP Consultation',
+    badge: 'LAUNCHING SOON',
+    hasActivePackages: false,
+    iconName: 'Cpu',
+  },
+  {
+    id: 'cat-marketing',
+    name: 'Digital Marketing',
+    slug: 'digital-marketing',
+    description:
+      'Data-backed SEO rank scaling, Core Web Vitals engineering, conversion funnel optimization, and technical performance auditing.',
+    startingPriceText: 'VIP Consultation',
+    badge: 'LAUNCHING SOON',
+    hasActivePackages: false,
+    iconName: 'TrendingUp',
+  },
+];
+
+function getCategoryIcon(iconName: string) {
+  switch (iconName) {
+    case 'Code2':
+      return Code2;
+    case 'Palette':
+      return Palette;
+    case 'Cpu':
+      return Cpu;
+    case 'TrendingUp':
+      return TrendingUp;
+    default:
+      return Code2;
+  }
 }
 
-export default function ServicesPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+export default function ServicesCatalogPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'upcoming'>('all');
 
-  // Fetch categories
-  const { data: categoriesData } = useQuery({
+  // Fetch categories from backend API
+  const { data: categoriesData, isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const res: any = await apiClient.get('/categories');
-      const payload = res?.data !== undefined ? res.data : res;
-      return Array.isArray(payload) ? payload : [];
+      try {
+        const res: any = await apiClient.get('/categories');
+        const payload = res?.data !== undefined ? res.data : res;
+        return Array.isArray(payload) ? payload : (payload?.items || []);
+      } catch (err) {
+        console.warn('Backend categories fetch failed, using fallback:', err);
+        return [];
+      }
     },
+    staleTime: 1000 * 60 * 5,
   });
 
-  // Fetch services
-  const { data: servicesData, isLoading } = useQuery({
-    queryKey: ['services', selectedCategory, searchTerm],
-    queryFn: async () => {
-      let url = '/services?limit=50';
-      if (selectedCategory !== 'all') {
-        url += `&categoryId=${selectedCategory}`;
-      }
-      if (searchTerm.trim()) {
-        url += `&search=${encodeURIComponent(searchTerm.trim())}`;
-      }
-      const res: any = await apiClient.get(url);
-      const payload = res?.data !== undefined ? res.data : res;
-      return payload?.items || (Array.isArray(payload) ? payload : []);
-    },
-  });
+  // Merge backend categories with catalog metadata
+  const catalogList: ServiceCategoryCard[] = useMemo(() => {
+    if (Array.isArray(categoriesData) && categoriesData.length > 0) {
+      return categoriesData.map((cat: any) => {
+        const fallback = DEFAULT_CATALOG.find((d) => d.slug === cat.slug);
+        const serviceCount = cat._count?.services ?? 0;
+        const isActive = serviceCount > 0 || cat.slug === 'web-development';
 
-  const categories: Category[] = Array.isArray(categoriesData) ? categoriesData : [];
-  const services: Service[] = Array.isArray(servicesData)
-    ? servicesData
-    : (servicesData as any)?.items || [];
+        return {
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          description:
+            cat.description ||
+            fallback?.description ||
+            'Specialized digital deliverables engineered for performance, precision, and reliable business outcomes.',
+          startingPriceText: isActive ? 'Starting from ৳10,000' : 'VIP Consultation',
+          badge: isActive ? 'ACTIVE • 3 PLANS' : 'LAUNCHING SOON',
+          hasActivePackages: isActive,
+          iconName: (fallback?.iconName || (cat.slug.includes('web') ? 'Code2' : 'Palette')) as any,
+          platformsCount: isActive ? 2 : undefined,
+        };
+      });
+    }
+    return DEFAULT_CATALOG;
+  }, [categoriesData]);
+
+  // Filtered list based on search and status tabs
+  const filteredCatalog = useMemo(() => {
+    return catalogList.filter((item) => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+      if (!matchesSearch) return false;
+      if (activeFilter === 'active') return item.hasActivePackages;
+      if (activeFilter === 'upcoming') return !item.hasActivePackages;
+      return true;
+    });
+  }, [catalogList, searchTerm, activeFilter]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 flex-1 w-full">
-      {/* Header Banner */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-200">
-          <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-          <span>AGENCY SERVICE CATALOG</span>
+    <div className="relative min-h-screen bg-[#080402] text-white overflow-hidden selection:bg-[#FFA500] selection:text-[#080402]">
+      {/* Background Ambience: Layered Gradient Color Auroras & Box Grid */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[560px] bg-gradient-aurora pointer-events-none -z-10" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[480px] hero-glowing-arc pointer-events-none -z-10 opacity-80" />
+      <div className="absolute top-[6%] left-1/2 -translate-x-1/2 w-[850px] h-[400px] bg-gradient-to-b from-[#FFA500]/30 via-[#FF7A00]/12 to-transparent blur-[120px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] bg-gradient-to-tr from-[#FFA500]/20 to-transparent blur-[140px] pointer-events-none -z-10 animate-glow-pulse" />
+      <div className="absolute top-[55%] -right-[8%] w-[650px] h-[650px] bg-gradient-to-bl from-[#FFA500]/22 via-[#FF6600]/10 to-transparent blur-[150px] pointer-events-none -z-10" />
+      <div className="absolute inset-0 bg-box-grid pointer-events-none -z-10" />
+
+      <main className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-12">
+        {/* =========================================================================
+            HEADER BANNER
+            ========================================================================= */}
+        <div className="text-center space-y-5 max-w-3xl mx-auto">
+          {/* Glass Pill Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-level-1 border border-white/15 text-[11px] font-mono uppercase tracking-wider text-[#FFA500] shadow-sm">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>AGENCY SERVICE CATALOG</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            Crafting High-Impact{' '}
+            <span className="text-[#FFA500] relative inline-block">
+              Digital Solutions
+              <span className="absolute -bottom-1.5 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#FFA500] to-transparent opacity-80" />
+            </span>
+            .
+          </h1>
+
+          <p className="text-base sm:text-lg text-[#F5F7FA]/75 leading-relaxed font-normal">
+            Choose a service category below to view detailed deliverables, platform options (Custom Code vs WordPress), starting plans, or submit a custom project brief.
+          </p>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
-          Digital Services & Custom Solutions
-        </h1>
+        {/* =========================================================================
+            SEARCH & STATUS FILTER BAR
+            ========================================================================= */}
+        <div className="p-4 sm:p-5 rounded-3xl glass-level-2 border border-white/12 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
+          {/* Search Box */}
+          <div className="relative w-full sm:max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+            <input
+              type="text"
+              placeholder="Search services..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white/[0.04] border border-white/15 text-white placeholder-white/40 rounded-full pl-10 pr-10 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#FFA500] focus:ring-1 focus:ring-[#FFA500] transition-colors"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
 
-        <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-          Select any service to submit custom project specifications and receive an upfront structured quote with milestones and delivery timeline.
-        </p>
-      </div>
-
-      {/* Filters & Search Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-        {/* Category Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
-              selectedCategory === 'all'
-                ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                : 'bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            All Services
-          </button>
-          {categories.map((cat) => (
+          {/* Filter Pills */}
+          <div className="flex items-center gap-2 self-center sm:self-auto">
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
-                selectedCategory === cat.id
-                  ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                  : 'bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                activeFilter === 'all'
+                  ? 'bg-[#FFA500] text-[#080402] font-bold shadow-md'
+                  : 'glass-level-1 border border-white/10 text-white/70 hover:text-white'
               }`}
             >
-              {cat.name}
+              All Services ({catalogList.length})
             </button>
-          ))}
-        </div>
 
-        {/* Search Input */}
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search services by keyword..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all"
-          />
-        </div>
-      </div>
-
-      {/* Services Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
-          ))}
-        </div>
-      ) : services.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => (
-            <Card
-              key={service.id}
-              className="border-slate-200/90 bg-white flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition-all group p-6"
+            <button
+              type="button"
+              onClick={() => setActiveFilter('active')}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                activeFilter === 'active'
+                  ? 'bg-[#FFA500] text-[#080402] font-bold shadow-md'
+                  : 'glass-level-1 border border-white/10 text-white/70 hover:text-white'
+              }`}
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-2">
-                  {service.category ? (
-                    <Badge variant="neutral" className="text-[10px] uppercase font-semibold">
-                      {service.category.name}
-                    </Badge>
-                  ) : <div />}
+              Active
+            </button>
 
-                  {service.isFeatured && (
-                    <Badge variant="primary" className="text-[10px]">
-                      FEATURED
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="space-y-1.5">
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-orange-600 transition-colors">
-                    {service.name}
-                  </h3>
-                  <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
-                    {service.description || 'Specialized digital agency deliverable with dedicated specialist timeline and revision review cycles.'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-5 mt-4 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] text-slate-400 block uppercase font-mono font-medium">
-                    Starting Base
-                  </span>
-                  <span className="text-base font-extrabold font-mono text-slate-900">
-                    {service.startingPrice
-                      ? `৳${Number(service.startingPrice).toLocaleString()}`
-                      : 'Custom Quote'}
-                  </span>
-                </div>
-
-                <Link href={`/services/${service.slug || service.id}`}>
-                  <Button variant="primary" size="sm" className="gap-1.5 text-xs shadow-xs">
-                    <span>Customize & Quote</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-          ))}
+            <button
+              type="button"
+              onClick={() => setActiveFilter('upcoming')}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                activeFilter === 'upcoming'
+                  ? 'bg-[#FFA500] text-[#080402] font-bold shadow-md'
+                  : 'glass-level-1 border border-white/10 text-white/70 hover:text-white'
+              }`}
+            >
+              Upcoming
+            </button>
+          </div>
         </div>
-      ) : (
-        <div className="text-center py-20 border border-slate-200/90 rounded-2xl bg-white p-8">
-          <Package className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-          <p className="text-base text-slate-800 font-semibold">No services found matching your criteria.</p>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Try selecting another category tab or clearing your search term.</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4"
-            onClick={() => {
-              setSelectedCategory('all');
-              setSearchTerm('');
-            }}
-          >
-            Clear Filters
-          </Button>
+
+        {/* =========================================================================
+            SERVICES BOX GRID (Compact, Sleek Service Cards)
+            ========================================================================= */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+          {filteredCatalog.map((service) => {
+            const IconComponent = getCategoryIcon(service.iconName);
+
+            return (
+              <Link
+                key={service.id}
+                href={`/services/${service.slug}`}
+                className="block group cursor-pointer focus:outline-none"
+              >
+                <div
+                  onMouseMove={handleCardMouseMove}
+                  className={`relative rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-full transition-all duration-300 glass-spotlight glass-card-interactive overflow-hidden ${
+                    service.hasActivePackages
+                      ? 'glass-level-2 border border-white/15 hover:border-[#FFA500]/60 shadow-lg group-hover:shadow-[0_0_25px_rgba(255,165,0,0.2)]'
+                      : 'glass-level-2 border border-white/10 hover:border-white/20 bg-white/[0.02]'
+                  }`}
+                >
+                  {/* Subtle Orange Glow in Top Corner */}
+                  <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#FFA500]/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-[#FFA500]/25 transition-all duration-500" />
+
+                  {/* Top Header: Icon & Status Badge */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      {/* Compact Icon */}
+                      <div className="w-11 h-11 rounded-xl bg-[#FFA500]/15 border border-[#FFA500]/30 flex items-center justify-center text-[#FFA500] group-hover:scale-105 group-hover:border-[#FFA500]/60 transition-all shadow-sm">
+                        <IconComponent className="w-5 h-5" />
+                      </div>
+
+                      {/* Status Badge */}
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border ${
+                          service.hasActivePackages
+                            ? 'bg-[#FFA500]/20 text-[#FFA500] border-[#FFA500]/40'
+                            : 'bg-white/[0.04] text-[#F5F7FA]/70 border-white/15'
+                        }`}
+                      >
+                        {service.badge}
+                      </span>
+                    </div>
+
+                    {/* Title & Short Description */}
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-[#FFA500] transition-colors tracking-tight">
+                        {service.name}
+                      </h3>
+                      <p className="text-xs text-[#F5F7FA]/70 leading-relaxed font-normal mt-1.5 line-clamp-2">
+                        {service.description}
+                      </p>
+                    </div>
+
+                    {/* Compact Key Attributes */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-[#F5F7FA]/75 font-mono">
+                      {service.hasActivePackages ? (
+                        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/[0.03] border border-white/10">
+                          <PackageCheck className="w-3 h-3 text-[#FFA500]" />
+                          <span>Next.js & WordPress</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/[0.03] border border-white/10">
+                          <CheckCircle2 className="w-3 h-3 text-[#FFA500]" />
+                          <span>Direct Consultation</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Footer: Starting Price & Compact Action Button */}
+                  <div className="pt-4 mt-5 border-t border-white/[0.08] flex items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[9.5px] text-[#F5F7FA]/50 block uppercase font-mono tracking-wider">
+                        Pricing
+                      </span>
+                      <span className="text-xs sm:text-sm font-extrabold font-mono text-white">
+                        {service.startingPriceText}
+                      </span>
+                    </div>
+
+                    {/* Compact Button */}
+                    <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all duration-300 bg-white/[0.06] group-hover:bg-[#FFA500] text-white group-hover:text-[#080402] border border-white/15 group-hover:border-[#FFA500] shadow-sm">
+                      <span>{service.hasActivePackages ? 'Explore' : 'Inquire'}</span>
+                      <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
-      )}
+
+        {/* =========================================================================
+            BOTTOM ASSISTANCE BANNER
+            ========================================================================= */}
+        <div className="rounded-3xl p-8 sm:p-12 text-center max-w-4xl mx-auto space-y-4 relative overflow-hidden bg-card-gradient-glow border border-[#FFA500]/30 shadow-2xl backdrop-blur-2xl">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-[#FFA500]/30 via-[#FF7A00]/20 to-transparent blur-[100px] rounded-full pointer-events-none" />
+
+          <h3 className="text-2xl sm:text-3xl font-bold text-white">
+            Need a Bespoke or Enterprise Architecture?
+          </h3>
+          <p className="text-xs sm:text-sm text-[#F5F7FA]/75 max-w-xl mx-auto leading-relaxed">
+            If your project involves specialized business workflows, microservices, or complex multi-system integrations, our senior solutions architects are available for a dedicated discovery call.
+          </p>
+
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+            <Link href="/services/web-development?platform=custom&tier=premium">
+              <Button
+                size="lg"
+                className="px-8 h-12 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider shadow-[0_0_24px_rgba(255,165,0,0.45)] hover:shadow-[0_0_35px_rgba(255,165,0,0.65)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer btn-shimmer-container border-none flex items-center gap-2"
+              >
+                <span>Request Custom Brief</span>
+                <ArrowRight className="w-4 h-4 text-[#080402]" />
+              </Button>
+            </Link>
+
+            <Link href="/">
+              <Button
+                variant="outline"
+                size="lg"
+                className="px-8 h-12 rounded-full glass-level-1 border border-white/20 hover:border-white/40 text-white text-xs uppercase tracking-wider font-semibold hover:bg-white/[0.08] transition-all cursor-pointer"
+              >
+                Back to Homepage
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
