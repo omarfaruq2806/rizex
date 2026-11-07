@@ -4,16 +4,14 @@ import React from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  FolderKanban,
   FileText,
   CheckCircle2,
   Clock,
   ArrowRight,
-  ExternalLink,
   Plus,
   ShoppingBag,
 } from 'lucide-react';
@@ -72,52 +70,52 @@ export default function ClientDashboardPage() {
     <div className="space-y-8">
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <Card className="border-slate-200/90 bg-white hover:border-blue-200 transition-all">
+        <Card className="glass-level-2 border border-white/10 bg-white/[0.02] p-5 rounded-2xl hover:border-sky-500/30 transition-all">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <span className="text-[11px] font-mono font-semibold tracking-wider text-slate-400 uppercase">
+              <span className="text-[11px] font-mono font-semibold tracking-wider text-neutral-400 uppercase">
                 Active Projects
               </span>
-              <div className="text-3xl font-extrabold font-mono text-slate-900">
+              <div className="text-3xl font-extrabold font-mono text-white">
                 {activeOrdersCount}
               </div>
-              <p className="text-xs text-slate-500 pt-1">In progress or awaiting review</p>
+              <p className="text-xs text-neutral-500 pt-1">In progress or awaiting review</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center">
               <Clock className="w-6 h-6" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-slate-200/90 bg-white hover:border-orange-200 transition-all">
+        <Card className="glass-level-2 border border-white/10 bg-white/[0.02] p-5 rounded-2xl hover:border-[#FFA500]/40 transition-all">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <span className="text-[11px] font-mono font-semibold tracking-wider text-slate-400 uppercase">
+              <span className="text-[11px] font-mono font-semibold tracking-wider text-neutral-400 uppercase">
                 Requirement Briefs
               </span>
-              <div className="text-3xl font-extrabold font-mono text-slate-900">
+              <div className="text-3xl font-extrabold font-mono text-white">
                 {pendingQuotesCount}
               </div>
-              <p className="text-xs text-slate-500 pt-1">Briefs submitted for custom quotes</p>
+              <p className="text-xs text-neutral-500 pt-1">Briefs submitted for custom quotes</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFA500]/10 border border-[#FFA500]/20 text-[#FFA500] flex items-center justify-center">
               <FileText className="w-6 h-6" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-slate-200/90 bg-white hover:border-emerald-200 transition-all">
+        <Card className="glass-level-2 border border-white/10 bg-white/[0.02] p-5 rounded-2xl hover:border-emerald-500/30 transition-all">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <span className="text-[11px] font-mono font-semibold tracking-wider text-slate-400 uppercase">
+              <span className="text-[11px] font-mono font-semibold tracking-wider text-neutral-400 uppercase">
                 Completed Orders
               </span>
-              <div className="text-3xl font-extrabold font-mono text-slate-900">
+              <div className="text-3xl font-extrabold font-mono text-white">
                 {completedOrdersCount}
               </div>
-              <p className="text-xs text-slate-500 pt-1">Finalized & delivered deliverables</p>
+              <p className="text-xs text-neutral-500 pt-1">Finalized & delivered deliverables</p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6" />
             </div>
           </div>
@@ -128,13 +126,13 @@ export default function ClientDashboardPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-bold text-white tracking-tight">
               Recent Projects & Orders
             </h2>
-            <p className="text-xs text-slate-500">Live timeline and delivery status of your ongoing contracts</p>
+            <p className="text-xs text-neutral-400">Live timeline and delivery status of your ongoing contracts</p>
           </div>
           <Link href="/dashboard/orders">
-            <Button variant="outline" size="sm" className="text-xs gap-1">
+            <Button variant="outline" size="sm" className="text-xs gap-1 border-white/15 hover:border-[#FFA500]/50">
               <span>View All Orders</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Button>
@@ -142,12 +140,12 @@ export default function ClientDashboardPage() {
         </div>
 
         {ordersLoading ? (
-          <div className="h-32 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+          <div className="h-32 glass-level-2 border border-white/10 rounded-2xl animate-pulse" />
         ) : orders.length > 0 ? (
-          <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-xs">
+          <div className="border border-white/10 rounded-2xl overflow-hidden glass-level-2 shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-100 font-mono uppercase tracking-wider text-[11px]">
+                <thead className="bg-white/[0.04] text-neutral-400 border-b border-white/10 font-mono uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="p-4">Order ID</th>
                     <th className="p-4">Service</th>
@@ -156,13 +154,13 @@ export default function ClientDashboardPage() {
                     <th className="p-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tbody className="divide-y divide-white/5 text-neutral-300">
                   {orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="p-4 font-mono font-bold text-slate-900">
+                    <tr key={order.id} className="hover:bg-white/[0.03] transition-colors">
+                      <td className="p-4 font-mono font-bold text-white">
                         {order.orderNumber}
                       </td>
-                      <td className="p-4 text-slate-800 font-medium">
+                      <td className="p-4 text-neutral-200 font-medium">
                         {order.service?.name || order.title}
                       </td>
                       <td className="p-4">
@@ -170,13 +168,13 @@ export default function ClientDashboardPage() {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-20 bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                          <div className="w-20 bg-white/10 h-1.5 rounded-full overflow-hidden">
                             <div
-                              className="bg-orange-500 h-full rounded-full"
+                              className="bg-gradient-to-r from-[#FFA500] to-[#FF4500] h-full rounded-full"
                               style={{ width: `${order.progress || 0}%` }}
                             />
                           </div>
-                          <span className="font-mono text-slate-500 text-[10px]">{order.progress || 0}%</span>
+                          <span className="font-mono text-neutral-400 text-[10px]">{order.progress || 0}%</span>
                         </div>
                       </td>
                       <td className="p-4 text-right">
@@ -193,12 +191,12 @@ export default function ClientDashboardPage() {
             </div>
           </div>
         ) : (
-          <Card className="border-slate-200/90 bg-white p-8 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+          <Card className="glass-level-2 border border-white/10 p-8 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-white/[0.04] text-neutral-400 flex items-center justify-center mx-auto mb-3">
               <ShoppingBag className="w-6 h-6" />
             </div>
-            <h3 className="text-sm font-semibold text-slate-800">No Active Orders Yet</h3>
-            <p className="text-xs text-slate-500 mt-1 mb-4 max-w-sm mx-auto">
+            <h3 className="text-sm font-semibold text-white">No Active Orders Yet</h3>
+            <p className="text-xs text-neutral-400 mt-1 mb-4 max-w-sm mx-auto">
               Submit your project requirement brief to receive a customized quote and get started.
             </p>
             <Link href="/services">
@@ -215,13 +213,13 @@ export default function ClientDashboardPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-bold text-white tracking-tight">
               Requirement Briefs & Quotes
             </h2>
-            <p className="text-xs text-slate-500">Commercial proposals and project briefs waiting for your review</p>
+            <p className="text-xs text-neutral-400">Commercial proposals and project briefs waiting for your review</p>
           </div>
           <Link href="/dashboard/quotes">
-            <Button variant="outline" size="sm" className="text-xs gap-1">
+            <Button variant="outline" size="sm" className="text-xs gap-1 border-white/15 hover:border-[#FFA500]/50">
               <span>View All Quotes</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Button>
@@ -229,43 +227,43 @@ export default function ClientDashboardPage() {
         </div>
 
         {quotesLoading ? (
-          <div className="h-32 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+          <div className="h-32 glass-level-2 border border-white/10 rounded-2xl animate-pulse" />
         ) : quotes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {quotes.map((req) => (
-              <Card key={req.id} className="border-slate-200/90 bg-white p-5 flex flex-col justify-between hover:border-orange-300 hover:shadow-xs transition-all">
+              <Card key={req.id} className="glass-level-2 border border-white/10 p-5 rounded-2xl flex flex-col justify-between hover:border-[#FFA500]/40 transition-all">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="neutral" className="text-[10px]">{req.service?.name || 'Service'}</Badge>
                     <Badge variant={req.quote ? 'primary' : 'outline'} className="text-[10px]">{req.status}</Badge>
                   </div>
 
-                  <h3 className="font-bold text-sm text-slate-900">
+                  <h3 className="font-bold text-sm text-white">
                     {req.projectName || 'Custom Project Brief'}
                   </h3>
 
                   {req.quote ? (
-                    <div className="p-3.5 bg-orange-50/60 border border-orange-100 rounded-xl space-y-1">
-                      <span className="text-[10px] text-orange-700 font-mono font-bold uppercase block">
+                    <div className="p-3.5 bg-[#FFA500]/10 border border-[#FFA500]/20 rounded-xl space-y-1">
+                      <span className="text-[10px] text-[#FFA500] font-mono font-bold uppercase block">
                         Commercial Proposal Received:
                       </span>
                       <div className="flex items-baseline justify-between">
-                        <span className="text-base font-extrabold font-mono text-slate-900">
+                        <span className="text-base font-extrabold font-mono text-white">
                           ৳{Number(req.quote.amount || 0).toLocaleString()} {req.quote.currency || 'BDT'}
                         </span>
-                        <span className="text-xs text-slate-600 font-mono">
+                        <span className="text-xs text-neutral-400 font-mono">
                           {req.quote.estimatedDays || 7} Days Timeline
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-500 italic bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <p className="text-xs text-neutral-400 italic bg-white/[0.03] p-3 rounded-xl border border-white/10">
                       Under evaluation by project managers. Custom quote will arrive shortly.
                     </p>
                   )}
                 </div>
 
-                <div className="pt-4 mt-3 border-t border-slate-100 flex justify-end">
+                <div className="pt-4 mt-3 border-t border-white/10 flex justify-end">
                   <Link href="/dashboard/quotes">
                     <Button variant={req.quote ? 'primary' : 'outline'} size="sm" className="text-xs">
                       {req.quote ? 'Review Proposal →' : 'View Brief Details'}
@@ -276,8 +274,8 @@ export default function ClientDashboardPage() {
             ))}
           </div>
         ) : (
-          <Card className="border-slate-200/90 bg-white p-8 text-center">
-            <p className="text-xs text-slate-500">No requirement briefs submitted yet.</p>
+          <Card className="glass-level-2 border border-white/10 p-8 text-center">
+            <p className="text-xs text-neutral-400">No requirement briefs submitted yet.</p>
           </Card>
         )}
       </div>

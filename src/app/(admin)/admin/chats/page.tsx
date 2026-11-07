@@ -10,11 +10,6 @@ import { Modal } from '@/components/ui/modal';
 import {
   MessageSquare,
   Eye,
-  User,
-  ShieldCheck,
-  Briefcase,
-  Clock,
-  ArrowRight,
 } from 'lucide-react';
 
 export default function AdminChatsSupervisionPage() {
@@ -44,45 +39,45 @@ export default function AdminChatsSupervisionPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+        <h2 className="text-xl font-extrabold text-white tracking-tight">
           Chat Moderation & Supervision Room
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-neutral-400 mt-1">
           Monitor communications between clients and assigned specialists across active and past project workrooms
         </p>
       </div>
 
       {isLoading ? (
-        <div className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+        <div className="h-64 glass-level-2 border border-white/10 rounded-2xl animate-pulse" />
       ) : chats.length > 0 ? (
-        <div className="divide-y divide-slate-100 border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-xs">
+        <div className="divide-y divide-white/5 border border-white/10 rounded-2xl overflow-hidden glass-level-2 shadow-xl">
           {chats.map((chat) => (
             <div
               key={chat.orderId || chat.id}
-              className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors"
+              className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.03] transition-colors"
             >
               <div className="space-y-1.5 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-slate-900 text-sm">
+                  <span className="font-mono font-bold text-white text-sm">
                     {chat.orderNumber}
                   </span>
                   <Badge variant="outline" className="text-[10px]">
                     {chat.status}
                   </Badge>
                 </div>
-                <h3 className="text-sm font-semibold text-slate-800">{chat.orderTitle}</h3>
-                <div className="text-xs text-slate-500 font-mono flex items-center gap-2 flex-wrap">
-                  <span className="text-slate-700">Client: <strong>{chat.clientName}</strong></span>
+                <h3 className="text-sm font-semibold text-neutral-200">{chat.orderTitle}</h3>
+                <div className="text-xs text-neutral-400 font-mono flex items-center gap-2 flex-wrap">
+                  <span className="text-neutral-300">Client: <strong className="text-white">{chat.clientName}</strong></span>
                   <span>•</span>
-                  <span className="text-slate-700">Worker: <strong>{chat.workerName || 'Unassigned'}</strong></span>
+                  <span className="text-neutral-300">Worker: <strong className="text-white">{chat.workerName || 'Unassigned'}</strong></span>
                   <span>•</span>
-                  <span className="inline-flex items-center gap-1 text-orange-600 font-semibold">
+                  <span className="inline-flex items-center gap-1 text-[#FFA500] font-semibold">
                     <MessageSquare className="w-3 h-3" />
                     {chat.messageCount || 0} Messages
                   </span>
                 </div>
                 {chat.lastMessage && (
-                  <p className="text-xs text-slate-600 italic pt-1 line-clamp-1 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                  <p className="text-xs text-neutral-300 italic pt-1 line-clamp-1 bg-white/[0.03] px-3 py-1.5 rounded-lg border border-white/10">
                     &quot;{chat.lastMessage.content}&quot;
                   </p>
                 )}
@@ -91,22 +86,22 @@ export default function AdminChatsSupervisionPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs gap-1.5 shrink-0"
+                className="text-xs gap-1.5 shrink-0 border-white/15 hover:border-[#FFA500]/50 hover:bg-[#FFA500]/10"
                 onClick={() => setSelectedOrderChat(chat)}
               >
-                <Eye className="w-3.5 h-3.5 text-slate-500" />
+                <Eye className="w-3.5 h-3.5 text-neutral-400" />
                 <span>Supervise Room</span>
               </Button>
             </div>
           ))}
         </div>
       ) : (
-        <Card className="p-12 text-center border-slate-200/90 bg-white">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+        <Card className="p-12 text-center border-white/10 glass-level-2">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] text-neutral-400 flex items-center justify-center mx-auto mb-3">
             <MessageSquare className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-800">No Chat Activity Yet</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-sm font-semibold text-white">No Chat Activity Yet</h3>
+          <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">
             When clients and assigned specialists converse inside order workrooms, live messages can be audited here.
           </p>
         </Card>
@@ -121,7 +116,7 @@ export default function AdminChatsSupervisionPage() {
         maxWidth="2xl"
       >
         <div className="space-y-4 pt-2">
-          <div className="h-96 overflow-y-auto space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+          <div className="h-96 overflow-y-auto space-y-3 p-4 bg-black/40 border border-white/10 rounded-2xl">
             {messages.length > 0 ? (
               messages.map((msg) => {
                 const isAdmin = msg.sender?.role === 'ADMIN';
@@ -129,7 +124,7 @@ export default function AdminChatsSupervisionPage() {
                 return (
                   <div key={msg.id} className="flex flex-col items-start">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-slate-900">
+                      <span className="text-xs font-bold text-white">
                         {msg.sender?.name}
                       </span>
                       <Badge
@@ -138,26 +133,30 @@ export default function AdminChatsSupervisionPage() {
                       >
                         {msg.sender?.role}
                       </Badge>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[10px] text-neutral-500 font-mono">
                         {new Date(msg.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
-                    <div className="p-3 bg-white border border-slate-200 rounded-2xl rounded-tl-sm text-xs text-slate-800 leading-relaxed shadow-2xs max-w-lg">
+                    <div className="p-3 bg-white/[0.04] border border-white/10 rounded-2xl rounded-tl-sm text-xs text-neutral-200 leading-relaxed shadow-sm max-w-lg">
                       {msg.content}
                     </div>
                   </div>
                 );
               })
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-xs text-slate-400">
-                <MessageSquare className="w-8 h-8 text-slate-300 mb-2" />
+              <div className="h-full flex flex-col items-center justify-center text-xs text-neutral-500">
+                <MessageSquare className="w-8 h-8 text-neutral-600 mb-2" />
                 <span>No chat history recorded for this order yet.</span>
               </div>
             )}
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button variant="outline" onClick={() => setSelectedOrderChat(null)}>
+            <Button
+              variant="outline"
+              className="border-white/15"
+              onClick={() => setSelectedOrderChat(null)}
+            >
               Close Supervision Room
             </Button>
           </div>

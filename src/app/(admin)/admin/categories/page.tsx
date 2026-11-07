@@ -14,10 +14,7 @@ import {
   Plus,
   Edit2,
   Trash2,
-  CheckCircle2,
-  XCircle,
   Hash,
-  Sparkles,
 } from 'lucide-react';
 
 interface Category {
@@ -148,14 +145,17 @@ export default function AdminCategoriesPage() {
       {/* Header with Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Service Categories</h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <h2 className="text-xl font-bold text-white tracking-tight">Service Categories</h2>
+          <p className="text-xs text-[#F5F7FA]/60 mt-1">
             Organize digital agency offerings into structured domains for catalog browsing
           </p>
         </div>
 
-        <Button variant="primary" onClick={handleOpenCreateModal} className="gap-2">
-          <Plus className="w-4 h-4" />
+        <Button
+          onClick={handleOpenCreateModal}
+          className="gap-2 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-5 shadow-sm hover:shadow-[#FFA500]/30 cursor-pointer border-none"
+        >
+          <Plus className="w-4 h-4 text-[#080402]" />
           <span>Add New Category</span>
         </Button>
       </div>
@@ -164,19 +164,23 @@ export default function AdminCategoriesPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+            <div key={i} className="h-48 glass-level-2 border border-white/10 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <Card className="p-12 text-center border-slate-200/90 bg-white">
-          <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mx-auto mb-3">
+        <Card className="p-12 text-center border-white/12">
+          <div className="w-12 h-12 rounded-2xl bg-[#FFA500]/15 text-[#FFA500] border border-[#FFA500]/30 flex items-center justify-center mx-auto mb-3">
             <Layers className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-800">No Service Categories Found</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-sm font-semibold text-white">No Service Categories Found</h3>
+          <p className="text-xs text-[#F5F7FA]/60 mt-1 max-w-sm mx-auto">
             Create your first category (e.g. Web Development, UI/UX Design, SEO) to group digital services.
           </p>
-          <Button variant="primary" size="sm" className="mt-4" onClick={handleOpenCreateModal}>
+          <Button
+            size="sm"
+            className="mt-4 bg-[#FFA500] text-[#080402] font-bold rounded-full text-xs"
+            onClick={handleOpenCreateModal}
+          >
             Create Category
           </Button>
         </Card>
@@ -185,15 +189,15 @@ export default function AdminCategoriesPage() {
           {categories.map((cat) => (
             <Card
               key={cat.id}
-              className="border-slate-200/90 bg-white flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition-all group"
+              className="flex flex-col justify-between hover:border-[#FFA500]/50 transition-all group"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
-                    <CardTitle className="text-base font-bold text-slate-900 group-hover:text-orange-600 transition-colors">
+                    <CardTitle className="text-base font-bold text-white group-hover:text-[#FFA500] transition-colors">
                       {cat.name}
                     </CardTitle>
-                    <span className="font-mono text-xs text-slate-400 block">/{cat.slug}</span>
+                    <span className="font-mono text-xs text-[#F5F7FA]/40 block">/{cat.slug}</span>
                   </div>
                   <Badge variant={cat.isActive ? 'success' : 'neutral'}>
                     {cat.isActive ? 'ACTIVE' : 'INACTIVE'}
@@ -202,17 +206,17 @@ export default function AdminCategoriesPage() {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-xs text-slate-600 line-clamp-2 min-h-[32px]">
+                <p className="text-xs text-[#F5F7FA]/70 line-clamp-2 min-h-[32px]">
                   {cat.description || 'No description provided.'}
                 </p>
 
-                <div className="flex items-center justify-between text-xs font-mono text-slate-500 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between text-xs font-mono text-[#F5F7FA]/60 pt-3 border-t border-white/[0.08]">
                   <span className="flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-slate-400" />
-                    <strong>{cat._count?.services ?? 0}</strong> Services
+                    <Layers className="w-3.5 h-3.5 text-[#FFA500]" />
+                    <strong className="text-white">{cat._count?.services ?? 0}</strong> Services
                   </span>
                   <span className="flex items-center gap-1">
-                    <Hash className="w-3.5 h-3.5 text-slate-400" />
+                    <Hash className="w-3.5 h-3.5 text-white/40" />
                     Order: {cat.sortOrder}
                   </span>
                 </div>
@@ -221,16 +225,16 @@ export default function AdminCategoriesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 gap-1.5 text-xs"
+                    className="flex-1 gap-1.5 text-xs glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-xl h-9"
                     onClick={() => handleOpenEditModal(cat)}
                   >
-                    <Edit2 className="w-3.5 h-3.5 text-slate-500" />
+                    <Edit2 className="w-3.5 h-3.5 text-[#FFA500]" />
                     <span>Edit</span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-slate-500 hover:text-rose-600 hover:bg-rose-50"
+                    className="text-white/40 hover:text-rose-400 hover:bg-white/[0.06] rounded-xl h-9 px-3"
                     onClick={() => handleDelete(cat.id, cat.name)}
                     disabled={deleteMutation.isPending}
                   >
@@ -258,7 +262,7 @@ export default function AdminCategoriesPage() {
           className="space-y-4 pt-2"
         >
           {formError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
+            <div className="p-3 bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs rounded-xl">
               {formError}
             </div>
           )}
@@ -289,8 +293,8 @@ export default function AdminCategoriesPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Lucide Icon (e.g. Code, Layout)"
-              placeholder="Code"
+              label="Lucide Icon (e.g. Code2, Palette)"
+              placeholder="Code2"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
             />
@@ -304,30 +308,31 @@ export default function AdminCategoriesPage() {
             />
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/10">
             <input
               type="checkbox"
               id="isActiveCategory"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+              className="h-4 w-4 rounded border-white/30 text-[#FFA500] focus:ring-[#FFA500] cursor-pointer"
             />
-            <label htmlFor="isActiveCategory" className="text-xs font-medium text-slate-700 select-none cursor-pointer">
+            <label htmlFor="isActiveCategory" className="text-xs font-medium text-white/90 select-none cursor-pointer">
               Category is active and visible publicly in catalog
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
+              className="bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
               isLoading={saveMutation.isPending}
             >
               {editingCategory ? 'Update Category' : 'Create Category'}

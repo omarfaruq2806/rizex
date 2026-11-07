@@ -5,23 +5,17 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/providers/auth-provider';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Modal } from '@/components/ui/modal';
 import {
   MessageSquare,
   FileText,
   Download,
-  CheckCircle2,
-  Clock,
-  RotateCcw,
   Send,
   ArrowLeft,
-  Briefcase,
-  Sparkles,
   Upload,
 } from 'lucide-react';
 
@@ -155,17 +149,17 @@ export default function WorkerOrderWorkspacePage() {
   if (orderLoading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-10 w-64 bg-slate-200 rounded-xl" />
-        <div className="h-40 bg-white border border-slate-200 rounded-2xl" />
+        <div className="h-10 w-64 bg-white/[0.05] rounded-xl" />
+        <div className="h-40 glass-level-2 border border-white/10 rounded-2xl" />
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="text-center py-20 border border-slate-200 rounded-2xl bg-white space-y-4">
-        <h2 className="text-xl font-bold text-slate-900">Assigned Project Not Found</h2>
-        <Button variant="outline" onClick={() => router.push('/worker')}>
+      <div className="text-center py-20 border border-white/10 rounded-2xl glass-level-2 space-y-4">
+        <h2 className="text-xl font-bold text-white">Assigned Project Not Found</h2>
+        <Button variant="outline" className="border-white/15" onClick={() => router.push('/worker')}>
           ← Back to Specialist Dashboard
         </Button>
       </div>
@@ -177,44 +171,44 @@ export default function WorkerOrderWorkspacePage() {
       {/* Back button */}
       <button
         onClick={() => router.push('/worker')}
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-400 hover:text-white transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         <span>Back to Assigned Projects</span>
       </button>
 
       {/* 1. ORDER SUMMARY & WORKER CONTROLS */}
-      <Card className="border-slate-200/90 bg-white p-6 sm:p-8 space-y-6 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+      <Card className="glass-level-2 border border-white/10 p-6 sm:p-8 space-y-6 shadow-2xl rounded-3xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-white/10">
           <div>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xl font-extrabold text-slate-900 tracking-tight">
+              <span className="font-mono text-xl font-extrabold text-white tracking-tight">
                 {order.orderNumber}
               </span>
               <Badge variant="primary" className="text-xs">{order.status}</Badge>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 mt-1">{order.title}</h1>
-            <span className="text-xs text-slate-500 font-mono">
+            <h1 className="text-xl font-bold text-white mt-1">{order.title}</h1>
+            <span className="text-xs text-neutral-400 font-mono">
               Client: {order.client?.name} ({order.client?.email}) • Service: {order.service?.name}
             </span>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+          <div className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/10 rounded-2xl">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-700">Progress:</span>
+              <span className="text-xs font-semibold text-neutral-300">Progress:</span>
               <input
                 type="number"
                 min="0"
                 max="100"
                 value={progressValue}
                 onChange={(e) => setProgressValue(Number(e.target.value))}
-                className="w-16 bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-mono text-slate-900 text-center font-bold"
+                className="w-16 bg-white/[0.06] border border-white/15 rounded-lg px-2 py-1 text-xs font-mono text-white text-center font-bold focus:outline-none focus:border-[#FFA500]"
               />
-              <span className="text-xs font-mono text-slate-500">%</span>
+              <span className="text-xs font-mono text-neutral-400">%</span>
               <Button
                 variant="primary"
                 size="sm"
-                className="text-xs"
+                className="text-xs shadow-lg shadow-[#FFA500]/20"
                 onClick={handleUpdateProgress}
                 isLoading={isUpdatingProgress}
               >
@@ -225,24 +219,24 @@ export default function WorkerOrderWorkspacePage() {
         </div>
 
         {/* Commercial Terms & Client Brief */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono p-4 bg-orange-50/50 border border-orange-100 rounded-2xl">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono p-4 bg-[#FFA500]/10 border border-[#FFA500]/20 rounded-2xl">
           <div>
-            <span className="text-slate-400 block uppercase font-bold text-[10px]">Commercial Value:</span>
-            <span className="text-slate-900 font-extrabold text-sm">৳{Number(order.quote?.amount || 0).toLocaleString()} {order.quote?.currency}</span>
+            <span className="text-neutral-400 block uppercase font-bold text-[10px]">Commercial Value:</span>
+            <span className="text-white font-extrabold text-sm">৳{Number(order.quote?.amount || 0).toLocaleString()} {order.quote?.currency}</span>
           </div>
           <div>
-            <span className="text-slate-400 block uppercase font-bold text-[10px]">Target Timeline:</span>
-            <span className="text-slate-900 font-bold">{order.quote?.estimatedDays || 7} Days</span>
+            <span className="text-neutral-400 block uppercase font-bold text-[10px]">Target Timeline:</span>
+            <span className="text-white font-bold">{order.quote?.estimatedDays || 7} Days</span>
           </div>
           <div>
-            <span className="text-slate-400 block uppercase font-bold text-[10px]">Revisions Limit:</span>
-            <span className="text-slate-900 font-bold">{order.quote?.revisions} Allowed</span>
+            <span className="text-neutral-400 block uppercase font-bold text-[10px]">Revisions Limit:</span>
+            <span className="text-white font-bold">{order.quote?.revisions} Allowed</span>
           </div>
         </div>
       </Card>
 
       {/* 2. TAB NAVIGATION */}
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 p-1.5 shadow-xs overflow-x-auto">
+      <div className="glass-level-2 rounded-2xl border border-white/10 p-1.5 backdrop-blur-xl shadow-lg overflow-x-auto">
         <div className="flex items-center gap-1.5 min-w-max">
           {[
             { key: 'DELIVER', label: 'Submit Deliverable & Revisions', icon: Upload },
@@ -255,13 +249,13 @@ export default function WorkerOrderWorkspacePage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 cursor-pointer ${
                   isActive
-                    ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-gradient-to-r from-[#FFA500] to-[#FF4500] text-black font-bold shadow-lg shadow-[#FFA500]/25'
+                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-orange-400' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-neutral-400'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -272,12 +266,12 @@ export default function WorkerOrderWorkspacePage() {
       {/* 3. SUBMIT DELIVERABLE TAB */}
       {activeTab === 'DELIVER' && (
         <div className="space-y-6">
-          <Card className="border-slate-200/90 bg-white p-6 sm:p-8 space-y-4 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900">
+          <Card className="glass-level-2 border border-white/10 p-6 sm:p-8 space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold text-white">
               Submit Work Deliverable for Client Review
             </h3>
-            <p className="text-xs text-slate-500">
-              Submitting deliverables will transition the project status to <strong>REVIEW</strong> and notify the client to inspect and sign off.
+            <p className="text-xs text-neutral-400">
+              Submitting deliverables will transition the project status to <strong className="text-white">REVIEW</strong> and notify the client to inspect and sign off.
             </p>
 
             <form onSubmit={handleSubmitDeliverable} className="space-y-4 pt-2">
@@ -305,8 +299,8 @@ export default function WorkerOrderWorkspacePage() {
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex justify-end">
-                <Button type="submit" variant="primary" isLoading={isSubmittingDelivery} className="gap-1.5">
+              <div className="pt-4 border-t border-white/10 flex justify-end">
+                <Button type="submit" variant="primary" isLoading={isSubmittingDelivery} className="gap-1.5 shadow-lg shadow-[#FFA500]/20">
                   <Upload className="w-4 h-4" />
                   <span>Submit for Client Review →</span>
                 </Button>
@@ -316,18 +310,18 @@ export default function WorkerOrderWorkspacePage() {
 
           {/* Revisions History */}
           {order.revisions && order.revisions.length > 0 && (
-            <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
-              <h3 className="text-sm font-bold text-slate-900">
+            <Card className="glass-level-2 border border-white/10 p-6 space-y-4 shadow-xl">
+              <h3 className="text-sm font-bold text-white">
                 Client Revision Requests ({order.revisions.length})
               </h3>
               <div className="space-y-3">
                 {order.revisions.map((rev: any, idx: number) => (
-                  <div key={rev.id || idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1.5">
+                  <div key={rev.id || idx} className="p-4 bg-white/[0.02] border border-white/10 rounded-2xl text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-900">Revision #{idx + 1}: {rev.reason}</span>
+                      <span className="font-bold text-white">Revision #{idx + 1}: {rev.reason}</span>
                       <Badge variant="warning">{rev.status}</Badge>
                     </div>
-                    <p className="text-slate-600 leading-relaxed">{rev.description}</p>
+                    <p className="text-neutral-300 leading-relaxed">{rev.description}</p>
                   </div>
                 ))}
               </div>
@@ -338,8 +332,8 @@ export default function WorkerOrderWorkspacePage() {
 
       {/* 4. CHAT TAB */}
       {activeTab === 'CHAT' && (
-        <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
-          <div className="h-96 overflow-y-auto space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+        <Card className="glass-level-2 border border-white/10 p-6 space-y-4 shadow-xl">
+          <div className="h-96 overflow-y-auto space-y-3 p-4 bg-black/40 border border-white/10 rounded-2xl">
             {messages.length > 0 ? (
               messages.map((msg) => {
                 const isMe = msg.senderId === user?.id;
@@ -349,21 +343,21 @@ export default function WorkerOrderWorkspacePage() {
                     className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-slate-800">
+                      <span className="text-xs font-bold text-neutral-300">
                         {isMe ? 'You' : msg.sender?.name}
                       </span>
                       <Badge variant={isMe ? 'primary' : 'neutral'} className="text-[9px] py-0 px-1.5">
                         {msg.sender?.role || 'USER'}
                       </Badge>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[10px] text-neutral-500 font-mono">
                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     <div
-                      className={`p-3.5 rounded-2xl text-xs max-w-lg leading-relaxed shadow-2xs ${
+                      className={`p-3.5 rounded-2xl text-xs max-w-lg leading-relaxed shadow-sm ${
                         isMe
-                          ? 'bg-slate-900 text-white rounded-tr-sm'
-                          : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'
+                          ? 'bg-gradient-to-r from-[#FFA500] to-[#FF4500] text-black font-medium rounded-tr-sm'
+                          : 'bg-white/[0.04] border border-white/10 text-neutral-200 rounded-tl-sm'
                       }`}
                     >
                       {msg.content}
@@ -372,8 +366,8 @@ export default function WorkerOrderWorkspacePage() {
                 );
               })
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-xs text-slate-400">
-                <MessageSquare className="w-8 h-8 text-slate-300 mb-2" />
+              <div className="h-full flex flex-col items-center justify-center text-xs text-neutral-500">
+                <MessageSquare className="w-8 h-8 text-neutral-600 mb-2" />
                 <span>No messages yet. Send a direct message to coordinate with the client.</span>
               </div>
             )}
@@ -386,7 +380,7 @@ export default function WorkerOrderWorkspacePage() {
               onChange={(e) => setChatMessage(e.target.value)}
               disabled={isSendingMessage}
             />
-            <Button type="submit" variant="primary" isLoading={isSendingMessage} className="gap-1.5">
+            <Button type="submit" variant="primary" isLoading={isSendingMessage} className="gap-1.5 shadow-lg shadow-[#FFA500]/20">
               <Send className="w-3.5 h-3.5" />
               <span>Send</span>
             </Button>
@@ -396,16 +390,16 @@ export default function WorkerOrderWorkspacePage() {
 
       {/* 5. FILES TAB */}
       {activeTab === 'FILES' && (
-        <Card className="border-slate-200/90 bg-white p-6 space-y-4 shadow-xs">
-          <h3 className="text-sm font-bold text-slate-900">Project Files & Attachments</h3>
+        <Card className="glass-level-2 border border-white/10 p-6 space-y-4 shadow-xl">
+          <h3 className="text-sm font-bold text-white">Project Files & Attachments</h3>
 
           {files.length > 0 ? (
-            <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden bg-white">
+            <div className="divide-y divide-white/5 border border-white/10 rounded-2xl overflow-hidden glass-level-2">
               {files.map((file) => (
-                <div key={file.id} className="p-4 flex items-center justify-between hover:bg-slate-50/70 transition-colors">
+                <div key={file.id} className="p-4 flex items-center justify-between hover:bg-white/[0.03] transition-colors">
                   <div className="space-y-1">
-                    <span className="text-xs font-bold text-slate-900 block">{file.name}</span>
-                    <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                    <span className="text-xs font-bold text-white block">{file.name}</span>
+                    <div className="flex items-center gap-2 text-[10px] text-neutral-400 font-mono">
                       <Badge variant="neutral">{file.category}</Badge>
                       <span>Uploaded by {file.uploader?.name}</span>
                     </div>
@@ -416,7 +410,7 @@ export default function WorkerOrderWorkspacePage() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs border-white/15 hover:border-[#FFA500]/50">
                       <Download className="w-3.5 h-3.5" />
                       <span>Download</span>
                     </Button>
@@ -425,9 +419,9 @@ export default function WorkerOrderWorkspacePage() {
               ))}
             </div>
           ) : (
-            <div className="p-12 text-center border border-slate-200 rounded-2xl bg-slate-50">
-              <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs text-slate-500">No files attached to this project.</p>
+            <div className="p-12 text-center border border-white/10 rounded-2xl bg-white/[0.02]">
+              <FileText className="w-8 h-8 text-neutral-600 mx-auto mb-2" />
+              <p className="text-xs text-neutral-400">No files attached to this project.</p>
             </div>
           )}
         </Card>

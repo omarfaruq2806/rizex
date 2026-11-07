@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -44,7 +45,7 @@ export function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className="fixed inset-0"
         onClick={onClose}
@@ -52,25 +53,25 @@ export function Modal({
       />
       <div
         className={cn(
-          'relative w-full bg-white text-slate-900 border border-slate-200/90 rounded-2xl shadow-2xl p-6 z-10 max-h-[90vh] overflow-y-auto flex flex-col',
+          'relative w-full glass-level-3 border border-[#FFA500]/30 bg-[#140A03]/95 text-white rounded-3xl shadow-2xl p-6 sm:p-8 z-10 max-h-[90vh] overflow-y-auto flex flex-col',
           maxWidths[maxWidth],
         )}
       >
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100 mb-4">
+        <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] mb-4">
           <div>
             {title && (
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">{title}</h3>
+              <h3 className="text-xl font-bold text-white tracking-tight">{title}</h3>
             )}
             {description && (
-              <p className="text-xs text-slate-500 mt-1">{description}</p>
+              <p className="text-xs text-[#F5F7FA]/70 mt-1">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1.5 rounded-lg transition-colors cursor-pointer text-sm font-medium"
+            className="text-white/50 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer text-sm font-medium"
             aria-label="Close"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
         <div className="flex-1">{children}</div>

@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ArrowRight, Sparkles } from 'lucide-react';
+import { Menu, X, ArrowRight, Sparkles, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { NAVBAR_LINKS } from '@/data/homepage';
 
 export function Navbar() {
-  const { user, role, isAuthenticated, isLoading } = useAuth();
+  const { user, role, isAuthenticated, isLoading, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -53,10 +53,11 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-[#080402] transition-all duration-300 ${scrolled
+      className={`sticky top-0 z-50 w-full bg-[#080402] transition-all duration-300 ${
+        scrolled
           ? 'border-b border-white/[0.06] shadow-[0_4px_16px_rgba(0,0,0,0.20)]'
           : 'border-b-0 shadow-none'
-        }`}
+      }`}
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
         {/* Left: Brand Logo */}
@@ -80,7 +81,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Desktop Navigation Links (No border when not scrolled) */}
+        {/* Center: Desktop Navigation Links */}
         <nav
           className="hidden md:flex items-center gap-1"
           aria-label="Main Navigation"
@@ -103,30 +104,27 @@ export function Navbar() {
           {isLoading ? (
             <div className="h-9 w-20 bg-white/[0.05] animate-pulse rounded-full" />
           ) : isAuthenticated && user ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <NotificationBell />
               <Link href={getDashboardLink()}>
                 <Button
                   size="sm"
-                  className="font-medium text-xs h-9 sm:h-10 px-4 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-white cursor-pointer transition-all hover:border-[#FFA500]/50"
+                  className="font-medium text-xs h-9 sm:h-10 px-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-white cursor-pointer transition-all hover:border-[#FFA500]/50"
                 >
                   Dashboard
                 </Button>
               </Link>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="inline-flex items-center gap-1.5 h-9 sm:h-10 px-3 rounded-full text-xs font-medium text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 transition-all cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </button>
             </div>
-          ) : (
-            <div className="hidden sm:flex items-center gap-2">
-              <Link href="/login">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-[#F5F7FA]/75 hover:text-white hover:bg-white/[0.06] text-xs font-medium h-9 px-3.5 rounded-full cursor-pointer transition-colors"
-                >
-                  Log In
-                </Button>
-              </Link>
-            </div>
-          )}
+          ) : null}
 
           {/* Primary Glow CTA Button: Get a Quote */}
           <a
@@ -171,32 +169,37 @@ export function Navbar() {
 
             <div className="pt-3 border-t border-white/[0.08] space-y-2.5">
               {isAuthenticated ? (
-                <Link
-                  href={getDashboardLink()}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white py-3 text-sm font-semibold cursor-pointer"
-                >
-                  <span>Go to Dashboard</span>
-                  <ArrowRight className="w-4 h-4 text-[#FFA500]" />
-                </Link>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
                   <Link
-                    href="/login"
+                    href={getDashboardLink()}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="inline-flex items-center justify-center rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white py-2.5 text-xs font-semibold cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white py-3 text-sm font-semibold cursor-pointer"
                   >
-                    Log In
+                    <span>Go to Dashboard</span>
+                    <ArrowRight className="w-4 h-4 text-[#FFA500]" />
                   </Link>
-                  <a
-                    href="#reach-us"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#FFA500] hover:bg-[#FFB733] text-[#080402] py-2.5 text-xs font-bold shadow-md cursor-pointer"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 py-2.5 text-xs font-semibold cursor-pointer transition-colors"
                   >
-                    <span>Get a Quote</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
+              ) : (
+                <a
+                  href="#reach-us"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#FFA500] hover:bg-[#FFB733] text-[#080402] py-3 text-sm font-bold shadow-md cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Get a Quote</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
               )}
             </div>
           </div>

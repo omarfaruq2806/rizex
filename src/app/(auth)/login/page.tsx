@@ -8,7 +8,7 @@ import { apiClient } from '@/lib/api-client';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { LogIn, Sparkles } from 'lucide-react';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -88,23 +88,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
-        <Card className="border-slate-200/90 bg-white p-6 sm:p-8 shadow-md">
+    <div className="min-h-screen bg-[#080402] text-white relative overflow-hidden flex items-center justify-center px-4 py-16">
+      {/* Background Ambience & Box Grid */}
+      <div className="absolute inset-0 bg-box-grid opacity-35 pointer-events-none" />
+      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-[#FFA500]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-[#FF4500]/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+        <Card className="glass-level-2 border border-white/10 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl rounded-3xl relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-36 h-36 bg-[#FFA500]/15 rounded-full blur-2xl pointer-events-none" />
+
           <CardHeader className="text-center space-y-1.5 pb-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-orange-50 text-orange-600 border border-orange-200 mx-auto">
-              <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-[#FFA500]/10 text-[#FFA500] border border-[#FFA500]/25 mx-auto">
+              <Sparkles className="w-3.5 h-3.5 text-[#FFA500]" />
               <span>ACCESS PORTAL</span>
             </div>
-            <CardTitle className="text-2xl font-extrabold text-slate-900 tracking-tight">Sign In to RizeX</CardTitle>
-            <CardDescription className="text-xs text-slate-500">
+            <CardTitle className="text-2xl font-extrabold text-white tracking-tight">Sign In to RizeX</CardTitle>
+            <CardDescription className="text-xs text-neutral-400">
               Enter your credentials to access your project dashboard
             </CardDescription>
           </CardHeader>
 
           <div className="space-y-4">
             {error && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl">
                 {error}
               </div>
             )}
@@ -114,10 +121,10 @@ export default function LoginPage() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={isGoogleLoading || isLoading}
-              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 font-semibold text-xs transition-all shadow-2xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] active:bg-white/[0.1] font-semibold text-xs transition-all shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isGoogleLoading ? (
-                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-400 border-t-transparent" />
+                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-[#FFA500]" />
               ) : (
                 <GoogleIcon />
               )}
@@ -126,9 +133,9 @@ export default function LoginPage() {
 
             {/* Divider */}
             <div className="relative flex items-center">
-              <div className="w-full border-t border-slate-200" />
+              <div className="w-full border-t border-white/10" />
 
-              <span className="absolute left-1/2 -translate-x-1/2 bg-white px-3 text-[11px] font-mono font-medium text-slate-400 uppercase whitespace-nowrap">
+              <span className="absolute left-1/2 -translate-x-1/2 bg-[#0c0603] px-3 text-[11px] font-mono font-medium text-neutral-500 uppercase whitespace-nowrap">
                 or with email
               </span>
             </div>
@@ -157,7 +164,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full mt-2 gap-2 shadow-xs"
+                className="w-full mt-2 gap-2 shadow-lg shadow-[#FFA500]/20"
                 isLoading={isLoading}
                 disabled={isGoogleLoading}
               >
@@ -166,11 +173,11 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <CardFooter className="justify-center text-xs text-slate-500 pt-4 border-t border-slate-100">
+            <CardFooter className="justify-center text-xs text-neutral-400 pt-4 border-t border-white/10">
               Don&apos;t have an account?{' '}
               <Link
                 href="/register"
-                className="text-orange-600 hover:text-orange-700 hover:underline font-semibold ml-1.5"
+                className="text-[#FFA500] hover:text-[#FFA500]/80 hover:underline font-semibold ml-1.5"
               >
                 Create an account
               </Link>

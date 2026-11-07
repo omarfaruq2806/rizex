@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
@@ -12,12 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   FileText,
   CheckCircle2,
-  AlertCircle,
-  Clock,
-  RotateCcw,
-  Sparkles,
   Send,
-  XCircle,
   Plus,
 } from 'lucide-react';
 
@@ -104,10 +99,10 @@ export default function ClientQuotesPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+        <h2 className="text-xl font-bold text-white tracking-tight">
           Requirement Briefs & Commercial Proposals
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-neutral-400">
           Track submitted requirement briefs, compare milestone terms, and approve custom agency quotes
         </p>
       </div>
@@ -115,7 +110,7 @@ export default function ClientQuotesPage() {
       {isLoading ? (
         <div className="space-y-4 animate-pulse">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-40 bg-white border border-slate-200/90 rounded-2xl" />
+            <div key={i} className="h-40 glass-level-2 border border-white/10 rounded-2xl" />
           ))}
         </div>
       ) : briefs.length > 0 ? (
@@ -123,17 +118,17 @@ export default function ClientQuotesPage() {
           {briefs.map((req) => {
             const quote = req.quote;
             return (
-              <Card key={req.id} className="border-slate-200/90 bg-white p-6 shadow-xs hover:border-orange-300 transition-all">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <Card key={req.id} className="glass-level-2 border border-white/10 p-6 rounded-2xl shadow-xl hover:border-[#FFA500]/40 transition-all">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Badge variant="neutral" className="text-[10px]">{req.service?.name || 'Service'}</Badge>
                       <Badge variant={quote ? 'primary' : 'outline'} className="text-[10px]">{req.status}</Badge>
                     </div>
-                    <CardTitle className="text-base font-bold text-slate-900 mt-1">
+                    <CardTitle className="text-base font-bold text-white mt-1">
                       {req.projectName || 'Project Specification Brief'}
                     </CardTitle>
-                    <span className="text-xs text-slate-400 font-mono block">
+                    <span className="text-xs text-neutral-400 font-mono block">
                       Submitted on {new Date(req.createdAt).toLocaleDateString()}
                     </span>
                   </div>
@@ -147,7 +142,7 @@ export default function ClientQuotesPage() {
                             size="sm"
                             disabled={isProcessing}
                             onClick={() => handleAcceptQuote(quote.id)}
-                            className="gap-1.5 text-xs shadow-xs"
+                            className="gap-1.5 text-xs shadow-lg shadow-[#FFA500]/20"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Accept & Start Project</span>
@@ -155,7 +150,7 @@ export default function ClientQuotesPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-xs"
+                            className="text-xs border-white/15 hover:border-[#FFA500]/50"
                             onClick={() => {
                               setSelectedQuote(quote);
                               setModalType('REQUEST_CHANGES');
@@ -166,7 +161,7 @@ export default function ClientQuotesPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-xs text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                            className="text-xs text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10"
                             onClick={() => handleRejectQuote(quote.id)}
                           >
                             Reject
@@ -183,51 +178,51 @@ export default function ClientQuotesPage() {
 
                 {/* Quote Breakdown if Available */}
                 {quote ? (
-                  <div className="mt-4 pt-2 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-orange-50/50 p-4 border border-orange-100 rounded-2xl">
+                  <div className="mt-4 pt-2 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-[#FFA500]/10 p-4 border border-[#FFA500]/20 rounded-2xl">
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono font-bold block">
                         Total Amount
                       </span>
-                      <span className="text-base font-extrabold font-mono text-slate-900">
+                      <span className="text-base font-extrabold font-mono text-white">
                         ৳{Number(quote.amount || 0).toLocaleString()} {quote.currency || 'BDT'}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono font-bold block">
                         Advance Required
                       </span>
-                      <span className="text-sm font-bold font-mono text-slate-700">
+                      <span className="text-sm font-bold font-mono text-neutral-200">
                         ৳{Number(quote.advanceAmount || 0).toLocaleString()} {quote.currency || 'BDT'}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono font-bold block">
                         Est. Timeline
                       </span>
-                      <span className="text-sm font-bold font-mono text-slate-700">
+                      <span className="text-sm font-bold font-mono text-neutral-200">
                         {quote.estimatedDays || 7} Days
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono font-bold block">
                         Included Revisions
                       </span>
-                      <span className="text-sm font-bold font-mono text-slate-700">
+                      <span className="text-sm font-bold font-mono text-neutral-200">
                         {quote.revisions} Revisions
                       </span>
                     </div>
 
                     {quote.notes && (
-                      <div className="col-span-2 sm:col-span-4 mt-2 pt-3 border-t border-orange-200/50 text-xs text-slate-600">
-                        <strong className="text-slate-900 font-mono font-bold">Terms & Scope Notes:</strong> {quote.notes}
+                      <div className="col-span-2 sm:col-span-4 mt-2 pt-3 border-t border-[#FFA500]/20 text-xs text-neutral-300">
+                        <strong className="text-white font-mono font-bold">Terms & Scope Notes:</strong> {quote.notes}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <p className="mt-3 text-xs text-slate-500 italic bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <p className="mt-3 text-xs text-neutral-400 italic bg-white/[0.03] p-3 rounded-xl border border-white/10">
                     Our technical lead is currently reviewing your dynamic requirements. You will receive a structured proposal here shortly.
                   </p>
                 )}
@@ -236,15 +231,15 @@ export default function ClientQuotesPage() {
           })}
         </div>
       ) : (
-        <Card className="border-slate-200/90 bg-white p-12 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+        <Card className="glass-level-2 border border-white/10 p-12 text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] text-neutral-400 flex items-center justify-center mx-auto mb-2">
             <FileText className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-800">No Requirement Briefs Submitted Yet</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <h3 className="text-sm font-semibold text-white">No Requirement Briefs Submitted Yet</h3>
+          <p className="text-xs text-neutral-400 max-w-sm mx-auto">
             Browse our catalog and submit a custom intake brief to receive an upfront structured quote.
           </p>
-          <Button variant="primary" size="sm" onClick={() => router.push('/services')} className="gap-1.5 text-xs">
+          <Button variant="primary" size="sm" onClick={() => router.push('/services')} className="gap-1.5 text-xs shadow-lg shadow-[#FFA500]/20">
             <Plus className="w-3.5 h-3.5" />
             <span>Explore Services & Submit Brief</span>
           </Button>
@@ -269,10 +264,11 @@ export default function ClientQuotesPage() {
             required
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
             <Button
               type="button"
               variant="outline"
+              className="border-white/15"
               onClick={() => setModalType(null)}
             >
               Cancel

@@ -323,13 +323,13 @@ export default function AdminOrdersPage() {
       case 'PAID':
       case 'SUCCESS':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
             PAID
           </span>
         );
       case 'PARTIALLY_PAID':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
             PARTIAL
           </span>
         );
@@ -337,7 +337,7 @@ export default function AdminOrdersPage() {
       case 'PENDING':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
             UNPAID
           </span>
         );
@@ -349,33 +349,32 @@ export default function AdminOrdersPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl font-bold text-white tracking-tight">
             Order & Milestone Management
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[#F5F7FA]/60 mt-1">
             Supervise production pipelines, track manual client payments, assign team specialists, and release deliveries.
           </p>
         </div>
 
         {/* Action Button: Create Order */}
         <Button
-          variant="primary"
           size="sm"
-          className="gap-1.5 text-xs shadow-sm shadow-orange-600/20"
+          className="gap-1.5 text-xs bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold uppercase rounded-full h-9 px-4 shadow-sm border-none"
           onClick={() => setIsCreateModalOpen(true)}
         >
-          <PlusCircle className="w-4 h-4" />
+          <PlusCircle className="w-4 h-4 text-[#080402]" />
           <span>Create New Order</span>
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+        <div className="h-64 glass-level-2 border border-white/12 rounded-2xl animate-pulse" />
       ) : orders.length > 0 ? (
-        <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-xs">
+        <div className="border border-white/12 rounded-2xl overflow-hidden glass-level-2 shadow-xl bg-white/[0.02]">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-100 font-mono uppercase tracking-wider text-[11px]">
+              <thead className="bg-white/[0.04] text-[#F5F7FA]/60 border-b border-white/[0.08] font-mono uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="p-4">Order ID</th>
                   <th className="p-4">Project Title</th>
@@ -386,28 +385,28 @@ export default function AdminOrdersPage() {
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-white/[0.06] text-[#F5F7FA]/80">
                 {orders.map((order) => {
                   const activeAssignment = order.assignments?.find((a: any) => !a.unassignedAt);
                   const total = Number(order.totalAmount || order.quote?.amount || 0);
                   const paid = Number(order.paidAmount || 0);
 
                   return (
-                    <tr key={order.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="p-4 font-mono font-bold text-slate-900">
+                    <tr key={order.id} className="hover:bg-white/[0.04] transition-colors">
+                      <td className="p-4 font-mono font-bold text-white">
                         {order.orderNumber}
                       </td>
 
                       <td className="p-4">
-                        <span className="font-semibold text-slate-900 block">{order.title}</span>
-                        <span className="text-[11px] text-slate-400 font-mono block">
+                        <span className="font-semibold text-white block">{order.title}</span>
+                        <span className="text-[11px] text-[#F5F7FA]/50 font-mono block">
                           {order.service?.name}
                         </span>
                       </td>
 
                       <td className="p-4">
-                        <span className="font-semibold text-slate-900 block">{order.client?.name}</span>
-                        <span className="text-[10px] text-slate-400 font-mono">{order.client?.email}</span>
+                        <span className="font-semibold text-white block">{order.client?.name}</span>
+                        <span className="text-[10px] text-[#F5F7FA]/40 font-mono">{order.client?.email}</span>
                       </td>
 
                       {/* Payment Status Column */}
@@ -416,7 +415,7 @@ export default function AdminOrdersPage() {
                           <div className="flex items-center gap-2">
                             {getPaymentStatusBadge(order.paymentStatus)}
                           </div>
-                          <span className="text-[11px] font-mono font-bold text-slate-900 block">
+                          <span className="text-[11px] font-mono font-bold text-white block">
                             ৳{paid.toLocaleString()} / ৳{total.toLocaleString()}
                           </span>
                         </div>
@@ -431,7 +430,7 @@ export default function AdminOrdersPage() {
                               href={order.deliveryUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[10px] text-orange-600 hover:underline flex items-center gap-1 font-mono mt-0.5"
+                              className="text-[10px] text-[#FFA500] hover:underline flex items-center gap-1 font-mono mt-0.5"
                             >
                               <ExternalLink className="w-2.5 h-2.5" /> Delivery Link
                             </a>
@@ -443,15 +442,15 @@ export default function AdminOrdersPage() {
                       <td className="p-4">
                         {activeAssignment ? (
                           <div className="space-y-0.5">
-                            <span className="font-semibold text-slate-900 block">
+                            <span className="font-semibold text-white block">
                               {activeAssignment.member?.name}
                             </span>
-                            <span className="text-[10px] text-slate-400 font-mono">
+                            <span className="text-[10px] text-[#F5F7FA]/40 font-mono">
                               {activeAssignment.member?.email}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-slate-400 text-[11px] italic">Unassigned</span>
+                          <span className="text-[#F5F7FA]/40 text-[11px] italic font-mono">Unassigned</span>
                         )}
                       </td>
 
@@ -461,34 +460,34 @@ export default function AdminOrdersPage() {
                           {/* Payment Update */}
                           <button
                             onClick={() => handleOpenPaymentModal(order)}
-                            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors"
+                            className="p-1.5 rounded-lg border border-white/15 hover:bg-white/10 text-white transition-colors cursor-pointer"
                             title="Update Payment"
                           >
-                            <CreditCard className="w-3.5 h-3.5" />
+                            <CreditCard className="w-3.5 h-3.5 text-[#FFA500]" />
                           </button>
 
                           {/* Status Change */}
                           <button
                             onClick={() => handleOpenStatusModal(order)}
-                            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors"
+                            className="p-1.5 rounded-lg border border-white/15 hover:bg-white/10 text-white transition-colors cursor-pointer"
                             title="Change Status"
                           >
-                            <Sliders className="w-3.5 h-3.5" />
+                            <Sliders className="w-3.5 h-3.5 text-[#FFA500]" />
                           </button>
 
                           {/* Assign Specialist */}
                           <button
                             onClick={() => handleOpenAssignModal(order)}
-                            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors"
+                            className="p-1.5 rounded-lg border border-white/15 hover:bg-white/10 text-white transition-colors cursor-pointer"
                             title="Assign Specialist"
                           >
-                            <UserPlus className="w-3.5 h-3.5" />
+                            <UserPlus className="w-3.5 h-3.5 text-blue-400" />
                           </button>
 
                           {/* Complete / Delivery */}
                           <button
                             onClick={() => handleOpenDeliveryModal(order)}
-                            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-emerald-700 transition-colors"
+                            className="p-1.5 rounded-lg border border-white/15 hover:bg-white/10 text-emerald-400 transition-colors cursor-pointer"
                             title="Finalize & Deliver"
                           >
                             <PackageCheck className="w-3.5 h-3.5" />
@@ -503,12 +502,12 @@ export default function AdminOrdersPage() {
           </div>
         </div>
       ) : (
-        <Card className="p-12 text-center border-slate-200/90 bg-white">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+        <Card className="p-12 text-center border-white/12">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 text-[#FFA500] flex items-center justify-center mx-auto mb-3">
             <FolderKanban className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-800">No Orders in Pipeline Yet</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-sm font-semibold text-white">No Orders in Pipeline Yet</h3>
+          <p className="text-xs text-[#F5F7FA]/60 mt-1 max-w-sm mx-auto">
             Click &ldquo;Create New Order&rdquo; above or convert an incoming lead from the Inquiries page.
           </p>
         </Card>
@@ -530,10 +529,10 @@ export default function AdminOrdersPage() {
               <button
                 type="button"
                 onClick={() => setClientMode('new')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   clientMode === 'new'
-                    ? 'bg-orange-50 text-orange-700 border-orange-300'
-                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    ? 'bg-[#FFA500]/20 text-[#FFA500] border-[#FFA500]/40'
+                    : 'glass-level-1 text-white/70 border-white/10 hover:bg-white/[0.06]'
                 }`}
               >
                 + New Client Details
@@ -541,10 +540,10 @@ export default function AdminOrdersPage() {
               <button
                 type="button"
                 onClick={() => setClientMode('existing')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   clientMode === 'existing'
-                    ? 'bg-orange-50 text-orange-700 border-orange-300'
-                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    ? 'bg-[#FFA500]/20 text-[#FFA500] border-[#FFA500]/40'
+                    : 'glass-level-1 text-white/70 border-white/10 hover:bg-white/[0.06]'
                 }`}
               >
                 Select Existing Client ({allUsers.length})
@@ -553,7 +552,7 @@ export default function AdminOrdersPage() {
           </div>
 
           {clientMode === 'new' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-white/[0.03] border border-white/10 rounded-xl">
               <Input
                 label="Client Name *"
                 placeholder="e.g. Tanvir Ahmed"
@@ -578,13 +577,13 @@ export default function AdminOrdersPage() {
             </div>
           ) : (
             <div>
-              <label className="text-xs font-medium text-slate-700 block mb-1">
+              <label className="text-xs font-semibold text-white/90 block mb-1 font-mono">
                 Choose Existing Client *
               </label>
               <select
                 value={selectedClientId}
                 onChange={(e) => setSelectedClientId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 text-xs bg-[#140A03] text-white focus:outline-none focus:border-[#FFA500]"
                 required={clientMode === 'existing'}
               >
                 <option value="">-- Select Client --</option>
@@ -600,7 +599,7 @@ export default function AdminOrdersPage() {
           {/* Service & Title */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium text-slate-700 block mb-1">Service *</label>
+              <label className="text-xs font-semibold text-white/90 block mb-1 font-mono">Service *</label>
               <select
                 value={selectedServiceId}
                 onChange={(e) => {
@@ -611,7 +610,7 @@ export default function AdminOrdersPage() {
                     if (!createTitle) setCreateTitle(`${found.name} Order`);
                   }
                 }}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 text-xs bg-[#140A03] text-white focus:outline-none focus:border-[#FFA500]"
                 required
               >
                 <option value="">-- Select Service --</option>
@@ -661,11 +660,11 @@ export default function AdminOrdersPage() {
 
           {/* Status */}
           <div>
-            <label className="text-xs font-medium text-slate-700 block mb-1">Initial Status</label>
+            <label className="text-xs font-semibold text-white/90 block mb-1 font-mono">Initial Status</label>
             <select
               value={createStatus}
               onChange={(e) => setCreateStatus(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3.5 py-2 rounded-xl border border-white/15 text-xs bg-[#140A03] text-white focus:outline-none focus:border-[#FFA500]"
             >
               <option value="DRAFT">DRAFT (Proposal / Pending Confirmation)</option>
               <option value="CONFIRMED">CONFIRMED (Client Agreed)</option>
@@ -681,21 +680,21 @@ export default function AdminOrdersPage() {
             rows={2}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsCreateModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
               disabled={isCreatingOrder}
-              className="gap-1.5"
+              className="gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 text-[#080402]" />
               <span>{isCreatingOrder ? 'Creating...' : 'Create Order'}</span>
             </Button>
           </div>
@@ -711,16 +710,16 @@ export default function AdminOrdersPage() {
         maxWidth="md"
       >
         <form onSubmit={handleUpdatePayment} className="space-y-4 pt-2">
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+          <div className="p-3 bg-white/[0.04] border border-white/10 rounded-xl space-y-1 text-xs">
             <div className="flex justify-between">
-              <span className="text-slate-500">Total Agreed Price:</span>
-              <span className="font-bold text-slate-900 font-mono">
+              <span className="text-[#F5F7FA]/60">Total Agreed Price:</span>
+              <span className="font-bold text-white font-mono">
                 ৳{Number(selectedOrder?.totalAmount || 0).toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Currently Recorded Paid:</span>
-              <span className="font-bold text-emerald-700 font-mono">
+              <span className="text-[#F5F7FA]/60">Currently Recorded Paid:</span>
+              <span className="font-bold text-emerald-400 font-mono">
                 ৳{Number(selectedOrder?.paidAmount || 0).toLocaleString()}
               </span>
             </div>
@@ -737,11 +736,11 @@ export default function AdminOrdersPage() {
           />
 
           <div>
-            <label className="text-xs font-medium text-slate-700 block mb-1">Payment Method</label>
+            <label className="text-xs font-semibold text-white/90 block mb-1 font-mono">Payment Method</label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 text-xs bg-[#140A03] text-white focus:outline-none focus:border-[#FFA500]"
             >
               <option value="MANUAL">Manual Cash / Other</option>
               <option value="BKASH">bKash</option>
@@ -758,21 +757,21 @@ export default function AdminOrdersPage() {
             onChange={(e) => setTransactionId(e.target.value)}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsPaymentModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
               disabled={isUpdatingPayment}
-              className="gap-1.5"
+              className="gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 text-[#080402]" />
               <span>{isUpdatingPayment ? 'Saving...' : 'Update Payment'}</span>
             </Button>
           </div>
@@ -801,8 +800,8 @@ export default function AdminOrdersPage() {
                 key={s.value}
                 className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                   newStatus === s.value
-                    ? 'border-orange-500 bg-orange-50/50'
-                    : 'border-slate-200 hover:bg-slate-50'
+                    ? 'border-[#FFA500] bg-[#FFA500]/15'
+                    : 'border-white/10 hover:bg-white/[0.04]'
                 }`}
               >
                 <input
@@ -811,29 +810,29 @@ export default function AdminOrdersPage() {
                   value={s.value}
                   checked={newStatus === s.value}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="mt-0.5 accent-orange-600"
+                  className="mt-0.5 accent-[#FFA500]"
                 />
                 <div>
-                  <span className="text-xs font-bold text-slate-900 block">{s.label}</span>
-                  <span className="text-[11px] text-slate-500">{s.desc}</span>
+                  <span className="text-xs font-bold text-white block">{s.label}</span>
+                  <span className="text-[11px] text-[#F5F7FA]/60">{s.desc}</span>
                 </div>
               </label>
             ))}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsStatusModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
               disabled={isUpdatingStatus}
-              className="gap-1.5"
+              className="gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
             >
               <span>{isUpdatingStatus ? 'Updating...' : 'Save Status'}</span>
             </Button>
@@ -857,25 +856,25 @@ export default function AdminOrdersPage() {
             onChange={(e) => setDeliveryUrl(e.target.value)}
           />
 
-          <p className="text-xs text-slate-500">
-            Clicking Confirm will mark the order status as <span className="font-bold text-emerald-700">COMPLETED</span> and attach the final delivery link.
+          <p className="text-xs text-[#F5F7FA]/60">
+            Clicking Confirm will mark the order status as <span className="font-bold text-emerald-400">COMPLETED</span> and attach the final delivery link.
           </p>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsDeliveryModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
               disabled={isUpdatingDelivery}
-              className="gap-1.5"
+              className="gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
             >
-              <PackageCheck className="w-4 h-4" />
+              <PackageCheck className="w-4 h-4 text-[#080402]" />
               <span>{isUpdatingDelivery ? 'Completing...' : 'Confirm Delivery & Complete'}</span>
             </Button>
           </div>
@@ -892,13 +891,13 @@ export default function AdminOrdersPage() {
       >
         <form onSubmit={handleAssignWorker} className="space-y-4 pt-2">
           <div>
-            <label className="text-xs font-medium text-slate-700 block mb-1">
+            <label className="text-xs font-semibold text-white/90 block mb-1 font-mono">
               Select Team Specialist
             </label>
             <select
               value={selectedMemberId}
               onChange={(e) => setSelectedMemberId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 text-xs bg-[#140A03] text-white focus:outline-none focus:border-[#FFA500]"
               required
             >
               <option value="">-- Choose specialist --</option>
@@ -910,12 +909,13 @@ export default function AdminOrdersPage() {
             </select>
           </div>
 
-          <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+          <div className="flex justify-between items-center pt-4 border-t border-white/[0.08]">
             {selectedOrder?.assignments?.some((a: any) => !a.unassignedAt) ? (
               <Button
                 type="button"
                 variant="danger"
                 size="sm"
+                className="rounded-full px-4 text-xs font-semibold"
                 onClick={() => handleUnassignWorker(selectedOrder.id)}
               >
                 Unassign Current Worker
@@ -927,15 +927,16 @@ export default function AdminOrdersPage() {
                 type="button"
                 variant="outline"
                 size="sm"
+                className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-9 px-4 text-xs font-semibold"
                 onClick={() => setIsAssignModalOpen(false)}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                variant="primary"
                 size="sm"
                 disabled={isAssigning}
+                className="bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-9 px-5 shadow-sm border-none"
               >
                 {isAssigning ? 'Assigning...' : 'Assign Specialist'}
               </Button>

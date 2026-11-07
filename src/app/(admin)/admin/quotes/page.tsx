@@ -12,20 +12,12 @@ import { Modal } from '@/components/ui/modal';
 import {
   FileText,
   Send,
-  Sparkles,
-  DollarSign,
-  Clock,
-  RotateCcw,
   CheckCircle2,
   FileQuestion,
-  Layers,
-  ArrowRight,
   MessageSquare,
-  User,
   Phone,
   Mail,
   PlusCircle,
-  ExternalLink,
 } from 'lucide-react';
 
 export default function AdminQuotesPage() {
@@ -63,31 +55,17 @@ export default function AdminQuotesPage() {
 
   const briefs: any[] = Array.isArray(briefsData) ? briefsData : [];
 
-  const handleOpenQuoteModal = (brief: any) => {
-    setSelectedBrief(brief);
-    if (brief.quote) {
-      setAmount(String(brief.quote.amount || ''));
-      setAdvanceAmount(String(brief.quote.advanceAmount || ''));
-      setEstimatedDays(String(brief.quote.estimatedDays || '7'));
-      setRevisions(String(brief.quote.revisions || '2'));
-      setNotes(brief.quote.notes || '');
-    } else {
-      setAmount(brief.budget ? String(brief.budget).replace(/[^0-9]/g, '') : '');
-      setAdvanceAmount('');
-      setEstimatedDays('7');
-      setRevisions('2');
-      setNotes(brief.description || '');
-    }
-    setIsQuoteModalOpen(true);
-  };
-
   const handleOpenConvertModal = (brief: any) => {
     setSelectedBrief(brief);
-    setOrderTitle(brief.projectName || `${brief.service?.name} Order`);
-    setOrderAmount(brief.budget ? String(brief.budget).replace(/[^0-9]/g, '') : '20000');
+    setOrderTitle(brief.projectName || `${brief.service?.name || 'Project'} Engagement`);
+    setOrderAmount(brief.budget ? String(brief.budget).replace(/[^0-9]/g, '') : '25000');
     setOrderPaidAmount('0');
-    setOrderDeliveryDate('');
     setOrderNotes(brief.description || '');
+
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 10);
+    setOrderDeliveryDate(nextWeek.toISOString().split('T')[0]);
+
     setIsConvertModalOpen(true);
   };
 
@@ -97,22 +75,18 @@ export default function AdminQuotesPage() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post('/quotes', {
-        requestId: selectedBrief.id,
+      await apiClient.post(`/quotes/request/${selectedBrief.id}`, {
         amount: Number(amount),
-        advanceAmount: Number(advanceAmount || 0),
-        currency: 'BDT',
+        advanceAmount: Number(advanceAmount),
         estimatedDays: Number(estimatedDays),
         revisions: Number(revisions),
-        notes: notes.trim() || undefined,
-        sendImmediately: true,
+        notes,
       });
 
       queryClient.invalidateQueries({ queryKey: ['admin-quote-requests'] });
-      alert('Custom quote generated and recorded!');
       setIsQuoteModalOpen(false);
     } catch (err: any) {
-      alert(err.message || 'Failed to create quote.');
+      alert(err.message || 'Failed to record quote.');
     } finally {
       setIsSubmitting(false);
     }
@@ -124,29 +98,22 @@ export default function AdminQuotesPage() {
 
     setIsConverting(true);
     try {
-      const clientEmail = selectedBrief.client?.email || selectedBrief.guestEmail;
-      const clientName = selectedBrief.client?.name || selectedBrief.guestName || 'Client';
-      const clientPhone = selectedBrief.guestPhone;
-
-      await apiClient.post('/orders', {
-        serviceId: selectedBrief.serviceId,
-        inquiryId: selectedBrief.id,
-        clientId: selectedBrief.clientId || undefined,
-        clientEmail: !selectedBrief.clientId ? clientEmail : undefined,
-        clientName: !selectedBrief.clientId ? clientName : undefined,
-        clientPhone: !selectedBrief.clientId ? clientPhone : undefined,
-        title: orderTitle.trim(),
+      const payload = {
+        quoteRequestId: selectedBrief.id,
+        title: orderTitle,
         totalAmount: Number(orderAmount),
-        paidAmount: Number(orderPaidAmount || 0),
+        paidAmount: Number(orderPaidAmount),
         expectedDelivery: orderDeliveryDate ? new Date(orderDeliveryDate).toISOString() : undefined,
-        notes: orderNotes.trim() || undefined,
-        status: 'CONFIRMED',
-      });
+        notes: orderNotes,
+      };
+
+      await apiClient.post('/orders/convert-lead', payload);
 
       queryClient.invalidateQueries({ queryKey: ['admin-quote-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-all-orders'] });
-      alert(`Official Order successfully created! Inquiry status updated to avoid duplicate orders.`);
+      queryClient.invalidateQueries({ queryKey: ['admin-recent-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       setIsConvertModalOpen(false);
+      alert('Official order generated successfully! Client can track and work has begun.');
     } catch (err: any) {
       alert(err.message || 'Failed to create official order.');
     } finally {
@@ -159,8 +126,8 @@ export default function AdminQuotesPage() {
       case 'ORDER_CREATED':
       case 'CONVERTED':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <CheckCircle2 className="w-3 h-3 text-emerald-600" /> ORDER CREATED
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> ORDER CREATED
           </span>
         );
       case 'SUBMITTED':
@@ -181,21 +148,21 @@ export default function AdminQuotesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+        <h2 className="text-xl font-bold text-white tracking-tight">
           Website Inquiries & Lead Management
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-[#F5F7FA]/60 mt-1">
           Review incoming client inquiries submitted with or without login. Direct WhatsApp chat and convert to official orders.
         </p>
       </div>
 
       {isLoading ? (
-        <div className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+        <div className="h-64 glass-level-2 border border-white/12 rounded-2xl animate-pulse" />
       ) : briefs.length > 0 ? (
-        <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-xs">
+        <div className="border border-white/12 rounded-2xl overflow-hidden glass-level-2 shadow-xl bg-white/[0.02]">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-100 font-mono uppercase tracking-wider text-[11px]">
+              <thead className="bg-white/[0.04] text-[#F5F7FA]/60 border-b border-white/[0.08] font-mono uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="p-4">Client Contact</th>
                   <th className="p-4">Service & Budget</th>
@@ -205,7 +172,7 @@ export default function AdminQuotesPage() {
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-white/[0.06] text-[#F5F7FA]/80">
                 {briefs.map((b) => {
                   const isGuest = b.isGuest || !b.clientId;
                   const clientName = b.client?.name || b.guestName || 'Website Lead';
@@ -221,44 +188,44 @@ export default function AdminQuotesPage() {
                   const whatsappUrl = cleanPhone ? `https://wa.me/${waNumber}?text=${waMessage}` : null;
 
                   return (
-                    <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={b.id} className="hover:bg-white/[0.04] transition-colors">
                       <td className="p-4">
-                        <span className="font-semibold text-slate-900 block text-xs">{clientName}</span>
-                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono mt-0.5">
-                          <Mail className="w-3 h-3 text-slate-400" />
+                        <span className="font-semibold text-white block text-xs">{clientName}</span>
+                        <div className="flex items-center gap-1.5 text-[11px] text-[#F5F7FA]/50 font-mono mt-0.5">
+                          <Mail className="w-3 h-3 text-[#FFA500]" />
                           <span>{clientEmail}</span>
                         </div>
                         {clientPhone && (
-                          <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-mono mt-0.5">
-                            <Phone className="w-3 h-3 text-emerald-600" />
+                          <div className="flex items-center gap-1.5 text-[11px] text-[#F5F7FA]/75 font-mono mt-0.5">
+                            <Phone className="w-3 h-3 text-emerald-400" />
                             <span>{clientPhone}</span>
                           </div>
                         )}
                       </td>
 
                       <td className="p-4">
-                        <span className="font-semibold text-slate-900 block">{b.service?.name}</span>
-                        <span className="text-[11px] font-mono text-orange-700 font-semibold mt-0.5 block">
+                        <span className="font-semibold text-white block">{b.service?.name}</span>
+                        <span className="text-[11px] font-mono text-[#FFA500] font-semibold mt-0.5 block">
                           Budget: {b.budget || 'Open / Discussion'}
                         </span>
                       </td>
 
                       <td className="p-4 max-w-xs">
-                        <span className="font-medium text-slate-900 block truncate">
+                        <span className="font-medium text-white block truncate">
                           {b.projectName || 'Project Inquiry'}
                         </span>
-                        <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">
+                        <p className="text-[11px] text-[#F5F7FA]/60 line-clamp-2 mt-0.5">
                           {b.description || 'No description provided.'}
                         </p>
                       </td>
 
                       <td className="p-4">
                         {isGuest ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#FFA500]/15 text-[#FFA500] border border-[#FFA500]/30 font-mono">
                             WITHOUT LOGIN (GUEST)
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 font-mono">
                             REGISTERED CLIENT
                           </span>
                         )}
@@ -276,7 +243,7 @@ export default function AdminQuotesPage() {
                               href={whatsappUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs border border-emerald-200 transition-colors"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-semibold text-xs border border-emerald-500/30 transition-colors"
                               title="Chat on WhatsApp"
                             >
                               <MessageSquare className="w-3.5 h-3.5" />
@@ -288,20 +255,19 @@ export default function AdminQuotesPage() {
                           {b.status === 'ORDER_CREATED' || b.status === 'CONVERTED' ? (
                             <button
                               disabled
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-400 font-semibold text-xs border border-slate-200 cursor-not-allowed opacity-75"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.04] text-white/40 font-semibold text-xs border border-white/10 cursor-not-allowed opacity-60"
                               title="Order already created for this inquiry"
                             >
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                               <span>Order Created</span>
                             </button>
                           ) : (
                             <Button
-                              variant="primary"
                               size="sm"
-                              className="text-xs gap-1"
+                              className="text-xs gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold uppercase rounded-full h-8 px-3.5 shadow-sm border-none"
                               onClick={() => handleOpenConvertModal(b)}
                             >
-                              <PlusCircle className="w-3.5 h-3.5" />
+                              <PlusCircle className="w-3.5 h-3.5 text-[#080402]" />
                               <span>Create Order</span>
                             </Button>
                           )}
@@ -315,12 +281,12 @@ export default function AdminQuotesPage() {
           </div>
         </div>
       ) : (
-        <Card className="p-12 text-center border-slate-200/90 bg-white">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+        <Card className="p-12 text-center border-white/12">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 text-[#FFA500] flex items-center justify-center mx-auto mb-3">
             <FileQuestion className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-800">No Inquiries Received Yet</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-sm font-semibold text-white">No Inquiries Received Yet</h3>
+          <p className="text-xs text-[#F5F7FA]/60 mt-1 max-w-sm mx-auto">
             When visitors submit quote requests from service cards without login, their lead information will appear here immediately.
           </p>
         </Card>
@@ -335,15 +301,15 @@ export default function AdminQuotesPage() {
         maxWidth="lg"
       >
         <form onSubmit={handleConvertToOrder} className="space-y-4 pt-2">
-          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
-            <span className="font-mono font-bold text-slate-700 block">Lead Details:</span>
-            <div className="text-slate-600">
-              <span className="font-semibold text-slate-900">{selectedBrief?.client?.name || selectedBrief?.guestName}</span>
+          <div className="p-3.5 bg-white/[0.04] border border-white/10 rounded-xl space-y-1 text-xs">
+            <span className="font-mono font-bold text-[#FFA500] block">Lead Details:</span>
+            <div className="text-white/80">
+              <span className="font-semibold text-white">{selectedBrief?.client?.name || selectedBrief?.guestName}</span>
               {' • '}{selectedBrief?.client?.email || selectedBrief?.guestEmail}
               {selectedBrief?.guestPhone ? ` • ${selectedBrief.guestPhone}` : ''}
             </div>
             {selectedBrief?.description && (
-              <p className="text-slate-500 italic mt-1">&ldquo;{selectedBrief.description}&rdquo;</p>
+              <p className="text-[#F5F7FA]/60 italic mt-1">&ldquo;{selectedBrief.description}&rdquo;</p>
             )}
           </div>
 
@@ -389,21 +355,21 @@ export default function AdminQuotesPage() {
             rows={3}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsConvertModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
               disabled={isConverting}
-              className="gap-1.5"
+              className="gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 text-[#080402]" />
               <span>{isConverting ? 'Creating Order...' : 'Confirm & Create Order'}</span>
             </Button>
           </div>
@@ -465,21 +431,21 @@ export default function AdminQuotesPage() {
             rows={3}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <Button
               type="button"
               variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
               onClick={() => setIsQuoteModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              variant="primary"
               disabled={isSubmitting}
-              className="gap-1.5"
+              className="gap-1.5 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4 text-[#080402]" />
               <span>{isSubmitting ? 'Recording...' : 'Record Quote'}</span>
             </Button>
           </div>

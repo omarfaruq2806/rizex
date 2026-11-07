@@ -16,14 +16,7 @@ import {
   Sparkles,
   Edit2,
   Trash2,
-  CheckCircle2,
-  XCircle,
   Sliders,
-  Layers,
-  HelpCircle,
-  Clock,
-  RotateCcw,
-  Check,
 } from 'lucide-react';
 
 interface Category {
@@ -51,18 +44,10 @@ interface Service {
   name: string;
   slug: string;
   description?: string | null;
-  shortDescription?: string;
-  fullDescription?: string;
   categoryId: string;
   startingPrice?: number | string | null;
-  basePrice?: number;
-  showPrice?: boolean;
   currency?: string;
-  estimatedDeliveryDays?: number;
-  maxRevisions?: number;
   image?: string | null;
-  icon?: string | null;
-  coverImage?: string | null;
   isFeatured?: boolean;
   isActive: boolean;
   category?: Category;
@@ -113,9 +98,9 @@ export default function AdminServicesPage() {
   const [isActive, setIsActive] = useState(true);
   const [serviceFormError, setServiceFormError] = useState<string | null>(null);
 
-  // Requirement Fields Management State
-  const [selectedServiceForFields, setSelectedServiceForFields] = useState<Service | null>(null);
+  // Requirements Modal State
   const [isFieldsModalOpen, setIsFieldsModalOpen] = useState(false);
+  const [selectedServiceForFields, setSelectedServiceForFields] = useState<Service | null>(null);
   const [editingField, setEditingField] = useState<RequirementField | null>(null);
 
   // Field Form State
@@ -129,20 +114,16 @@ export default function AdminServicesPage() {
   const [fieldSortOrder, setFieldSortOrder] = useState('0');
   const [fieldFormError, setFieldFormError] = useState<string | null>(null);
 
-  // Fetch Categories
+  // Fetch Categories for Dropdown
   const { data: categoriesData } = useQuery({
-    queryKey: ['admin-categories-dropdown'],
+    queryKey: ['admin-categories'],
     queryFn: async () => {
-      const res: any = await apiClient.get('/categories');
-      return res?.data || res || [];
+      const res = await apiClient.get<any>('/categories');
+      return res.data || res || [];
     },
   });
 
-  const categories: Category[] = Array.isArray(categoriesData)
-    ? categoriesData
-    : Array.isArray(categoriesData?.data)
-      ? categoriesData.data
-      : [];
+  const categories: Category[] = Array.isArray(categoriesData) ? categoriesData : [];
 
   // Fetch Services
   const { data: servicesData, isLoading: isServicesLoading } = useQuery({
@@ -248,15 +229,14 @@ export default function AdminServicesPage() {
 
       const payload = {
         categoryId: targetCategoryId,
-        name: serviceName.trim(),
-        slug: serviceSlug.trim() || undefined,
-        description: fullDesc.trim() || shortDesc.trim() || undefined,
-        startingPrice: Number(basePrice) || 0,
+        name: serviceName,
+        slug: serviceSlug,
+        description: fullDesc || shortDesc,
+        image: coverImage || icon || undefined,
         showPrice: true,
-        currency: currency || 'BDT',
-        image: coverImage.trim() || icon.trim() || undefined,
+        startingPrice: Number(basePrice) || 0,
+        currency,
         isActive,
-        sortOrder: 0,
       };
 
       if (editingService) {
@@ -270,17 +250,16 @@ export default function AdminServicesPage() {
       setIsServiceModalOpen(false);
     },
     onError: (err: any) => {
-      const msg = Array.isArray(err.message)
-        ? err.message.join(', ')
-        : err.message || (err.errors ? JSON.stringify(err.errors) : 'Failed to save service. Please check inputs.');
-      setServiceFormError(msg);
+      setServiceFormError(err.message || 'Failed to save service.');
     },
   });
 
-  // Toggle Active Status Mutation
+  // Toggle Active Status
   const toggleStatusMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiClient.patch(`/services/${id}/toggle-status`);
+      const s = services.find((item) => item.id === id);
+      if (!s) return;
+      return apiClient.patch(`/services/${id}`, { isActive: !s.isActive });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-services'] });
@@ -419,28 +398,31 @@ export default function AdminServicesPage() {
       {/* Header & Main Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Services & Dynamic Briefs</h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <h2 className="text-xl font-bold text-white tracking-tight">Services & Offerings</h2>
+          <p className="text-xs text-[#F5F7FA]/60 mt-1">
             Configure agency offerings, pricing baselines, delivery estimates & interactive requirement forms
           </p>
         </div>
 
-        <Button variant="primary" onClick={handleOpenCreateService} className="gap-2">
-          <Plus className="w-4 h-4" />
+        <Button
+          onClick={handleOpenCreateService}
+          className="gap-2 bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-5 shadow-sm hover:shadow-[#FFA500]/30 cursor-pointer border-none"
+        >
+          <Plus className="w-4 h-4 text-[#080402]" />
           <span>Create New Service</span>
         </Button>
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center gap-4 glass-level-2 p-3.5 rounded-2xl border border-white/12 shadow-xl bg-white/[0.02]">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input
             type="text"
             placeholder="Search services by title or slug..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-orange-500 focus:bg-white transition-all"
+            className="w-full bg-white/[0.04] text-white placeholder-white/35 border border-white/12 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#FFA500] focus:ring-1 focus:ring-[#FFA500] transition-colors"
           />
         </div>
 
@@ -448,7 +430,7 @@ export default function AdminServicesPage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-700 focus:outline-none focus:border-orange-500 focus:bg-white transition-all cursor-pointer font-medium"
+            className="w-full bg-[#140A03] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#FFA500] transition-all cursor-pointer font-medium"
           >
             <option value="ALL">All Categories ({categories.length})</option>
             {categories.map((c) => (
@@ -464,19 +446,23 @@ export default function AdminServicesPage() {
       {isServicesLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 bg-white border border-slate-200/90 rounded-2xl animate-pulse" />
+            <div key={i} className="h-64 glass-level-2 border border-white/10 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : filteredServices.length === 0 ? (
-        <Card className="p-12 text-center border-slate-200/90 bg-white">
-          <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mx-auto mb-3">
+        <Card className="p-12 text-center border-white/12">
+          <div className="w-12 h-12 rounded-2xl bg-[#FFA500]/15 text-[#FFA500] border border-[#FFA500]/30 flex items-center justify-center mx-auto mb-3">
             <Package className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-800">No Services Found</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-sm font-semibold text-white">No Services Found</h3>
+          <p className="text-xs text-[#F5F7FA]/60 mt-1 max-w-sm mx-auto">
             {searchQuery ? 'Try changing your search keywords or category filter.' : 'Create your first service offering to start accepting client requirement briefs.'}
           </p>
-          <Button variant="primary" size="sm" className="mt-4" onClick={handleOpenCreateService}>
+          <Button
+            size="sm"
+            className="mt-4 bg-[#FFA500] text-[#080402] font-bold rounded-full text-xs"
+            onClick={handleOpenCreateService}
+          >
             Create Service
           </Button>
         </Card>
@@ -485,11 +471,11 @@ export default function AdminServicesPage() {
           {filteredServices.map((service) => (
             <Card
               key={service.id}
-              className="border-slate-200/90 bg-white flex flex-col justify-between hover:border-orange-300 hover:shadow-md transition-all group"
+              className="flex flex-col justify-between hover:border-[#FFA500]/50 transition-all group"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 font-semibold">
+                  <span className="font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-lg bg-white/[0.04] text-[#F5F7FA]/75 border border-white/10 font-semibold">
                     {service.category?.name || 'Category'}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -504,26 +490,26 @@ export default function AdminServicesPage() {
                   </div>
                 </div>
 
-                <CardTitle className="text-base font-bold text-slate-900 mt-2 group-hover:text-orange-600 transition-colors">
+                <CardTitle className="text-base font-bold text-white mt-2 group-hover:text-[#FFA500] transition-colors">
                   {service.name}
                 </CardTitle>
-                <span className="font-mono text-xs text-slate-400 block">/services/{service.slug}</span>
+                <span className="font-mono text-xs text-[#F5F7FA]/40 block">/services/{service.slug}</span>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-xs text-slate-600 line-clamp-2 min-h-[32px]">
+                <p className="text-xs text-[#F5F7FA]/70 line-clamp-2 min-h-[32px]">
                   {service.description || 'No description provided.'}
                 </p>
 
                 {/* Specs Grid */}
-                <div className="grid grid-cols-2 gap-2 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-100 font-mono text-xs">
+                <div className="grid grid-cols-2 gap-2 py-2.5 px-3 rounded-xl bg-white/[0.03] border border-white/10 font-mono text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-medium">Starting Price</span>
-                    <span className="font-bold text-slate-900">৳{Number(service.startingPrice || 0).toLocaleString()}</span>
+                    <span className="text-[#F5F7FA]/50 block text-[10px] uppercase font-medium">Starting Price</span>
+                    <span className="font-bold text-white">৳{Number(service.startingPrice || 0).toLocaleString()}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-medium">Brief Questions</span>
-                    <span className="font-bold text-slate-900">
+                    <span className="text-[#F5F7FA]/50 block text-[10px] uppercase font-medium">Brief Questions</span>
+                    <span className="font-bold text-white">
                       {service._count?.requirementFields ?? service.requirementFields?.length ?? 0} Fields
                     </span>
                   </div>
@@ -532,12 +518,11 @@ export default function AdminServicesPage() {
                 {/* Action Buttons */}
                 <div className="space-y-2 pt-1">
                   <Button
-                    variant="primary"
                     size="sm"
-                    className="w-full text-xs gap-1.5"
+                    className="w-full text-xs gap-1.5 glass-level-1 border border-white/15 text-white hover:bg-white/[0.08] hover:border-[#FFA500]/50 rounded-xl h-9"
                     onClick={() => handleOpenFieldsManager(service)}
                   >
-                    <Sliders className="w-3.5 h-3.5" />
+                    <Sliders className="w-3.5 h-3.5 text-[#FFA500]" />
                     <span>Dynamic Brief Builder ({service._count?.requirementFields ?? service.requirementFields?.length ?? 0})</span>
                   </Button>
 
@@ -545,16 +530,16 @@ export default function AdminServicesPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 text-xs gap-1"
+                      className="flex-1 text-xs gap-1 glass-level-1 border border-white/15 text-white hover:bg-white/[0.08] rounded-xl h-8"
                       onClick={() => handleOpenEditService(service)}
                     >
-                      <Edit2 className="w-3 h-3 text-slate-500" />
+                      <Edit2 className="w-3 h-3 text-[#FFA500]" />
                       <span>Edit</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs"
+                      className="text-xs glass-level-1 border border-white/15 text-white hover:bg-white/[0.08] rounded-xl h-8"
                       onClick={() => toggleStatusMutation.mutate(service.id)}
                     >
                       {service.isActive ? 'Disable' : 'Enable'}
@@ -562,7 +547,7 @@ export default function AdminServicesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 text-xs px-2"
+                      className="text-white/40 hover:text-rose-400 hover:bg-white/[0.06] text-xs px-2 rounded-xl h-8"
                       onClick={() => handleDeleteService(service.id, service.name)}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -591,18 +576,18 @@ export default function AdminServicesPage() {
           className="space-y-4 max-h-[75vh] overflow-y-auto pr-1"
         >
           {serviceFormError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
+            <div className="p-3 bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs rounded-xl">
               {serviceFormError}
             </div>
           )}
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700 block">Category *</label>
+            <label className="text-xs font-semibold text-white/90 block font-mono">Category *</label>
             <select
               value={categoryId || (categories[0]?.id || '')}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-orange-500 focus:bg-white transition-all font-medium"
+              className="w-full bg-[#120904] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#FFA500] transition-all font-medium"
             >
               {categories.length === 0 ? (
                 <option value="" disabled>
@@ -682,7 +667,7 @@ export default function AdminServicesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Lucide Icon (Optional)"
-              placeholder="e.g. Code, Globe, Palette"
+              placeholder="e.g. Code2, Globe, Palette"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
             />
@@ -694,33 +679,42 @@ export default function AdminServicesPage() {
             />
           </div>
 
-          <div className="flex items-center gap-6 p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+          <div className="flex items-center gap-6 p-3 rounded-xl bg-white/[0.03] border border-white/10">
+            <label className="flex items-center gap-2 text-xs font-medium text-white/90 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                className="h-4 w-4 rounded border-white/30 text-[#FFA500] focus:ring-[#FFA500]"
               />
               Active (Visible publicly)
             </label>
 
-            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs font-medium text-white/90 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                className="h-4 w-4 rounded border-white/30 text-[#FFA500] focus:ring-[#FFA500]"
               />
               Featured on Homepage
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={() => setIsServiceModalOpen(false)}>
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
+            <Button
+              type="button"
+              variant="outline"
+              className="glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] rounded-full h-10 px-5 text-xs font-semibold"
+              onClick={() => setIsServiceModalOpen(false)}
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="primary" isLoading={saveServiceMutation.isPending}>
+            <Button
+              type="submit"
+              className="bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider rounded-full h-10 px-6 shadow-sm border-none"
+              isLoading={saveServiceMutation.isPending}
+            >
               {editingService ? 'Update Service' : 'Create Service'}
             </Button>
           </div>
@@ -737,8 +731,8 @@ export default function AdminServicesPage() {
       >
         <div className="space-y-6 max-h-[80vh] overflow-y-auto pr-1">
           {/* Information Banner */}
-          <div className="p-3.5 bg-orange-50/70 border border-orange-200/80 rounded-xl text-xs text-orange-800 flex items-start gap-2.5">
-            <Sparkles className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+          <div className="p-3.5 bg-[#FFA500]/10 border border-[#FFA500]/30 rounded-xl text-xs text-[#FFA500] flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-[#FFA500] shrink-0 mt-0.5" />
             <div>
               When clients click <strong>&quot;Submit Requirement Brief&quot;</strong> for this service,
               they will fill out the exact fields configured below.
@@ -746,16 +740,16 @@ export default function AdminServicesPage() {
           </div>
 
           {/* Form to Add / Edit a Field */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
-            <h4 className="text-sm font-bold text-slate-900 flex items-center justify-between">
+          <div className="p-4 bg-white/[0.03] border border-white/10 rounded-2xl space-y-4">
+            <h4 className="text-sm font-bold text-white flex items-center justify-between">
               <span>{editingField ? 'Edit Question / Field' : '+ Add New Question / Field'}</span>
               {editingField && (
-                <span className="text-xs font-normal text-slate-500 font-mono">Editing #{editingField.name}</span>
+                <span className="text-xs font-normal text-[#F5F7FA]/50 font-mono">Editing #{editingField.name}</span>
               )}
             </h4>
 
             {fieldFormError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
+              <div className="p-3 bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs rounded-xl">
                 {fieldFormError}
               </div>
             )}
@@ -780,11 +774,11 @@ export default function AdminServicesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-700 block">Input Type *</label>
+                <label className="text-xs font-semibold text-white/90 block font-mono">Input Type *</label>
                 <select
                   value={fieldType}
                   onChange={(e) => setFieldType(e.target.value as any)}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-orange-500 transition-all font-medium"
+                  className="w-full bg-[#140A03] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#FFA500] transition-all font-medium"
                 >
                   {FIELD_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -829,12 +823,12 @@ export default function AdminServicesPage() {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs font-medium text-white/90 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={fieldIsRequired}
                   onChange={(e) => setFieldIsRequired(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                  className="h-4 w-4 rounded border-white/30 text-[#FFA500] focus:ring-[#FFA500]"
                 />
                 Mandatory / Required Field
               </label>
@@ -845,6 +839,7 @@ export default function AdminServicesPage() {
                     type="button"
                     variant="ghost"
                     size="sm"
+                    className="text-xs text-white/60 hover:text-white"
                     onClick={resetFieldForm}
                   >
                     Cancel Edit
@@ -852,8 +847,8 @@ export default function AdminServicesPage() {
                 )}
                 <Button
                   type="button"
-                  variant="primary"
                   size="sm"
+                  className="bg-[#FFA500] text-[#080402] font-bold text-xs rounded-full px-4 h-8"
                   onClick={() => saveFieldMutation.mutate()}
                   isLoading={saveFieldMutation.isPending}
                 >
@@ -865,13 +860,13 @@ export default function AdminServicesPage() {
 
           {/* Configured Fields List */}
           <div className="space-y-3">
-            <h4 className="text-xs font-mono uppercase tracking-wider text-slate-500 font-semibold">
+            <h4 className="text-xs font-mono uppercase tracking-wider text-[#F5F7FA]/60 font-semibold">
               Configured Requirement Fields ({fields.length})
             </h4>
 
             {fields.length === 0 ? (
-              <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
-                <p className="text-xs text-slate-500">
+              <div className="p-6 bg-white/[0.02] border border-white/10 rounded-xl text-center">
+                <p className="text-xs text-[#F5F7FA]/50">
                   No requirement fields configured yet. Add your first intake question above.
                 </p>
               </div>
@@ -880,16 +875,16 @@ export default function AdminServicesPage() {
                 {fields.map((f, idx) => (
                   <div
                     key={f.id}
-                    className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:border-orange-300 hover:shadow-xs transition-all"
+                    className="p-3.5 bg-white/[0.03] border border-white/10 rounded-xl flex items-center justify-between gap-3 hover:border-[#FFA500]/40 transition-all"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs text-slate-400 w-6 text-center font-bold">
+                      <span className="font-mono text-xs text-[#FFA500] w-6 text-center font-bold">
                         #{idx + 1}
                       </span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-slate-900">{f.label}</span>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                          <span className="text-sm font-semibold text-white">{f.label}</span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/15 font-medium">
                             {f.type}
                           </span>
                           {f.isRequired && (
@@ -898,8 +893,8 @@ export default function AdminServicesPage() {
                             </Badge>
                           )}
                         </div>
-                        <span className="text-[11px] font-mono text-slate-400 block mt-0.5">
-                          key: <code className="text-slate-700">{f.name}</code> {f.options && `• options: ${JSON.stringify(f.options)}`}
+                        <span className="text-[11px] font-mono text-[#F5F7FA]/40 block mt-0.5">
+                          key: <code className="text-[#FFA500]">{f.name}</code> {f.options && `• options: ${JSON.stringify(f.options)}`}
                         </span>
                       </div>
                     </div>
@@ -908,7 +903,7 @@ export default function AdminServicesPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-slate-600 hover:text-slate-900 h-8 px-2.5"
+                        className="text-xs text-white/70 hover:text-white h-8 px-2.5 rounded-lg"
                         onClick={() => handleEditField(f)}
                       >
                         Edit
@@ -916,7 +911,7 @@ export default function AdminServicesPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-slate-500 hover:text-rose-600 hover:bg-rose-50 h-8 px-2.5"
+                        className="text-xs text-white/40 hover:text-rose-400 h-8 px-2.5 rounded-lg"
                         onClick={() => deleteFieldMutation.mutate(f.id)}
                       >
                         Delete
