@@ -70,27 +70,27 @@ export function FloatingContactWidget() {
   return (
     <div
       ref={widgetRef}
-      className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end select-none print:hidden"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end select-none print:hidden"
     >
       {/* Expanded Contact Popover */}
       {isOpen && (
         <div
           role="dialog"
           aria-label="Direct Contact Channels"
-          className="mb-3 w-[calc(100vw-2.5rem)] sm:w-84 max-w-sm bg-[#050F2E]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(5,15,46,0.9)] rounded-3xl p-4.5 transition-all animate-in fade-in slide-in-from-bottom-5 duration-200 text-white"
+          className="mb-2.5 sm:mb-3 w-[calc(100vw-2rem)] xs:w-80 sm:w-84 max-w-[340px] sm:max-w-sm bg-[#0c0603]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.85)] rounded-2xl sm:rounded-3xl p-3.5 sm:p-4.5 transition-all animate-in fade-in slide-in-from-bottom-5 duration-200 text-white"
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2.5">
-              <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-[#FFA500] to-[#FFB733] text-[#050F2E] shadow-sm shadow-[#FFA500]/30 font-bold">
-                <Sparkles className="w-4 h-4 text-[#050F2E]" />
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#FFA500] rounded-full border-2 border-[#050F2E] animate-pulse" />
+          <div className="flex items-center justify-between pb-2.5 sm:pb-3.5 mb-2.5 sm:mb-3 border-b border-white/[0.08]">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-[#FFA500] to-[#FFB733] text-[#080402] shadow-sm shadow-[#FFA500]/30 font-bold">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#080402]" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#FFA500] rounded-full border-2 border-[#080402] animate-pulse" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white leading-tight">
+                <h4 className="text-xs sm:text-sm font-bold text-white leading-tight">
                   Connect with RizeX
                 </h4>
-                <div className="flex items-center gap-1.5 text-[11px] text-[#FFA500] font-medium">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#FFA500] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FFA500]" />
                   <span>Online • Immediate response</span>
                 </div>
@@ -102,29 +102,29 @@ export function FloatingContactWidget() {
               className="p-1 rounded-full text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
               aria-label="Close contact menu"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
 
           {/* Quick Notice */}
-          <div className="mb-3 px-3 py-2 bg-white/[0.04] rounded-xl border border-white/10 text-[11.5px] text-[#F5F7FA]/75 flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-[#FFA500] shrink-0" />
+          <div className="mb-2.5 sm:mb-3 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-white/[0.04] rounded-lg sm:rounded-xl border border-white/10 text-[10.5px] sm:text-[11.5px] text-[#F5F7FA]/75 flex items-center gap-2">
+            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FFA500] shrink-0" />
             <span>Direct agency channel for quotes & roadmap calls</span>
           </div>
 
           {/* Action Links */}
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             {/* WhatsApp - Highlighted Primary */}
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#FFA500]/20 text-[#FFA500] border border-[#FFA500]/30 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#FFA500]/20 text-[#FFA500] border border-[#FFA500]/30 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform shrink-0">
                   <svg
-                    className="w-5 h-5 fill-current"
+                    className="w-4 h-4 sm:w-5 sm:h-5 fill-current"
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
@@ -134,70 +134,70 @@ export function FloatingContactWidget() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-bold text-white">
+                    <p className="text-[11px] sm:text-xs font-bold text-white">
                       WhatsApp Chat
                     </p>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#FFA500]/20 text-[#FFA500]">
+                    <span className="text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#FFA500]/20 text-[#FFA500]">
                       Instant
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#F5F7FA]/60 font-medium">
+                  <p className="text-[10px] sm:text-[11px] text-[#F5F7FA]/60 font-medium">
                     Direct conversation with team
                   </p>
                 </div>
               </div>
-              <ArrowUpRight className="w-4 h-4 text-[#FFA500] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FFA500] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             {/* Direct Phone Call */}
             <a
               href={phoneUrl}
-              className="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/[0.06] text-white flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform">
-                  <Phone className="w-4 h-4 text-[#FFA500]" />
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-white/[0.06] text-white flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform shrink-0">
+                  <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FFA500]" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">
+                  <p className="text-[11px] sm:text-xs font-bold text-white">
                     Direct Helpline
                   </p>
-                  <p className="text-[11px] text-[#F5F7FA]/60 font-mono">
+                  <p className="text-[10px] sm:text-[11px] text-[#F5F7FA]/60 font-mono">
                     {contactPhone}
                   </p>
                 </div>
               </div>
-              <ArrowUpRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             {/* Official Email */}
             <a
               href={emailUrl}
-              className="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/[0.06] text-white flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform">
-                  <Mail className="w-4 h-4 text-[#FFA500]" />
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-white/[0.06] text-white flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform shrink-0">
+                  <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FFA500]" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">
+                  <p className="text-[11px] sm:text-xs font-bold text-white">
                     Official Email
                   </p>
-                  <p className="text-[11px] text-[#F5F7FA]/60 truncate max-w-[150px]">
+                  <p className="text-[10px] sm:text-[11px] text-[#F5F7FA]/60 truncate max-w-[150px]">
                     {contactEmail}
                   </p>
                 </div>
               </div>
-              <ArrowUpRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             {/* Browse Services / Request Quote Shortcut */}
             <Link
               href="/services"
               onClick={() => setIsOpen(false)}
-              className="mt-2 flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#050F2E] font-bold text-xs shadow-md shadow-[#FFA500]/25 transition-all text-center btn-shimmer-container"
+              className="mt-1.5 sm:mt-2 flex items-center justify-center gap-1.5 w-full py-2 sm:py-2.5 px-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[11px] sm:text-xs shadow-md shadow-[#FFA500]/25 transition-all text-center btn-shimmer-container"
             >
-              <Send className="w-3.5 h-3.5 text-[#050F2E]" />
+              <Send className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#080402]" />
               <span>Browse Services & Submit Quote</span>
             </Link>
           </div>
@@ -208,7 +208,7 @@ export function FloatingContactWidget() {
       <div className="relative flex items-center gap-2">
         {/* Subtle hover / teaser tooltip when closed */}
         {!isOpen && !hasInteracted && (
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#071A4A]/90 text-white text-xs font-medium backdrop-blur-md shadow-lg border border-white/10 animate-in fade-in slide-in-from-right-3 duration-300">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0c0603]/90 text-white text-xs font-medium backdrop-blur-md shadow-lg border border-white/10 animate-in fade-in slide-in-from-right-3 duration-300">
             <span className="w-2 h-2 rounded-full bg-[#FFA500] animate-pulse" />
             <span>Chat / Contact Us</span>
           </div>
@@ -221,10 +221,11 @@ export function FloatingContactWidget() {
           }}
           aria-expanded={isOpen}
           aria-label={isOpen ? 'Close contact menu' : 'Open contact menu'}
-          className={`relative group flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 rounded-full text-white shadow-xl transition-all duration-300 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#FFA500]/20 ${isOpen
-            ? 'bg-[#071A4A] text-white shadow-xl rotate-90 scale-95 border border-white/20'
-            : 'bg-gradient-to-tr from-[#FFA500] to-[#FFB733] text-[#050F2E] shadow-[0_0_24px_rgba(255,165,0,0.5)] hover:shadow-[0_0_36px_rgba(255,165,0,0.7)] hover:scale-105 active:scale-95'
-            }`}
+          className={`relative group flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 rounded-full text-white shadow-xl transition-all duration-300 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#FFA500]/20 ${
+            isOpen
+              ? 'bg-[#140803] text-white shadow-xl rotate-90 scale-95 border border-[#FFA500]/40'
+              : 'bg-gradient-to-tr from-[#FFA500] to-[#FFB733] text-[#080402] shadow-[0_0_20px_rgba(255,165,0,0.45)] hover:shadow-[0_0_36px_rgba(255,165,0,0.7)] hover:scale-105 active:scale-95'
+          }`}
         >
           {/* Animated pulse ring around button when closed */}
           {!isOpen && (
@@ -232,12 +233,12 @@ export function FloatingContactWidget() {
           )}
 
           {isOpen ? (
-            <X className="w-6 h-6 transition-transform duration-200" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6 text-[#FFA500] transition-transform duration-200" />
           ) : (
             <div className="relative">
-              <MessageCircle className="w-6 h-6 sm:w-6.5 sm:h-6.5 drop-shadow-sm text-[#050F2E]" />
+              <MessageCircle className="w-5 h-5 sm:w-6.5 sm:h-6.5 drop-shadow-sm text-[#080402]" />
               {/* Orange online indicator dot */}
-              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[#FFA500] rounded-full border-2 border-[#050F2E]" />
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#FFA500] rounded-full border-2 border-[#080402]" />
             </div>
           )}
         </button>

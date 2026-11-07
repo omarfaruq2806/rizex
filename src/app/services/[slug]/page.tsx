@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
+import React, { useState, useMemo, useRef, Suspense } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
@@ -14,10 +14,10 @@ import {
   MessageSquare,
   CheckCircle2,
   Clock,
-  ShieldCheck,
   AlertCircle,
   Check,
   ArrowDown,
+  X,
 } from 'lucide-react';
 import {
   PlatformToggle,
@@ -60,22 +60,34 @@ function ServiceInquiryContent() {
   const formRef = useRef<HTMLDivElement>(null);
 
   // Read URL parameters if provided
-  const initialPlatform = (searchParams.get('platform') as PlatformType) || 'custom';
-  const initialTier = searchParams.get('tier') || 'standard';
-  const priceParam = searchParams.get('price');
+  const queryPlatform = searchParams.get('platform');
+  const queryTier = searchParams.get('tier');
 
   // Platform & Tier selection state
-  const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>(
-    initialPlatform === 'wordpress' ? 'wordpress' : 'custom'
-  );
-  const [selectedTierId, setSelectedTierId] = useState<string>(initialTier);
+  const [userSelectedPlatform, setUserSelectedPlatform] = useState<PlatformType | null>(null);
+  const [userSelectedTierId, setUserSelectedTierId] = useState<string | null>(null);
+
+  const selectedPlatform: PlatformType =
+    userSelectedPlatform ?? (queryPlatform === 'wordpress' ? 'wordpress' : 'custom');
+
+  const selectedTierId: string = userSelectedTierId ?? (queryTier || 'standard');
+
+  // Active platform package configuration
+  const platformConfig = WEB_DEVELOPMENT_PACKAGES[selectedPlatform];
+  const activeTier = useMemo(() => {
+    return (
+      platformConfig.tiers.find((t) => t.id === selectedTierId) ||
+      platformConfig.tiers[1] ||
+      platformConfig.tiers[0]
+    );
+  }, [platformConfig, selectedTierId]);
 
   // Form State
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [budget, setBudget] = useState('');
+  const [customProjectName, setCustomProjectName] = useState<string | null>(null);
+  const [customBudget, setCustomBudget] = useState<string | null>(null);
   const [projectDescription, setProjectDescription] = useState('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,8 +104,9 @@ function ServiceInquiryContent() {
     queryKey: ['service-detail', slug],
     queryFn: async () => {
       try {
-        const res = await apiClient.get<any>(`/services/${slug}`);
-        return res?.data !== undefined ? res.data : res || null;
+        const res = await apiClient.get<Record<string, unknown>>(`/services/${slug}`);
+        const payload = (res as { data?: unknown })?.data !== undefined ? (res as { data: unknown }).data : res;
+        return (payload as ServiceDetail) || null;
       } catch (err) {
         console.warn('Failed to fetch service detail from backend:', err);
         return null;
@@ -101,52 +114,39 @@ function ServiceInquiryContent() {
     },
   });
 
-  const service: ServiceDetail | null = serviceData;
-
-  // Active platform package configuration
-  const platformConfig = WEB_DEVELOPMENT_PACKAGES[selectedPlatform];
-  const activeTier = useMemo(() => {
-    return (
-      platformConfig.tiers.find((t) => t.id === selectedTierId) ||
-      platformConfig.tiers[1] ||
-      platformConfig.tiers[0]
-    );
-  }, [platformConfig, selectedTierId]);
+  const service: ServiceDetail | null = serviceData ?? null;
 
   // Is this a package-enabled service (Web Development) or an upcoming category?
   const isWebDevService = slug === 'web-development' || slug.includes('web');
   const isUpcomingCategory = !isWebDevService && (!service || slug.includes('design') || slug.includes('ai') || slug.includes('market'));
 
-  // Prefill user details if logged in
-  useEffect(() => {
-    if (user) {
-      if (user.name) setGuestName(user.name);
-      if (user.email) setGuestEmail(user.email);
-    }
-  }, [user]);
+  const platformLabel = selectedPlatform === 'wordpress' ? 'WordPress' : 'Custom Code';
+  const defaultBudget = isWebDevService && activeTier ? String(activeTier.startingPrice) : String(service?.startingPrice || '');
+  const budget = customBudget !== null ? customBudget : defaultBudget;
 
-  // Update budget & project title whenever platform or tier changes
-  useEffect(() => {
-    if (isWebDevService && activeTier) {
-      setBudget(String(activeTier.startingPrice));
-      const platformLabel = selectedPlatform === 'wordpress' ? 'WordPress' : 'Custom Code';
-      setProjectName(`Web Development (${platformLabel} - ${activeTier.name} Plan)`);
-    } else if (service?.startingPrice && !budget) {
-      setBudget(String(service.startingPrice));
-      setProjectName(`${service.name} Project`);
-    }
-  }, [selectedPlatform, selectedTierId, isWebDevService, activeTier, service]);
+  const defaultProjectName = isWebDevService && activeTier
+    ? `Web Development (${platformLabel} - ${activeTier.name} Plan)`
+    : `${service?.name || 'Web Development'} Project`;
+  const projectName = customProjectName !== null ? customProjectName : defaultProjectName;
 
   // Select a tier card and smooth-scroll to the inquiry form
   const handleSelectTier = (tier: ServicePackageTier) => {
-    setSelectedTierId(tier.id);
-    setBudget(String(tier.startingPrice));
-    const platformLabel = selectedPlatform === 'wordpress' ? 'WordPress' : 'Custom Code';
-    setProjectName(`Web Development (${platformLabel} - ${tier.name} Plan)`);
+    setUserSelectedTierId(tier.id);
+    setCustomBudget(String(tier.startingPrice));
+    setCustomProjectName(`Web Development (${platformLabel} - ${tier.name} Plan)`);
 
     // Smooth scroll down to form
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     toast.success(`Selected: ${platformLabel} • ${tier.name} Plan (৳${tier.startingPrice.toLocaleString()})`);
+  };
+
+  const handleSelectPlatform = (platform: PlatformType) => {
+    setUserSelectedPlatform(platform);
+    const newConfig = WEB_DEVELOPMENT_PACKAGES[platform];
+    const newTier = newConfig.tiers.find((t) => t.id === selectedTierId) || newConfig.tiers[1] || newConfig.tiers[0];
+    const pLabel = platform === 'wordpress' ? 'WordPress' : 'Custom Code';
+    setCustomBudget(String(newTier.startingPrice));
+    setCustomProjectName(`Web Development (${pLabel} - ${newTier.name} Plan)`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -193,7 +193,7 @@ function ServiceInquiryContent() {
         budget: budget ? `৳${budget}` : undefined,
       };
 
-      await apiClient.post<any>('/quote-requests', payload);
+      await apiClient.post<Record<string, unknown>>('/quote-requests', payload);
 
       setSubmittedData({
         name: finalName,
@@ -204,8 +204,9 @@ function ServiceInquiryContent() {
 
       setSuccessModalOpen(true);
       toast.success('Inquiry submitted successfully!');
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to submit quote request. Please try again.');
+    } catch (err: unknown) {
+      const errorMsg = (err as { message?: string })?.message || 'Failed to submit quote request. Please try again.';
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -254,10 +255,8 @@ function ServiceInquiryContent() {
 
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801700000000';
   const whatsappMessage = encodeURIComponent(
-    `Hello RizeX Team, I am inquiring about Web Development.\n\nName: ${
-      submittedData?.name || guestName
-    }\nTarget Plan: ${selectedPlatform === 'wordpress' ? 'WordPress' : 'Custom Code'} - ${
-      activeTier.name
+    `Hello RizeX Team, I am inquiring about Web Development.\n\nName: ${submittedData?.name || guestName
+    }\nTarget Plan: ${selectedPlatform === 'wordpress' ? 'WordPress' : 'Custom Code'} - ${activeTier.name
     }\nBudget Anchor: ৳${budget || activeTier.startingPrice}`
   );
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
@@ -272,11 +271,11 @@ function ServiceInquiryContent() {
       <div className="absolute top-[60%] -right-[10%] w-[600px] h-[600px] bg-gradient-to-bl from-[#FFA500]/20 via-[#FF6600]/10 to-transparent blur-[150px] pointer-events-none -z-10" />
       <div className="absolute inset-0 bg-box-grid pointer-events-none -z-10" />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 relative z-10">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10 relative z-10">
         {/* Back Button */}
         <button
           onClick={() => router.push('/services')}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#F5F7FA]/70 hover:text-[#FFA500] transition-colors cursor-pointer group"
+          className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-[#F5F7FA]/70 hover:text-[#FFA500] transition-colors cursor-pointer group"
         >
           <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
           <span>Back to Services Catalog</span>
@@ -285,17 +284,17 @@ function ServiceInquiryContent() {
         {/* =========================================================================
             HEADER BANNER
             ========================================================================= */}
-        <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-level-1 border border-white/15 text-[11px] font-mono uppercase tracking-wider text-[#FFA500] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
+        <div className="text-center space-y-3 sm:space-y-4 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full glass-level-1 border border-white/15 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-[#FFA500] shadow-sm">
+            <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
             <span>FULL-STACK & CMS ARCHITECTURE</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
             Web Development <span className="text-[#FFA500]">Services</span>
           </h1>
 
-          <p className="text-xs sm:text-base text-[#F5F7FA]/75 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm md:text-base text-[#F5F7FA]/75 leading-relaxed font-normal max-w-2xl mx-auto">
             Choose your preferred technology platform below. Select a starting package to prefill your inquiry specifications and receive a transparent milestone-based quote.
           </p>
         </div>
@@ -305,13 +304,13 @@ function ServiceInquiryContent() {
             ========================================================================= */}
         <PlatformToggle
           selectedPlatform={selectedPlatform}
-          onSelectPlatform={(p) => setSelectedPlatform(p)}
+          onSelectPlatform={handleSelectPlatform}
         />
 
         {/* =========================================================================
             3 PRICING TIER CARDS (Basic, Standard, Premium)
             ========================================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-stretch pt-1 sm:pt-2">
           {platformConfig.tiers.map((tier) => {
             const isSelected = selectedTierId === tier.id;
             const isPopular = tier.isPopular;
@@ -320,69 +319,68 @@ function ServiceInquiryContent() {
               <div
                 key={tier.id}
                 onMouseMove={handleCardMouseMove}
-                className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 glass-spotlight group ${
-                  isSelected
-                    ? 'glass-level-3 border-2 border-[#FFA500] shadow-[0_0_35px_rgba(255,165,0,0.3)] scale-[1.02] bg-gradient-to-b from-[#FFA500]/15 via-white/[0.04] to-transparent'
+                className={`relative rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-8 flex flex-col justify-between transition-all duration-300 glass-spotlight group ${isSelected
+                    ? 'glass-level-3 border-2 border-[#FFA500] shadow-[0_0_35px_rgba(255,165,0,0.3)] scale-[1.01] sm:scale-[1.02] bg-gradient-to-b from-[#FFA500]/15 via-white/[0.04] to-transparent'
                     : isPopular
-                    ? 'glass-level-2 border-2 border-[#FFA500]/50 shadow-[0_0_25px_rgba(255,165,0,0.15)] bg-white/[0.03]'
-                    : 'glass-level-2 border border-white/12 hover:border-white/25 bg-white/[0.02]'
-                }`}
+                      ? 'glass-level-2 border-2 border-[#FFA500]/50 shadow-[0_0_25px_rgba(255,165,0,0.15)] bg-white/[0.03]'
+                      : 'glass-level-2 border border-white/12 hover:border-white/25 bg-white/[0.02]'
+                  }`}
               >
                 {/* Popular or Selected Badge */}
                 {isSelected ? (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.6)] flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#080402]" />
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] text-[10px] sm:text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.6)] flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#080402]" />
                     <span>SELECTED PLAN</span>
                   </div>
                 ) : isPopular ? (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.5)] flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-[#080402]" />
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] text-[10px] sm:text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.5)] flex items-center gap-1.5">
+                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#080402]" />
                     <span>MOST POPULAR</span>
                   </div>
                 ) : null}
 
                 {/* Top Header */}
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-2xl font-extrabold text-white tracking-tight">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                       {tier.name}
                     </h3>
-                    <span className="px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[11px] font-mono text-[#F5F7FA]/70 capitalize">
+                    <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/[0.05] border border-white/10 text-[10px] sm:text-[11px] font-mono text-[#F5F7FA]/70 capitalize">
                       {selectedPlatform}
                     </span>
                   </div>
 
-                  <p className="text-xs text-[#F5F7FA]/75 leading-relaxed min-h-[36px]">
+                  <p className="text-xs text-[#F5F7FA]/75 leading-relaxed min-h-[32px] sm:min-h-[36px]">
                     {tier.tagline}
                   </p>
 
                   {/* Price */}
-                  <div className="pt-2 pb-3 border-b border-white/[0.08]">
+                  <div className="pt-1.5 pb-2.5 sm:pt-2 sm:pb-3 border-b border-white/[0.08]">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-[11px] font-mono uppercase text-[#FFA500] tracking-wider font-semibold">
+                      <span className="text-[10px] sm:text-[11px] font-mono uppercase text-[#FFA500] tracking-wider font-semibold">
                         Starts at
                       </span>
-                      <span className="text-3xl font-extrabold font-mono text-white tracking-tight">
+                      <span className="text-2xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">
                         ৳{tier.startingPrice.toLocaleString()}
                       </span>
                     </div>
-                    <span className="text-[10.5px] text-[#F5F7FA]/50 block mt-1 font-mono">
+                    <span className="text-[10px] sm:text-[10.5px] text-[#F5F7FA]/50 block mt-0.5 sm:mt-1 font-mono">
                       Base anchor • negotiable per scope
                     </span>
                   </div>
 
                   {/* Delivery */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono text-[#F5F7FA]/80">
-                    <Clock className="w-3.5 h-3.5 text-[#FFA500]" />
+                  <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/10 text-[11px] sm:text-xs font-mono text-[#F5F7FA]/80">
+                    <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FFA500]" />
                     <span>{tier.deliveryDays} Days Estimated Delivery</span>
                   </div>
 
                   {/* Deliverables Checklist */}
-                  <div className="pt-3 space-y-2.5">
-                    <span className="text-[10px] font-mono uppercase text-[#FFA500] tracking-wider block font-bold">
+                  <div className="pt-2 sm:pt-3 space-y-2 sm:space-y-2.5">
+                    <span className="text-[9.5px] sm:text-[10px] font-mono uppercase text-[#FFA500] tracking-wider block font-bold">
                       Key Deliverables:
                     </span>
-                    <ul className="space-y-2 text-xs text-[#F5F7FA]/85">
+                    <ul className="space-y-1.5 sm:space-y-2 text-xs text-[#F5F7FA]/85">
                       {tier.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-2">
                           <div className="w-3.5 h-3.5 rounded-full bg-[#FFA500]/20 border border-[#FFA500]/40 flex items-center justify-center shrink-0 mt-0.5">
@@ -396,8 +394,8 @@ function ServiceInquiryContent() {
                 </div>
 
                 {/* Card Action Button */}
-                <div className="pt-6 mt-6 border-t border-white/[0.08] space-y-3">
-                  <div className="text-[10.5px] text-[#F5F7FA]/60 leading-tight">
+                <div className="pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-white/[0.08] space-y-2.5 sm:space-y-3">
+                  <div className="text-[10px] sm:text-[10.5px] text-[#F5F7FA]/60 leading-tight">
                     <span className="font-semibold text-white/80">Best for: </span>
                     <span>{tier.bestFor}</span>
                   </div>
@@ -405,16 +403,15 @@ function ServiceInquiryContent() {
                   <Button
                     type="button"
                     onClick={() => handleSelectTier(tier)}
-                    className={`w-full h-11 rounded-full font-bold text-xs uppercase tracking-wider cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 ${
-                      isSelected
+                    className={`w-full h-9 sm:h-11 rounded-full font-bold text-[11px] sm:text-xs uppercase tracking-wider cursor-pointer transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 ${isSelected
                         ? 'bg-[#FFA500] text-[#080402] shadow-[0_0_20px_rgba(255,165,0,0.5)] border-none'
                         : isPopular
-                        ? 'bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] shadow-md hover:scale-[1.02] border-none'
-                        : 'glass-level-1 border border-white/20 hover:border-[#FFA500]/50 text-white hover:text-[#FFA500]'
-                    }`}
+                          ? 'bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] shadow-md hover:scale-[1.02] border-none'
+                          : 'glass-level-1 border border-white/20 hover:border-[#FFA500]/50 text-white hover:text-[#FFA500]'
+                      }`}
                   >
                     <span>{isSelected ? 'Selected • Fill Below' : 'Select Plan & Quote'}</span>
-                    <ArrowDown className="w-3.5 h-3.5" />
+                    <ArrowDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </Button>
                 </div>
               </div>
@@ -430,39 +427,39 @@ function ServiceInquiryContent() {
             ========================================================================= */}
         <div
           ref={formRef}
-          className="rounded-3xl glass-level-2 border border-white/12 p-6 sm:p-10 shadow-2xl space-y-6 relative overflow-hidden bg-gradient-to-b from-white/[0.07] via-white/[0.03] to-[#FFA500]/[0.05]"
+          className="rounded-2xl sm:rounded-3xl glass-level-2 border border-white/12 p-4 sm:p-7 md:p-10 shadow-2xl space-y-4 sm:space-y-6 relative overflow-hidden bg-gradient-to-b from-white/[0.07] via-white/[0.03] to-[#FFA500]/[0.05]"
         >
-          <div className="space-y-1 mb-2">
-            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#FFA500] uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
+          <div className="space-y-1 mb-1 sm:mb-2">
+            <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-mono font-semibold text-[#FFA500] uppercase tracking-wider">
+              <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
               <span>CUSTOM SPECIFICATIONS & DIRECT QUOTE</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight">
               Tell Us About Your Project
             </h2>
-            <p className="text-xs sm:text-sm text-[#F5F7FA]/70">
+            <p className="text-[11px] sm:text-xs md:text-sm text-[#F5F7FA]/70 leading-relaxed">
               Submit your project brief and target features below. Our senior solution architect will review your scope, adjust quotes transparently, and discuss timelines.
             </p>
           </div>
 
           {/* Active Package Banner */}
-          <div className="p-4 rounded-2xl glass-level-1 border border-[#FFA500]/30 bg-[#FFA500]/[0.08] flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#FFA500]/20 flex items-center justify-center text-[#FFA500]">
-                <Sparkles className="w-4 h-4" />
+          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl glass-level-1 border border-[#FFA500]/30 bg-[#FFA500]/[0.08] flex items-center justify-between flex-wrap gap-2.5 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#FFA500]/20 flex items-center justify-center text-[#FFA500]">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div>
-                <span className="text-[10px] font-mono text-[#F5F7FA]/60 uppercase tracking-wider block">
+                <span className="text-[9.5px] sm:text-[10px] font-mono text-[#F5F7FA]/60 uppercase tracking-wider block">
                   Targeted Plan
                 </span>
-                <span className="text-xs sm:text-sm font-bold text-white">
+                <span className="text-[11px] sm:text-xs md:text-sm font-bold text-white">
                   {selectedPlatform === 'wordpress' ? 'WordPress' : 'Custom Code'} •{' '}
                   <span className="text-[#FFA500] uppercase">{activeTier.name} Plan</span>
                 </span>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-mono text-[#F5F7FA]/60 uppercase tracking-wider block">
+              <span className="text-[9.5px] sm:text-[10px] font-mono text-[#F5F7FA]/60 uppercase tracking-wider block">
                 Starting Base Anchor
               </span>
               <span className="text-xs sm:text-sm font-mono font-extrabold text-[#FFA500]">
@@ -471,11 +468,11 @@ function ServiceInquiryContent() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
             {/* Contact Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-[11px] font-semibold text-white mb-1.5 font-mono">
+                <label className="block text-[10.5px] sm:text-[11px] font-semibold text-white mb-1 sm:mb-1.5 font-mono">
                   Your Full Name <span className="text-[#FFA500]">*</span>
                 </label>
                 <input
@@ -493,9 +490,8 @@ function ServiceInquiryContent() {
                       });
                     }
                   }}
-                  className={`w-full h-11 px-3.5 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                    formErrors.name ? 'border-rose-500' : 'border-white/12'
-                  }`}
+                  className={`w-full h-9 sm:h-11 px-3 sm:px-3.5 rounded-lg sm:rounded-xl bg-white/[0.04] border text-[11px] sm:text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${formErrors.name ? 'border-rose-500' : 'border-white/12'
+                    }`}
                 />
                 {formErrors.name && (
                   <p className="text-[10px] text-rose-400 mt-1 flex items-center gap-1">
@@ -506,7 +502,7 @@ function ServiceInquiryContent() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-white mb-1.5 font-mono">
+                <label className="block text-[10.5px] sm:text-[11px] font-semibold text-white mb-1 sm:mb-1.5 font-mono">
                   Email Address <span className="text-[#FFA500]">*</span>
                 </label>
                 <input
@@ -524,9 +520,8 @@ function ServiceInquiryContent() {
                       });
                     }
                   }}
-                  className={`w-full h-11 px-3.5 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                    formErrors.email ? 'border-rose-500' : 'border-white/12'
-                  }`}
+                  className={`w-full h-9 sm:h-11 px-3 sm:px-3.5 rounded-lg sm:rounded-xl bg-white/[0.04] border text-[11px] sm:text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${formErrors.email ? 'border-rose-500' : 'border-white/12'
+                    }`}
                 />
                 {formErrors.email && (
                   <p className="text-[10px] text-rose-400 mt-1 flex items-center gap-1">
@@ -537,9 +532,9 @@ function ServiceInquiryContent() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-[11px] font-semibold text-white mb-1.5 font-mono">
+                <label className="block text-[10.5px] sm:text-[11px] font-semibold text-white mb-1 sm:mb-1.5 font-mono">
                   WhatsApp / Phone Number <span className="text-[#FFA500]">*</span>
                 </label>
                 <input
@@ -556,9 +551,8 @@ function ServiceInquiryContent() {
                       });
                     }
                   }}
-                  className={`w-full h-11 px-3.5 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors ${
-                    formErrors.phone ? 'border-rose-500' : 'border-white/12'
-                  }`}
+                  className={`w-full h-9 sm:h-11 px-3 sm:px-3.5 rounded-lg sm:rounded-xl bg-white/[0.04] border text-[11px] sm:text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors ${formErrors.phone ? 'border-rose-500' : 'border-white/12'
+                    }`}
                 />
                 {formErrors.phone ? (
                   <p className="text-[10px] text-rose-400 mt-1 flex items-center gap-1">
@@ -566,24 +560,24 @@ function ServiceInquiryContent() {
                     <span>{formErrors.phone}</span>
                   </p>
                 ) : (
-                  <p className="text-[10.5px] text-[#F5F7FA]/50 mt-1">
+                  <p className="text-[10px] sm:text-[10.5px] text-[#F5F7FA]/50 mt-1">
                     We will reach out via WhatsApp for fast discovery discussion
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-white mb-1.5 font-mono">
+                <label className="block text-[10.5px] sm:text-[11px] font-semibold text-white mb-1 sm:mb-1.5 font-mono">
                   Estimated Target Budget (৳ BDT) <span className="text-white/40">(Optional)</span>
                 </label>
                 <input
                   type="number"
                   placeholder="e.g. 25000"
                   value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-white/[0.04] border border-white/12 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
+                  onChange={(e) => setCustomBudget(e.target.value)}
+                  className="w-full h-9 sm:h-11 px-3 sm:px-3.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/12 text-[11px] sm:text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
                 />
-                <p className="text-[10.5px] text-[#F5F7FA]/50 mt-1 font-mono">
+                <p className="text-[10px] sm:text-[10.5px] text-[#F5F7FA]/50 mt-1 font-mono">
                   Plan base starting anchor: ৳{activeTier.startingPrice.toLocaleString()}
                 </p>
               </div>
@@ -591,27 +585,27 @@ function ServiceInquiryContent() {
 
             {/* Project Title */}
             <div>
-              <label className="block text-[11px] font-semibold text-white mb-1.5 font-mono">
+              <label className="block text-[10.5px] sm:text-[11px] font-semibold text-white mb-1 sm:mb-1.5 font-mono">
                 Project Title <span className="text-white/40">(Optional)</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. Web Development (Custom Code - Standard Plan)"
                 value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-xl bg-white/[0.04] border border-white/12 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
+                onChange={(e) => setCustomProjectName(e.target.value)}
+                className="w-full h-9 sm:h-11 px-3 sm:px-3.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/12 text-[11px] sm:text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
               />
             </div>
 
             {/* Project Description */}
             <div>
-              <label className="block text-[11px] font-semibold text-white mb-1.5 font-mono">
+              <label className="block text-[10.5px] sm:text-[11px] font-semibold text-white mb-1 sm:mb-1.5 font-mono">
                 Project Overview & Requirements <span className="text-[#FFA500]">*</span>
               </label>
               <textarea
                 placeholder="Describe your goals, reference websites, specific features, integrations, or scope..."
                 value={projectDescription}
-                rows={4}
+                rows={3}
                 onChange={(e) => {
                   setProjectDescription(e.target.value);
                   if (formErrors.description) {
@@ -622,9 +616,8 @@ function ServiceInquiryContent() {
                     });
                   }
                 }}
-                className={`w-full p-3.5 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors resize-none ${
-                  formErrors.description ? 'border-rose-500' : 'border-white/12'
-                }`}
+                className={`w-full p-2.5 sm:p-3.5 rounded-lg sm:rounded-xl bg-white/[0.04] border text-[11px] sm:text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors resize-none ${formErrors.description ? 'border-rose-500' : 'border-white/12'
+                  }`}
               />
               {formErrors.description && (
                 <p className="text-[10px] text-rose-400 mt-1 flex items-center gap-1">
@@ -635,19 +628,19 @@ function ServiceInquiryContent() {
             </div>
 
             {/* Submit Action Button */}
-            <div className="pt-2">
+            <div className="pt-2 flex justify-center sm:justify-start">
               <Button
                 type="submit"
-                size="lg"
+                size="md"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto px-8 h-12 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider shadow-[0_0_24px_rgba(255,165,0,0.4)] hover:shadow-[0_0_32px_rgba(255,165,0,0.6)] hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-2"
+                className="w-full max-w-[260px] sm:max-w-none sm:w-auto px-5 sm:px-8 h-9 sm:h-12 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.35)] hover:shadow-[0_0_32px_rgba(255,165,0,0.6)] hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <span>Transmitting Inquiry...</span>
                 ) : (
                   <>
                     <span>Request Quote & Discuss Project</span>
-                    <Send className="w-4 h-4 text-[#080402]" />
+                    <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#080402]" />
                   </>
                 )}
               </Button>
@@ -655,97 +648,96 @@ function ServiceInquiryContent() {
           </form>
         </div>
 
-        {/* Success Modal */}
+        {/* Ultra-Minimal Success Modal */}
         {successModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-            <div
-              className="fixed inset-0"
-              onClick={() => {
-                setSuccessModalOpen(false);
-                router.push('/services');
-              }}
-              aria-hidden="true"
-            />
-            <div className="relative w-full max-w-md rounded-3xl glass-level-3 border border-[#FFA500]/35 bg-[#140A03]/95 p-6 sm:p-8 shadow-2xl z-10 text-white space-y-5">
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-full bg-[#FFA500]/20 text-[#FFA500] border border-[#FFA500]/30 flex items-center justify-center mx-auto shadow-md">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-white tracking-tight">
-                  Inquiry Received Successfully! 🚀
-                </h3>
-                <p className="text-xs text-[#F5F7FA]/75">
-                  Our technical management team has received your project inquiry.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#FFA500]">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Project: {submittedData?.projectName}</span>
-                </div>
-                <p className="text-xs text-[#F5F7FA]/80 leading-relaxed">
-                  Thank you, <strong className="text-white">{submittedData?.name}</strong>! We have saved your project inquiry. Our technical manager will review your scope and get in touch within 2 hours.
-                </p>
-              </div>
-
-              {/* WhatsApp Direct Connect Button */}
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-[#F5F7FA]/60">Want an instant response?</p>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 w-full px-5 h-12 rounded-full bg-[#FFA500] hover:bg-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#FFA500]/25 transition-all cursor-pointer btn-shimmer-container"
-                >
-                  <MessageSquare className="w-4 h-4 text-[#080402]" />
-                  <span>Connect Directly on WhatsApp</span>
-                </a>
-              </div>
-
-              <div className="flex gap-3 pt-3 border-t border-white/[0.08]">
-                {isAuthenticated && (
-                  <Button
-                    variant="outline"
-                    className="flex-1 rounded-full h-10 glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] text-xs font-semibold cursor-pointer"
-                    onClick={() => router.push('/dashboard/quotes')}
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
+              <div
+                className="fixed inset-0"
+                onClick={() => {
+                  setSuccessModalOpen(false);
+                  router.push('/services');
+                }}
+                aria-hidden="true"
+              />
+                <div className="relative w-full max-w-[280px] sm:max-w-[320px] rounded-xl sm:rounded-2xl glass-level-3 border border-[#FFA500]/30 bg-[#120803]/95 p-3 sm:p-4 shadow-2xl z-10 text-white space-y-2">
+                  {/* Dismiss X button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSuccessModalOpen(false);
+                      router.push('/services');
+                    }}
+                    className="absolute top-2 right-2 p-1 rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Close modal"
                   >
-                    Client Dashboard
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  className="flex-1 rounded-full h-10 glass-level-1 border border-white/20 text-white hover:bg-white/[0.08] text-xs font-semibold cursor-pointer"
-                  onClick={() => {
-                    setSuccessModalOpen(false);
-                    router.push('/services');
-                  }}
-                >
-                  Back to Services
-                </Button>
-              </div>
-            </div>
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Status Header */}
+                      <div className="text-center space-y-1 pt-0.5">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FFA500]/20 text-[#FFA500] border border-[#FFA500]/30 flex items-center justify-center mx-auto shadow-sm">
+                          <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        </div>
+                          <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight">
+                            Inquiry Received! 🚀
+                          </h3>
+                            <p className="text-[10px] sm:text-[10.5px] text-[#F5F7FA]/75 leading-tight px-1">
+                              Thank you, <strong className="text-white">{submittedData?.name}</strong>! We will evaluate your scope and reach out shortly.
+                            </p>
+                          </div>
+
+                          {/* Scope Tag */}
+                          {submittedData?.projectName && (
+                              <div className="px-2 py-1 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1.5 text-[9.5px] sm:text-[10px] text-[#FFA500] font-mono">
+                                <Sparkles className="w-3 h-3 text-[#FFA500] shrink-0" />
+                                <span className="truncate">{submittedData.projectName}</span>
+                              </div>
+              )}
+
+                              {/* WhatsApp Direct Connect Action */}
+                              <a
+                                href={whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-1.5 w-full h-7 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[10.5px] sm:text-[11px] uppercase tracking-wider shadow-sm hover:shadow-[#FFA500]/25 transition-all cursor-pointer btn-shimmer-container"
+                              >
+                                <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#080402]" />
+                                <span>Chat on WhatsApp</span>
+                              </a>
+
+                              {/* Dismiss Link */}
+                              <button
+                                type="button"
+                                className="w-full text-center text-[9.5px] sm:text-[10px] text-white/50 hover:text-white transition-colors cursor-pointer py-0.5 font-medium block"
+                                onClick={() => {
+                                  setSuccessModalOpen(false);
+                                  router.push('/services');
+                                }}
+                              >
+                                Dismiss & Return to Services
+                              </button>
+                            </div>
           </div>
         )}
-      </main>
-    </div>
-  );
+                    </main>
+                  </div>
+                  );
 }
 
-export default function ServiceInquiryPage() {
+                  export default function ServiceInquiryPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#080402] text-white flex items-center justify-center">
-          <div className="max-w-4xl w-full mx-auto px-4 py-16 space-y-6 animate-pulse">
-            <div className="h-8 w-48 bg-white/[0.05] rounded-xl" />
-            <div className="h-44 rounded-3xl glass-level-2 border border-white/10" />
-            <div className="h-96 rounded-3xl glass-level-2 border border-white/10" />
-          </div>
-        </div>
-      }
-    >
-      <ServiceInquiryContent />
-    </Suspense>
-  );
+                  <Suspense
+                    fallback={
+                      <div className="min-h-screen bg-[#080402] text-white flex items-center justify-center">
+                        <div className="max-w-4xl w-full mx-auto px-4 py-16 space-y-6 animate-pulse">
+                          <div className="h-8 w-48 bg-white/[0.05] rounded-xl" />
+                          <div className="h-44 rounded-3xl glass-level-2 border border-white/10" />
+                          <div className="h-96 rounded-3xl glass-level-2 border border-white/10" />
+                        </div>
+                      </div>
+                    }
+                  >
+                    <ServiceInquiryContent />
+                  </Suspense>
+                  );
 }

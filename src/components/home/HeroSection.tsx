@@ -17,7 +17,13 @@ export function HeroSection() {
   // Responsive Globe Size
   useEffect(() => {
     const updateSize = () => {
-      setGlobeSize(Math.max(window.innerWidth, 900));
+      const width = window.innerWidth;
+
+      if (width < 640) {
+        setGlobeSize(Math.max(width * 1.15, 380));
+      } else {
+        setGlobeSize(Math.max(width, 900));
+      }
     };
 
     updateSize();
@@ -41,18 +47,14 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative isolate overflow-hidden w-full min-h-[calc(100vh-5rem)] pt-6 pb-12 sm:pt-10 sm:pb-16 px-4 sm:px-6 lg:px-8 text-center flex flex-col justify-center">
+    <section className="relative isolate overflow-hidden w-full min-h-[calc(100vh-5rem)] pt-6 pb-12 sm:pt-10 sm:pb-16 px-0 sm:px-6 lg:px-8 text-center flex flex-col justify-center">
 
-      {/* =====================================
-          FULL WIDTH ORANGE GLOBE BACKGROUND
-      ====================================== */}
+      {/* FULL WIDTH ORANGE GLOBE BACKGROUND */}
 
       <div
         className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
       >
-
-        {/* Giant Globe */}
         {/* Giant Globe */}
         <div
           className="absolute left-1/2 -translate-x-1/2"
@@ -62,11 +64,11 @@ export function HeroSection() {
             bottom: `-${globeSize / 2}px`,
             opacity: 0.9,
             filter: `
-      sepia(1)
-      saturate(2.5)
-      hue-rotate(350deg)
-      brightness(0.9)
-    `,
+              sepia(1)
+              saturate(2.5)
+              hue-rotate(350deg)
+              brightness(0.9)
+            `,
           }}
         >
           <Globe
@@ -132,14 +134,11 @@ export function HeroSection() {
             `,
           }}
         />
-
       </div>
 
-      {/* =====================================
-          HERO CONTENT
-      ====================================== */}
+      {/* HERO CONTENT */}
 
-      <div className="relative z-10 w-full">
+      <div className="relative z-10 w-full flex flex-col items-center justify-center">
 
         {/* Glass Pill Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-level-1 border border-white/15 mb-3 shadow-sm hover:border-[#FFA500]/40 transition-colors mx-auto">
@@ -161,28 +160,30 @@ export function HeroSection() {
         </h1>
 
         {/* Description */}
-        <p className="mt-3 text-xs sm:text-sm md:text-base text-[#F5F7FA]/75 max-w-lg mx-auto leading-relaxed font-normal">
+        <p className="mt-3 text-xs sm:text-sm md:text-base text-[#F5F7FA]/75 max-w-lg mx-auto leading-relaxed font-normal px-4 sm:px-0">
           We build modern digital experiences, powerful software, and smart solutions that help businesses move forward.
         </p>
 
         {/* Action Buttons */}
-        <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto px-4 sm:px-0">
 
-          <a href="#reach-us" className="w-full sm:w-auto">
+          {/* Get a Quote */}
+          <a href="/#reach-us" className="w-full max-w-[200px] sm:max-w-none sm:w-auto">
             <Button
               size="md"
-              className="w-full sm:w-auto px-6 h-10 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.35)] hover:shadow-[0_0_28px_rgba(255,165,0,0.55)] hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-4 sm:px-6 h-9 sm:h-10 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.35)] hover:shadow-[0_0_28px_rgba(255,165,0,0.55)] hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-2"
             >
               <span>Get a Quote</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#080402]" />
             </Button>
           </a>
 
-          <a href="#services" className="w-full sm:w-auto">
+          {/* Explore Services */}
+          <a href="/services" className="w-full max-w-[200px] sm:max-w-none sm:w-auto">
             <Button
               size="md"
               variant="outline"
-              className="w-full sm:w-auto px-6 h-10 rounded-full glass-level-1 border border-white/20 hover:border-white/40 hover:bg-white/[0.08] text-white text-xs uppercase tracking-wider font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-4 sm:px-6 h-9 sm:h-10 rounded-full glass-level-1 border border-white/20 hover:border-white/40 hover:bg-white/[0.08] text-white text-[11px] sm:text-xs uppercase tracking-wider font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>Explore Services</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-[#FFA500]" />
@@ -191,8 +192,8 @@ export function HeroSection() {
 
         </div>
 
-        {/* Trust Metrics / Stats Bar */}
-        <div className="mt-12 pt-7 pb-6 px-4 sm:px-6 rounded-2xl bg-gradient-to-r from-white/[0.02] via-[#FFA500]/[0.06] to-white/[0.02] border border-[#FFA500]/15 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto shadow-sm backdrop-blur-sm">
+        {/* Trust Metrics / Stats Bar - Hidden on Mobile */}
+        <div className="hidden sm:grid mt-12 pt-7 pb-6 px-4 sm:px-6 rounded-2xl bg-gradient-to-r from-white/[0.02] via-[#FFA500]/[0.06] to-white/[0.02] border border-[#FFA500]/15 grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto shadow-sm backdrop-blur-sm">
 
           <div className="flex flex-col items-center">
             <span className="text-xl sm:text-2xl font-bold text-white font-mono">

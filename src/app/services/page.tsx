@@ -173,18 +173,18 @@ export default function ServicesCatalogPage() {
       <div className="absolute top-[55%] -right-[8%] w-[650px] h-[650px] bg-gradient-to-bl from-[#FFA500]/22 via-[#FF6600]/10 to-transparent blur-[150px] pointer-events-none -z-10" />
       <div className="absolute inset-0 bg-box-grid pointer-events-none -z-10" />
 
-      <main className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-12">
+      <main className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-16 sm:pb-24 space-y-8 sm:space-y-12">
         {/* =========================================================================
             HEADER BANNER
             ========================================================================= */}
-        <div className="text-center space-y-5 max-w-3xl mx-auto">
+        <div className="text-center space-y-3 sm:space-y-5 max-w-3xl mx-auto">
           {/* Glass Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-level-1 border border-white/15 text-[11px] font-mono uppercase tracking-wider text-[#FFA500] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full glass-level-1 border border-white/15 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-[#FFA500] shadow-sm">
+            <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
             <span>AGENCY SERVICE CATALOG</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
             Crafting High-Impact{' '}
             <span className="text-[#FFA500] relative inline-block">
               Digital Solutions
@@ -193,15 +193,15 @@ export default function ServicesCatalogPage() {
             .
           </h1>
 
-          <p className="text-base sm:text-lg text-[#F5F7FA]/75 leading-relaxed font-normal">
+          <p className="text-xs sm:text-base text-[#F5F7FA]/75 leading-relaxed font-normal max-w-2xl mx-auto">
             Choose a service category below to view detailed deliverables, platform options (Custom Code vs WordPress), starting plans, or submit a custom project brief.
           </p>
         </div>
 
         {/* =========================================================================
-            SEARCH & STATUS FILTER BAR
+            SEARCH & STATUS FILTER BAR (Hidden on all screens per configuration)
             ========================================================================= */}
-        <div className="p-4 sm:p-5 rounded-3xl glass-level-2 border border-white/12 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
+        <div className="hidden p-4 sm:p-5 rounded-3xl glass-level-2 border border-white/12 shadow-xl flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
           {/* Search Box */}
           <div className="relative w-full sm:max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
@@ -336,18 +336,18 @@ export default function ServicesCatalogPage() {
                   {/* Card Footer: Starting Price & Compact Action Button */}
                   <div className="pt-4 mt-5 border-t border-white/[0.08] flex items-center justify-between gap-3">
                     <div>
-                      <span className="text-[9.5px] text-[#F5F7FA]/50 block uppercase font-mono tracking-wider">
-                        Pricing
+                      <span className="text-[8.5px] sm:text-[9.5px] text-[#F5F7FA]/50 block uppercase font-mono tracking-wider">
+                        Starting from
                       </span>
-                      <span className="text-xs sm:text-sm font-extrabold font-mono text-white">
+                      <span className="text-[11px] sm:text-xs md:text-sm font-extrabold font-mono text-white">
                         {service.startingPriceText}
                       </span>
                     </div>
 
                     {/* Compact Button */}
-                    <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all duration-300 bg-white/[0.06] group-hover:bg-[#FFA500] text-white group-hover:text-[#080402] border border-white/15 group-hover:border-[#FFA500] shadow-sm">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-300 bg-white/[0.06] group-hover:bg-[#FFA500] text-white group-hover:text-[#080402] border border-white/15 group-hover:border-[#FFA500] shadow-sm">
                       <span>{service.hasActivePackages ? 'Explore' : 'Inquire'}</span>
-                      <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 transition-transform group-hover:translate-x-0.5" />
                     </div>
                   </div>
                 </div>
@@ -359,32 +359,32 @@ export default function ServicesCatalogPage() {
         {/* =========================================================================
             BOTTOM ASSISTANCE BANNER
             ========================================================================= */}
-        <div className="rounded-3xl p-8 sm:p-12 text-center max-w-4xl mx-auto space-y-4 relative overflow-hidden bg-card-gradient-glow border border-[#FFA500]/30 shadow-2xl backdrop-blur-2xl">
+        <div className="rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-center max-w-4xl mx-auto space-y-3 sm:space-y-4 relative overflow-hidden bg-card-gradient-glow border border-[#FFA500]/30 shadow-2xl backdrop-blur-2xl">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-[#FFA500]/30 via-[#FF7A00]/20 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
-          <h3 className="text-2xl sm:text-3xl font-bold text-white">
+          <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
             Need a Bespoke or Enterprise Architecture?
           </h3>
-          <p className="text-xs sm:text-sm text-[#F5F7FA]/75 max-w-xl mx-auto leading-relaxed">
+          <p className="text-[11px] sm:text-xs md:text-sm text-[#F5F7FA]/75 max-w-xl mx-auto leading-relaxed">
             If your project involves specialized business workflows, microservices, or complex multi-system integrations, our senior solutions architects are available for a dedicated discovery call.
           </p>
 
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/services/web-development?platform=custom&tier=premium">
+          <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 w-full">
+            <Link href="/services/web-development?platform=custom&tier=premium" className="w-full max-w-[220px] sm:max-w-none sm:w-auto">
               <Button
-                size="lg"
-                className="px-8 h-12 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider shadow-[0_0_24px_rgba(255,165,0,0.45)] hover:shadow-[0_0_35px_rgba(255,165,0,0.65)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer btn-shimmer-container border-none flex items-center gap-2"
+                size="md"
+                className="w-full sm:w-auto px-4 sm:px-6 h-9 sm:h-11 rounded-full bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,165,0,0.35)] hover:shadow-[0_0_30px_rgba(255,165,0,0.55)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-2"
               >
                 <span>Request Custom Brief</span>
-                <ArrowRight className="w-4 h-4 text-[#080402]" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#080402]" />
               </Button>
             </Link>
 
-            <Link href="/">
+            <Link href="/" className="w-full max-w-[220px] sm:max-w-none sm:w-auto">
               <Button
                 variant="outline"
-                size="lg"
-                className="px-8 h-12 rounded-full glass-level-1 border border-white/20 hover:border-white/40 text-white text-xs uppercase tracking-wider font-semibold hover:bg-white/[0.08] transition-all cursor-pointer"
+                size="md"
+                className="w-full sm:w-auto px-4 sm:px-6 h-9 sm:h-11 rounded-full glass-level-1 border border-white/20 hover:border-white/40 text-white text-[11px] sm:text-xs uppercase tracking-wider font-semibold hover:bg-white/[0.08] transition-all cursor-pointer flex items-center justify-center"
               >
                 Back to Homepage
               </Button>

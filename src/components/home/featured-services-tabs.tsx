@@ -111,9 +111,9 @@ export function FeaturedServicesTabs({ initialServices, categories }: FeaturedSe
                 >
                   <Button
                     size="sm"
-                    className="font-semibold text-xs gap-1 bg-gradient-to-r from-[#ff7300] to-[#ff8c00] hover:from-[#ff8c00] text-white shadow-md shadow-orange-500/20 border-none cursor-pointer"
+                    className="font-semibold text-[10px] sm:text-xs h-7 sm:h-8 px-2.5 sm:px-3 gap-1 bg-gradient-to-r from-[#ff7300] to-[#ff8c00] hover:from-[#ff8c00] text-white shadow-md shadow-orange-500/20 border-none cursor-pointer"
                   >
-                    Get Quote <ChevronRight className="w-3.5 h-3.5" />
+                    Get Quote <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </Button>
                 </Link>
               </div>
@@ -125,6 +125,19 @@ export function FeaturedServicesTabs({ initialServices, categories }: FeaturedSe
           <p className="text-sm text-slate-300">No services found in this category.</p>
         </div>
       )}
+
+      {/* Catalog Banner Link */}
+      <div className="text-center pt-2 px-2">
+        <Link
+          href="/services"
+          className="inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-[10px] sm:text-xs font-mono font-medium text-slate-400 hover:text-[#ff8c00] transition-colors py-1.5 px-3 sm:py-2 sm:px-4 rounded-xl sm:rounded-full border border-blue-900/50 hover:border-[#ff8c00]/40 bg-[#09224d]/60 max-w-full"
+        >
+          <span>Looking for custom solutions?</span>
+          <span className="text-[#ff8c00] font-bold inline-flex items-center gap-1 shrink-0">
+            Browse All Services <ChevronRight className="w-3 h-3" />
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }

@@ -320,20 +320,22 @@ export function ReachUsSection() {
                 </div>
 
                 {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full h-11 rounded-xl bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:shadow-[#FFA500]/25 transition-all cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <span>Sending Inquiry...</span>
-                  ) : (
-                    <>
-                      <span>Submit Project Inquiry</span>
-                      <Send className="w-3.5 h-3.5 text-[#080402]" />
-                    </>
-                  )}
-                </Button>
+                <div className="pt-1 flex justify-center sm:justify-start">
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full max-w-[240px] sm:max-w-none sm:w-auto h-9 sm:h-11 px-4 sm:px-6 rounded-xl bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:shadow-[#FFA500]/25 transition-all cursor-pointer btn-shimmer-container border-none flex items-center justify-center gap-1.5 sm:gap-2"
+                  >
+                    {isSubmitting ? (
+                      <span>Sending Inquiry...</span>
+                    ) : (
+                      <>
+                        <span>Submit Project Inquiry</span>
+                        <Send className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#080402]" />
+                      </>
+                    )}
+                  </Button>
+                </div>
               </form>
             )}
           </div>

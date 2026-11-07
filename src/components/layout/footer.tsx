@@ -10,13 +10,14 @@ import {
   Mail,
   MessageCircle,
   LogIn,
+  LogOut,
 } from 'lucide-react';
 import { LinkedinIcon } from '@/components/ui/icons';
 import { AGENCY_CONTACT, SERVICES_DATA } from '@/data/homepage';
 import { useAuth } from '@/providers/auth-provider';
 
 export function Footer() {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, logout } = useAuth();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -102,15 +103,39 @@ export function Footer() {
               <li><a href="#process" className="hover:text-[#FFA500] transition-colors">Our Process</a></li>
               <li><a href="#projects" className="hover:text-[#FFA500] transition-colors">Projects</a></li>
               <li><a href="#reach-us" className="hover:text-[#FFA500] transition-colors">Contact</a></li>
-              <li className="pt-1">
-                <Link
-                  href={isAuthenticated ? getDashboardHref() : '/login'}
-                  className="hover:text-[#FFA500] transition-colors flex items-center gap-1.5 text-neutral-400 font-medium"
-                >
-                  <LogIn className="w-3.5 h-3.5 text-[#FFA500]" />
-                  <span>{isAuthenticated ? 'My Dashboard' : 'Client & Team Login'}</span>
-                </Link>
-              </li>
+              {isAuthenticated ? (
+                <>
+                  <li className="pt-1">
+                    <Link
+                      href={getDashboardHref()}
+                      className="hover:text-[#FFA500] transition-colors flex items-center gap-1.5 text-neutral-400 font-medium"
+                    >
+                      <LogIn className="w-3.5 h-3.5 text-[#FFA500]" />
+                      <span>My Dashboard</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => logout()}
+                      className="hover:text-rose-400 transition-colors flex items-center gap-1.5 text-rose-400/80 cursor-pointer font-medium"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li className="pt-1">
+                  <Link
+                    href="/login"
+                    className="hover:text-[#FFA500] transition-colors flex items-center gap-1.5 text-neutral-400 font-medium"
+                  >
+                    <LogIn className="w-3.5 h-3.5 text-[#FFA500]" />
+                    <span>Client & Team Login</span>
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -191,14 +216,34 @@ export function Footer() {
         {/* Bottom Copyright & Portal Access */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#F5F7FA]/60">
           <p>{AGENCY_CONTACT.copyrightText}</p>
-          <div className="flex items-center gap-4 text-[#F5F7FA]/60">
-            <Link
-              href={isAuthenticated ? getDashboardHref() : '/login'}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 text-[#F5F7FA]/75 hover:text-white transition-all font-mono text-[11px]"
-            >
-              <LogIn className="w-3 h-3 text-[#FFA500]" />
-              <span>{isAuthenticated ? 'My Dashboard →' : 'Staff / Client Login →'}</span>
-            </Link>
+          <div className="flex flex-wrap items-center gap-3 text-[#F5F7FA]/60">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href={getDashboardHref()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 text-[#F5F7FA]/75 hover:text-white transition-all font-mono text-[11px]"
+                >
+                  <LogIn className="w-3 h-3 text-[#FFA500]" />
+                  <span>My Dashboard →</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 text-rose-400 hover:text-rose-300 transition-all font-mono text-[11px] cursor-pointer"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span>Sign Out</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 text-[#F5F7FA]/75 hover:text-white transition-all font-mono text-[11px]"
+              >
+                <LogIn className="w-3 h-3 text-[#FFA500]" />
+                <span>Staff / Client Login →</span>
+              </Link>
+            )}
             <span>•</span>
             <span>Modern Digital Experiences</span>
           </div>
