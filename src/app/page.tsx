@@ -1,5 +1,6 @@
 import React from 'react';
 import { SectionSeparator } from '@/components/ui/section-separator';
+import { FaqJsonLd } from '@/components/seo/JsonLd';
 import {
   HeroSection,
   ReachUsSection,
@@ -14,6 +15,9 @@ import {
 export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-[#080402] text-white overflow-hidden selection:bg-[#FFA500] selection:text-[#080402]">
+      {/* Search Engine Rich Snippet FAQ Schema */}
+      <FaqJsonLd />
+
       {/* Background Ambience: Layered Gradient Color Auroras & Glowing Orbs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[560px] bg-gradient-aurora pointer-events-none -z-10" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[480px] hero-glowing-arc pointer-events-none -z-10 opacity-80" />

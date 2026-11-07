@@ -7,6 +7,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { FloatingContactWidget } from '@/components/layout/FloatingContactWidget';
 import { NotificationListener } from '@/components/notifications/NotificationListener';
+import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -109,6 +110,8 @@ export default function RootLayout({
       className={`${plusJakarta.variable} ${inter.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full flex flex-col bg-[#080402] text-white font-sans selection:bg-[#FFA500] selection:text-[#080402]">
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
         <QueryProvider>
           <AuthProvider>
             <NotificationListener />
