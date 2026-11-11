@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import * as fpixel from '@/lib/fpixel';
 import {
   CONTACT_METHODS,
   SERVICE_OPTIONS,
@@ -78,6 +79,14 @@ export function ReachUsSection() {
       setIsSubmitting(false);
       setFormSubmitted(true);
       toast.success('Inquiry received! We will be in touch shortly.');
+
+      // Meta Pixel Lead Event
+      fpixel.event('Lead', {
+        content_name: formData.service,
+        content_category: 'Homepage Lead Form',
+        value: formData.budget || undefined,
+        currency: 'BDT',
+      });
     }, 900);
   };
 

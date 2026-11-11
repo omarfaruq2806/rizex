@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useMemo, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import * as fpixel from '@/lib/fpixel';
 import {
   ArrowLeft,
   Sparkles,
@@ -116,6 +117,17 @@ function ServiceInquiryContent({ initialSlug }: { initialSlug?: string }) {
 
   const service: ServiceDetail | null = serviceData ?? null;
 
+  // Track Meta Pixel ViewContent event
+  useEffect(() => {
+    if (slug) {
+      fpixel.event('ViewContent', {
+        content_name: service?.name || slug,
+        content_category: 'Service Detail',
+        currency: 'BDT',
+      });
+    }
+  }, [slug, service?.name]);
+
   // Is this a package-enabled service (Web Development) or an upcoming category?
   const isWebDevService = slug === 'web-development' || slug.includes('web');
   const isUpcomingCategory = !isWebDevService && (!service || slug.includes('design') || slug.includes('ai') || slug.includes('market'));
@@ -204,6 +216,14 @@ function ServiceInquiryContent({ initialSlug }: { initialSlug?: string }) {
 
       setSuccessModalOpen(true);
       toast.success('Inquiry submitted successfully!');
+
+      // Meta Pixel Lead Event
+      fpixel.event('Lead', {
+        content_name: projectName.trim() || 'Service Inquiry',
+        content_category: service?.name || 'Digital Service',
+        value: budget ? Number(budget) : undefined,
+        currency: 'BDT',
+      });
     } catch (err: unknown) {
       const errorMsg = (err as { message?: string })?.message || 'Failed to submit quote request. Please try again.';
       toast.error(errorMsg);
@@ -699,6 +719,12 @@ function ServiceInquiryContent({ initialSlug }: { initialSlug?: string }) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  fpixel.event('Contact', {
+                    method: 'WhatsApp',
+                    content_name: submittedData?.projectName || 'Service WhatsApp Connect',
+                  });
+                }}
                 className="inline-flex items-center justify-center gap-1.5 w-full h-7 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-r from-[#FFA500] to-[#FFB733] text-[#080402] font-bold text-[10.5px] sm:text-[11px] uppercase tracking-wider shadow-sm hover:shadow-[#FFA500]/25 transition-all cursor-pointer btn-shimmer-container"
               >
                 <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#080402]" />

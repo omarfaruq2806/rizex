@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import * as fpixel from '@/lib/fpixel';
 import {
   MessageCircle,
   Phone,
@@ -119,6 +120,12 @@ export function FloatingContactWidget() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                fpixel.event('Contact', {
+                  method: 'WhatsApp',
+                  location: 'Floating Widget',
+                });
+              }}
               className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <div className="flex items-center gap-2.5 sm:gap-3">
@@ -152,6 +159,12 @@ export function FloatingContactWidget() {
             {/* Direct Phone Call */}
             <a
               href={phoneUrl}
+              onClick={() => {
+                fpixel.event('Contact', {
+                  method: 'Phone',
+                  location: 'Floating Widget',
+                });
+              }}
               className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <div className="flex items-center gap-2.5 sm:gap-3">
@@ -173,6 +186,12 @@ export function FloatingContactWidget() {
             {/* Official Email */}
             <a
               href={emailUrl}
+              onClick={() => {
+                fpixel.event('Contact', {
+                  method: 'Email',
+                  location: 'Floating Widget',
+                });
+              }}
               className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#FFA500]/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <div className="flex items-center gap-2.5 sm:gap-3">
