@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -11,14 +10,17 @@ const Globe = dynamic(() => import('react-globe.gl'), {
 });
 
 export function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const globeRef = useRef<any>(null);
   const [globeSize, setGlobeSize] = useState(1000);
+  const [canLoadGlobe, setCanLoadGlobe] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Responsive Globe Size
+  // Responsive Globe Size & Mobile Detection
   useEffect(() => {
     const updateSize = () => {
       const width = window.innerWidth;
-
+      setIsMobile(width < 640);
       if (width < 640) {
         setGlobeSize(Math.max(width * 1.15, 380));
       } else {
@@ -27,16 +29,40 @@ export function HeroSection() {
     };
 
     updateSize();
-
     window.addEventListener('resize', updateSize);
-
     return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  // Delay mounting heavy WebGL globe so text entrance animations complete at 60 FPS
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanLoadGlobe(true);
+    }, 650);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Pause globe auto-rotation when user scrolls past Hero to free 100% GPU
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || !('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const controls = globeRef.current?.controls?.();
+        if (controls) {
+          controls.autoRotate = entry.isIntersecting;
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   // Automatic Globe Rotation
   const handleGlobeReady = () => {
     const controls = globeRef.current?.controls();
-
     if (controls) {
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.35;
@@ -47,43 +73,40 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative isolate overflow-hidden w-full min-h-[calc(100vh-5rem)] pt-6 pb-12 sm:pt-10 sm:pb-16 px-0 sm:px-6 lg:px-8 text-center flex flex-col justify-center">
-
+    <section
+      ref={sectionRef}
+      className="relative isolate overflow-hidden w-full min-h-[calc(100vh-5rem)] pt-6 pb-12 sm:pt-10 sm:pb-16 px-0 sm:px-6 lg:px-8 text-center flex flex-col justify-center"
+    >
       {/* FULL WIDTH ORANGE GLOBE BACKGROUND */}
-
       <div
         className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
       >
-        {/* Giant Globe */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2"
-          style={{
-            width: `${globeSize}px`,
-            height: `${globeSize}px`,
-            bottom: `-${globeSize / 2}px`,
-            opacity: 0.9,
-            filter: `
-              sepia(1)
-              saturate(2.5)
-              hue-rotate(350deg)
-              brightness(0.9)
-            `,
-          }}
-        >
-          <Globe
-            ref={globeRef}
-            width={globeSize}
-            height={globeSize}
-            backgroundColor="rgba(0,0,0,0)"
-            globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
-            bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
-            showAtmosphere={true}
-            atmosphereColor="#FFA500"
-            atmosphereAltitude={0.22}
-            onGlobeReady={handleGlobeReady}
-          />
-        </div>
+        {/* Giant 3D Globe (Mounted smoothly on desktop after text settles, zero filter lag) */}
+        {!isMobile && canLoadGlobe && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2 transition-opacity duration-1000 ease-out"
+            style={{
+              width: `${globeSize}px`,
+              height: `${globeSize}px`,
+              bottom: `-${globeSize / 2}px`,
+              opacity: 0.85,
+            }}
+          >
+            <Globe
+              ref={globeRef}
+              width={globeSize}
+              height={globeSize}
+              backgroundColor="rgba(0,0,0,0)"
+              globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
+              bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
+              showAtmosphere={true}
+              atmosphereColor="#FFA500"
+              atmosphereAltitude={0.22}
+              onGlobeReady={handleGlobeReady}
+            />
+          </div>
+        )}
 
         {/* Bottom Orange Ambient Glow */}
         <div
@@ -137,11 +160,9 @@ export function HeroSection() {
       </div>
 
       {/* HERO CONTENT */}
-
       <div className="relative z-10 w-full flex flex-col items-center justify-center">
-
         {/* Glass Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-level-1 border border-white/15 mb-3 shadow-sm hover:border-[#FFA500]/40 transition-colors mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-level-1 border border-white/15 mb-3 shadow-sm hover:border-[#FFA500]/40 transition-colors mx-auto animate-hero-badge">
           <span className="w-1.5 h-1.5 rounded-full bg-[#FFA500] animate-pulse" />
           <span className="text-[11px] font-semibold tracking-wide text-white font-mono uppercase">
             Modern Digital Agency
@@ -150,7 +171,7 @@ export function HeroSection() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-[1.2] max-w-3xl mx-auto">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-[1.2] max-w-3xl mx-auto animate-hero-headline">
           Turning Ideas Into{' '}
           <span className="text-[#FFA500] relative inline-block">
             Digital Reality
@@ -160,13 +181,12 @@ export function HeroSection() {
         </h1>
 
         {/* Description */}
-        <p className="mt-3 text-xs sm:text-sm md:text-base text-[#F5F7FA]/75 max-w-lg mx-auto leading-relaxed font-normal px-4 sm:px-0">
+        <p className="mt-3 text-xs sm:text-sm md:text-base text-[#F5F7FA]/75 max-w-lg mx-auto leading-relaxed font-normal px-4 sm:px-0 animate-hero-desc">
           We build modern digital experiences, powerful software, and smart solutions that help businesses move forward.
         </p>
 
         {/* Action Buttons */}
-        <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto px-4 sm:px-0">
-
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto px-4 sm:px-0 animate-hero-actions">
           {/* Get a Quote */}
           <a href="/#reach-us" className="w-full max-w-[200px] sm:max-w-none sm:w-auto">
             <Button
@@ -189,12 +209,10 @@ export function HeroSection() {
               <ArrowUpRight className="w-3.5 h-3.5 text-[#FFA500]" />
             </Button>
           </a>
-
         </div>
 
         {/* Trust Metrics / Stats Bar - Hidden on Mobile */}
-        <div className="hidden sm:grid mt-12 pt-7 pb-6 px-4 sm:px-6 rounded-2xl bg-gradient-to-r from-white/[0.02] via-[#FFA500]/[0.06] to-white/[0.02] border border-[#FFA500]/15 grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto shadow-sm backdrop-blur-sm">
-
+        <div className="hidden sm:grid mt-12 pt-7 pb-6 px-4 sm:px-6 rounded-2xl bg-gradient-to-r from-white/[0.02] via-[#FFA500]/[0.06] to-white/[0.02] border border-[#FFA500]/15 grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto shadow-sm backdrop-blur-sm animate-hero-metrics">
           <div className="flex flex-col items-center">
             <span className="text-xl sm:text-2xl font-bold text-white font-mono">
               150+
@@ -224,15 +242,13 @@ export function HeroSection() {
 
           <div className="flex flex-col items-center">
             <span className="text-xl sm:text-2xl font-bold text-[#FFA500] font-mono">
-              5+
+              100%
             </span>
             <span className="text-[11px] text-[#F5F7FA]/60 uppercase tracking-wider mt-0.5">
-              Years Expertise
+              Escrow Protection
             </span>
           </div>
-
         </div>
-
       </div>
     </section>
   );

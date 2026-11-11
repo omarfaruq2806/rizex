@@ -102,10 +102,10 @@ export const CONTACT_METHODS: ContactMethod[] = [
 export const NAVBAR_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },
   { label: 'Services', href: '/services' },
-  { label: 'Our Process', href: '#process' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Contact', href: '#reach-us' },
+  { label: 'Our Process', href: '/#process' },
+  { label: 'Projects', href: '/#projects' },
+  { label: 'FAQ', href: '/#faq' },
+  { label: 'Contact', href: '/#reach-us' },
 ];
 
 // -------------------------------------------------------------

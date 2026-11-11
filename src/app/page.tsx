@@ -1,6 +1,7 @@
 import React from 'react';
 import { SectionSeparator } from '@/components/ui/section-separator';
 import { FaqJsonLd } from '@/components/seo/JsonLd';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import {
   HeroSection,
   ReachUsSection,
@@ -29,50 +30,64 @@ export default function HomePage() {
       <div className="absolute inset-0 bg-box-grid pointer-events-none -z-10" />
       <div className="absolute inset-0 bg-subtle-noise pointer-events-none -z-10 opacity-35" />
 
-      {/* SECTION 01: HERO */}
+      {/* SECTION 01: HERO (Staggered Compositor Animation with Delayed 3D WebGL Mount) */}
       <HeroSection />
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 02: HOW TO REACH US */}
-      <ReachUsSection />
+      <RevealOnScroll direction="up">
+        <ReachUsSection />
+      </RevealOnScroll>
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 03: OUR SERVICES */}
-      <ServicesSection />
+      <RevealOnScroll direction="up">
+        <ServicesSection />
+      </RevealOnScroll>
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 04: OUR WORKING PROCESS */}
-      <ProcessSection />
+      <RevealOnScroll direction="up">
+        <ProcessSection />
+      </RevealOnScroll>
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 05: WHY CHOOSE US */}
-      <WhyUsSection />
+      <RevealOnScroll direction="up">
+        <WhyUsSection />
+      </RevealOnScroll>
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 06: FEATURED DEMO PROJECTS */}
-      <ProjectsSection />
+      <RevealOnScroll direction="up">
+        <ProjectsSection />
+      </RevealOnScroll>
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 07: FAQ */}
-      <FaqSection />
+      <RevealOnScroll direction="up">
+        <FaqSection />
+      </RevealOnScroll>
 
       {/* Centered 60% Section Separator */}
       <SectionSeparator />
 
       {/* SECTION 08: CONTACT / FINAL CTA */}
-      <CtaSection />
+      <RevealOnScroll direction="up">
+        <CtaSection />
+      </RevealOnScroll>
     </div>
   );
 }

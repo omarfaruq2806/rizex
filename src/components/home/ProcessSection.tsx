@@ -26,8 +26,6 @@ export function ProcessSection() {
 
       {/* 5-Step Process Timeline */}
       <div className="relative">
-        <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFA500]/20 via-[#FFA500] to-[#FFA500]/20 -translate-y-10 -z-10 shadow-[0_0_12px_rgba(255,165,0,0.6)]" />
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5">
           {WORKING_PROCESS_STEPS.map((item) => {
             const IconComponent = ICON_MAP[item.iconName] || Search;
