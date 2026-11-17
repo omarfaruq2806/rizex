@@ -107,7 +107,7 @@ export function ServicesCatalogClient() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'upcoming'>('all');
 
   // Fetch categories from backend API
-  const { data: categoriesData } = useQuery({
+  const { data: categoriesData, isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
       try {
@@ -124,6 +124,9 @@ export function ServicesCatalogClient() {
 
   // Merge backend categories with catalog metadata
   const catalogList: ServiceCategoryCard[] = useMemo(() => {
+    if (isLoading) {
+      return [];
+    }
     if (Array.isArray(categoriesData) && categoriesData.length > 0) {
       return categoriesData.map((cat: any) => {
         const fallback = DEFAULT_CATALOG.find((d) => d.slug === cat.slug);
@@ -147,7 +150,7 @@ export function ServicesCatalogClient() {
       });
     }
     return DEFAULT_CATALOG;
-  }, [categoriesData]);
+  }, [categoriesData, isLoading]);
 
   // Filtered list based on search and status tabs
   const filteredCatalog = useMemo(() => {
@@ -268,103 +271,150 @@ export function ServicesCatalogClient() {
         {/* =========================================================================
             SERVICES BOX GRID (Compact, Sleek Service Cards with Staggered Entrance)
             ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-          {filteredCatalog.map((service, idx) => {
-            const IconComponent = getCategoryIcon(service.iconName);
-
-            return (
-              <RevealOnScroll
-                key={service.id}
-                direction="up"
-                distance={16}
-                duration={520}
-                delay={idx * 60}
-                className="h-full"
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="relative rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[280px] glass-level-2 border border-white/10 overflow-hidden animate-pulse"
               >
-                <Link
-                  href={`/services/${service.slug}`}
-                  className="block group cursor-pointer focus:outline-none h-full"
-                >
-                  <div
-                    onMouseMove={handleCardMouseMove}
-                    className={`relative rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-full transition-all duration-300 glass-spotlight glass-card-interactive overflow-hidden ${
-                      service.hasActivePackages
-                        ? 'glass-level-2 border border-white/15 hover:border-[#FFA500]/60 shadow-lg group-hover:shadow-[0_0_25px_rgba(255,165,0,0.2)]'
-                        : 'glass-level-2 border border-white/10 hover:border-white/20 bg-white/[0.02]'
-                    }`}
-                  >
-                    {/* Subtle Orange Glow in Top Corner */}
-                    <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#FFA500]/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-[#FFA500]/25 transition-all duration-500" />
+                {/* Subtle Amber Glow Placeholder */}
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#FFA500]/5 blur-[50px] rounded-full pointer-events-none" />
 
-                    {/* Top Header: Icon & Status Badge */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        {/* Compact Icon */}
-                        <div className="w-11 h-11 rounded-xl bg-[#FFA500]/15 border border-[#FFA500]/30 flex items-center justify-center text-[#FFA500] group-hover:scale-105 group-hover:border-[#FFA500]/60 transition-all shadow-sm">
-                          <IconComponent className="w-5 h-5" />
+                <div className="space-y-4">
+                  {/* Header Skeleton: Icon & Badge */}
+                  <div className="flex items-center justify-between">
+                    <div className="w-11 h-11 rounded-xl bg-white/[0.06] border border-white/10" />
+                    <div className="w-24 h-5 rounded-full bg-white/[0.06] border border-white/10" />
+                  </div>
+
+                  {/* Title & Description Skeleton */}
+                  <div className="space-y-2 pt-1">
+                    <div className="w-3/4 h-5 bg-white/[0.09] rounded-md" />
+                    <div className="w-full h-3.5 bg-white/[0.04] rounded-md" />
+                    <div className="w-4/5 h-3.5 bg-white/[0.04] rounded-md" />
+                  </div>
+
+                  {/* Attribute Pill Skeleton */}
+                  <div className="pt-1">
+                    <div className="w-36 h-6 rounded-lg bg-white/[0.04] border border-white/10" />
+                  </div>
+                </div>
+
+                {/* Footer Skeleton: Price & Action Button */}
+                <div className="pt-4 mt-5 border-t border-white/[0.08] flex items-center justify-between gap-3">
+                  <div className="space-y-1.5">
+                    <div className="w-16 h-2 bg-white/[0.04] rounded" />
+                    <div className="w-24 h-4 bg-white/[0.08] rounded" />
+                  </div>
+                  <div className="w-20 h-7 rounded-full bg-white/[0.06] border border-white/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredCatalog.length === 0 ? (
+          <div className="text-center py-16 px-4 glass-level-2 border border-white/10 rounded-2xl max-w-xl mx-auto">
+            <p className="text-white/60 text-sm font-mono">No services found matching your criteria.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+            {filteredCatalog.map((service, idx) => {
+              const IconComponent = getCategoryIcon(service.iconName);
+
+              return (
+                <RevealOnScroll
+                  key={service.id}
+                  direction="up"
+                  distance={16}
+                  duration={520}
+                  delay={idx * 60}
+                  className="h-full"
+                >
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="block group cursor-pointer focus:outline-none h-full"
+                  >
+                    <div
+                      onMouseMove={handleCardMouseMove}
+                      className={`relative rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-full transition-all duration-300 glass-spotlight glass-card-interactive overflow-hidden ${
+                        service.hasActivePackages
+                          ? 'glass-level-2 border border-white/15 hover:border-[#FFA500]/60 shadow-lg group-hover:shadow-[0_0_25px_rgba(255,165,0,0.2)]'
+                          : 'glass-level-2 border border-white/10 hover:border-white/20 bg-white/[0.02]'
+                      }`}
+                    >
+                      {/* Subtle Orange Glow in Top Corner */}
+                      <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#FFA500]/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-[#FFA500]/25 transition-all duration-500" />
+
+                      {/* Top Header: Icon & Status Badge */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          {/* Compact Icon */}
+                          <div className="w-11 h-11 rounded-xl bg-[#FFA500]/15 border border-[#FFA500]/30 flex items-center justify-center text-[#FFA500] group-hover:scale-105 group-hover:border-[#FFA500]/60 transition-all shadow-sm">
+                            <IconComponent className="w-5 h-5" />
+                          </div>
+
+                          {/* Status Badge */}
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border ${
+                              service.hasActivePackages
+                                ? 'bg-[#FFA500]/20 text-[#FFA500] border-[#FFA500]/40'
+                                : 'bg-white/[0.04] text-[#F5F7FA]/70 border-white/15'
+                            }`}
+                          >
+                            {service.badge}
+                          </span>
                         </div>
 
-                        {/* Status Badge */}
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border ${
-                            service.hasActivePackages
-                              ? 'bg-[#FFA500]/20 text-[#FFA500] border-[#FFA500]/40'
-                              : 'bg-white/[0.04] text-[#F5F7FA]/70 border-white/15'
-                          }`}
-                        >
-                          {service.badge}
-                        </span>
+                        {/* Title & Short Description */}
+                        <div>
+                          <h2 className="text-lg sm:text-xl font-bold text-white group-hover:text-[#FFA500] transition-colors tracking-tight">
+                            {service.name}
+                          </h2>
+                          <p className="text-xs text-[#F5F7FA]/70 leading-relaxed font-normal mt-1.5 line-clamp-2">
+                            {service.description}
+                          </p>
+                        </div>
+
+                        {/* Compact Key Attributes */}
+                        <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-[#F5F7FA]/75 font-mono">
+                          {service.hasActivePackages ? (
+                            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/[0.03] border border-white/10">
+                              <PackageCheck className="w-3 h-3 text-[#FFA500]" />
+                              <span>Next.js & WordPress</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/[0.03] border border-white/10">
+                              <CheckCircle2 className="w-3 h-3 text-[#FFA500]" />
+                              <span>Direct Consultation</span>
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Title & Short Description */}
-                      <div>
-                        <h2 className="text-lg sm:text-xl font-bold text-white group-hover:text-[#FFA500] transition-colors tracking-tight">
-                          {service.name}
-                        </h2>
-                        <p className="text-xs text-[#F5F7FA]/70 leading-relaxed font-normal mt-1.5 line-clamp-2">
-                          {service.description}
-                        </p>
-                      </div>
+                      {/* Card Footer: Starting Price & Compact Action Button */}
+                      <div className="pt-4 mt-5 border-t border-white/[0.08] flex items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[8.5px] sm:text-[9.5px] text-[#F5F7FA]/50 block uppercase font-mono tracking-wider">
+                            Starting from
+                          </span>
+                          <span className="text-[11px] sm:text-xs md:text-sm font-extrabold font-mono text-white">
+                            {service.startingPriceText}
+                          </span>
+                        </div>
 
-                      {/* Compact Key Attributes */}
-                      <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-[#F5F7FA]/75 font-mono">
-                        {service.hasActivePackages ? (
-                          <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/[0.03] border border-white/10">
-                            <PackageCheck className="w-3 h-3 text-[#FFA500]" />
-                            <span>Next.js & WordPress</span>
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/[0.03] border border-white/10">
-                            <CheckCircle2 className="w-3 h-3 text-[#FFA500]" />
-                            <span>Direct Consultation</span>
-                          </span>
-                        )}
+                        {/* Compact Button */}
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-300 bg-white/[0.06] group-hover:bg-[#FFA500] text-white group-hover:text-[#080402] border border-white/15 group-hover:border-[#FFA500] shadow-sm">
+                          <span>{service.hasActivePackages ? 'Explore' : 'Inquire'}</span>
+                          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 transition-transform group-hover:translate-x-0.5" />
+                        </div>
                       </div>
                     </div>
-
-                    {/* Card Footer: Starting Price & Compact Action Button */}
-                    <div className="pt-4 mt-5 border-t border-white/[0.08] flex items-center justify-between gap-3">
-                      <div>
-                        <span className="text-[8.5px] sm:text-[9.5px] text-[#F5F7FA]/50 block uppercase font-mono tracking-wider">
-                          Starting from
-                        </span>
-                        <span className="text-[11px] sm:text-xs md:text-sm font-extrabold font-mono text-white">
-                          {service.startingPriceText}
-                        </span>
-                      </div>
-
-                      {/* Compact Button */}
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-300 bg-white/[0.06] group-hover:bg-[#FFA500] text-white group-hover:text-[#080402] border border-white/15 group-hover:border-[#FFA500] shadow-sm">
-                        <span>{service.hasActivePackages ? 'Explore' : 'Inquire'}</span>
-                        <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 transition-transform group-hover:translate-x-0.5" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </RevealOnScroll>
-            );
-          })}
-        </div>
+                  </Link>
+                </RevealOnScroll>
+              );
+            })}
+          </div>
+        )}
 
         {/* =========================================================================
             BOTTOM ASSISTANCE BANNER (Smooth luxury reveal)

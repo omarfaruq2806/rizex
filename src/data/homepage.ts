@@ -57,12 +57,12 @@ export interface NavLink {
 // CENTRALIZED AGENCY CONTACT DATA
 // -------------------------------------------------------------
 export const AGENCY_CONTACT = {
-  email: 'contact@rizex.agency',
-  emailHref: 'mailto:contact@rizex.agency?subject=Project%20Inquiry%20%E2%80%94%20RizeX',
-  whatsappNumber: '+880 1700-000000',
-  whatsappHref: 'https://wa.me/8801700000000?text=Hello%20RizeX%20Team!%20I%20would%20like%20to%20discuss%20a%20project.',
+  email: 'social.rizex@gmail.com',
+  emailHref: 'mailto:social.rizex@gmail.com?subject=Project%20Inquiry%20%E2%80%94%20RizeX',
+  whatsappNumber: '+880 1797-317530',
+  whatsappHref: 'https://wa.me/8801797317530?text=Hello%20RizeX%20Team!%20I%20would%20like%20to%20discuss%20a%20project.',
   linkedinName: 'RizeX Digital Agency',
-  linkedinHref: 'https://linkedin.com/company/rizex-agency',
+  linkedinHref: 'https://www.linkedin.com/company/rizex-solution/',
   copyrightText: 'Copyright © 2026 RizeX. All rights reserved.',
   tagline: 'We help businesses turn ideas into digital solutions through technology, creativity, and innovation.',
 };

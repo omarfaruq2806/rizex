@@ -21,8 +21,8 @@ import { ICON_MAP, handleCardMouseMove } from './icon-map';
 export function ReachUsSection() {
   const [formData, setFormData] = useState({
     fullName: '',
+    whatsapp: '',
     email: '',
-    company: '',
     service: '',
     budget: '',
     message: '',
@@ -51,16 +51,13 @@ export function ReachUsSection() {
     if (!formData.fullName.trim()) {
       errors.fullName = 'Full Name is required.';
     }
-    if (!formData.email.trim()) {
-      errors.email = 'Email Address is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+    if (!formData.whatsapp.trim()) {
+      errors.whatsapp = 'WhatsApp number is required.';
+    } else if (formData.whatsapp.trim().length < 6) {
+      errors.whatsapp = 'Please provide a valid phone/WhatsApp number.';
+    }
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       errors.email = 'Please provide a valid email address.';
-    }
-    if (!formData.service) {
-      errors.service = 'Please select a service you are interested in.';
-    }
-    if (!formData.message.trim()) {
-      errors.message = 'Please provide a brief message or project details.';
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -74,27 +71,43 @@ export function ReachUsSection() {
     }
 
     setIsSubmitting(true);
-    // Mock submission flow - ready for future API integration
-    setTimeout(() => {
-      setIsSubmitting(false);
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || 'Failed to submit inquiry.');
+      }
+
       setFormSubmitted(true);
       toast.success('Inquiry received! We will be in touch shortly.');
 
       // Meta Pixel Lead Event
       fpixel.event('Lead', {
-        content_name: formData.service,
+        content_name: formData.service || 'General Inquiry',
         content_category: 'Homepage Lead Form',
         value: formData.budget || undefined,
         currency: 'BDT',
       });
-    }, 900);
+    } catch (err: any) {
+      console.error('Lead submission error:', err);
+      toast.error(err.message || 'Something went wrong. Please try again or message us on WhatsApp.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetForm = () => {
     setFormData({
       fullName: '',
+      whatsapp: '',
       email: '',
-      company: '',
       service: '',
       budget: '',
       message: '',
@@ -180,7 +193,7 @@ export function ReachUsSection() {
                 </div>
                 <h4 className="text-lg font-bold text-white">Inquiry Received</h4>
                 <p className="text-xs text-[#F5F7FA]/80 max-w-sm mx-auto leading-relaxed">
-                  Thank you, <strong className="text-white">{formData.fullName}</strong>. We have logged your inquiry and will contact you via <span className="text-[#FFA500]">{formData.email}</span> within 24 hours.
+                  Thank you, <strong className="text-white">{formData.fullName}</strong>. We have logged your inquiry and will reach out to you via WhatsApp at <span className="text-[#FFA500] font-mono">{formData.whatsapp}</span> shortly.
                 </p>
                 <Button
                   onClick={handleResetForm}
@@ -193,7 +206,7 @@ export function ReachUsSection() {
             ) : (
               <form onSubmit={handleFormSubmit} noValidate className="space-y-3 text-left">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Full Name */}
+                  {/* Full Name (Required) */}
                   <div>
                     <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
                       Full Name <span className="text-[#FFA500]">*</span>
@@ -203,7 +216,7 @@ export function ReachUsSection() {
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleInputChange}
-                      placeholder="John Doe"
+                      placeholder="e.g. John Doe"
                       className={`w-full h-10 px-3.5 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors ${
                         formErrors.fullName ? 'border-rose-500' : 'border-white/12'
                       }`}
@@ -216,10 +229,35 @@ export function ReachUsSection() {
                     )}
                   </div>
 
-                  {/* Email Address */}
+                  {/* WhatsApp Number (Required) */}
                   <div>
                     <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
-                      Email Address <span className="text-[#FFA500]">*</span>
+                      WhatsApp Number <span className="text-[#FFA500]">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      name="whatsapp"
+                      value={formData.whatsapp}
+                      onChange={handleInputChange}
+                      placeholder="e.g. +880 1842-670257"
+                      className={`w-full h-10 px-3.5 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors ${
+                        formErrors.whatsapp ? 'border-rose-500' : 'border-white/12'
+                      }`}
+                    />
+                    {formErrors.whatsapp && (
+                      <p className="text-[10px] text-rose-400 mt-0.5 flex items-center gap-1">
+                        <AlertCircle className="w-2.5 h-2.5" />
+                        <span>{formErrors.whatsapp}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Email Address (Optional) */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
+                      Email Address <span className="text-white/40">(Optional)</span>
                     </label>
                     <input
                       type="email"
@@ -238,54 +276,29 @@ export function ReachUsSection() {
                       </p>
                     )}
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Company / Business Name */}
+                  {/* Service Interested In (Optional) */}
                   <div>
                     <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
-                      Company <span className="text-white/40">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      placeholder="Acme Corp"
-                      className="w-full h-10 px-3.5 rounded-xl bg-white/[0.04] border border-white/12 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
-                    />
-                  </div>
-
-                  {/* Service Interested In */}
-                  <div>
-                    <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
-                      Service <span className="text-[#FFA500]">*</span>
+                      Service <span className="text-white/40">(Optional)</span>
                     </label>
                     <select
                       name="service"
                       value={formData.service}
                       onChange={handleInputChange}
-                      className={`w-full h-10 px-3.5 rounded-xl bg-[#140A03] border text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors ${
-                        formErrors.service ? 'border-rose-500' : 'border-white/12'
-                      }`}
+                      className="w-full h-10 px-3.5 rounded-xl bg-[#140A03] border border-white/12 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
                     >
-                      <option value="">Select a service...</option>
+                      <option value="">Select a service (Optional)...</option>
                       {SERVICE_OPTIONS.map((opt) => (
                         <option key={opt} value={opt} className="bg-[#140A03] text-white">
                           {opt}
                         </option>
                       ))}
                     </select>
-                    {formErrors.service && (
-                      <p className="text-[10px] text-rose-400 mt-0.5 flex items-center gap-1">
-                        <AlertCircle className="w-2.5 h-2.5" />
-                        <span>{formErrors.service}</span>
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                {/* Project Budget */}
+                {/* Project Budget (Optional) */}
                 <div>
                   <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
                     Estimated Budget <span className="text-white/40">(Optional)</span>
@@ -296,7 +309,7 @@ export function ReachUsSection() {
                     onChange={handleInputChange}
                     className="w-full h-10 px-3.5 rounded-xl bg-[#140A03] border border-white/12 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors"
                   >
-                    <option value="">Select budget range...</option>
+                    <option value="">Select budget range (Optional)...</option>
                     {BUDGET_OPTIONS.map((opt) => (
                       <option key={opt} value={opt} className="bg-[#140A03] text-white">
                         {opt}
@@ -305,27 +318,19 @@ export function ReachUsSection() {
                   </select>
                 </div>
 
-                {/* Project Details / Message */}
+                {/* Project Details / Message (Optional) */}
                 <div>
                   <label className="block text-[11px] font-semibold text-white mb-1 font-mono">
-                    Project Details <span className="text-[#FFA500]">*</span>
+                    Message / Project Brief <span className="text-white/40">(Optional)</span>
                   </label>
                   <textarea
                     name="message"
-                    rows={3}
+                    rows={2}
                     value={formData.message}
                     onChange={handleInputChange}
-                    placeholder="Briefly describe your project requirements..."
-                    className={`w-full p-3 rounded-xl bg-white/[0.04] border text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors resize-none ${
-                      formErrors.message ? 'border-rose-500' : 'border-white/12'
-                    }`}
+                    placeholder="Brief details or any specific requirement (Optional)..."
+                    className="w-full p-3 rounded-xl bg-white/[0.04] border border-white/12 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFA500] transition-colors resize-none"
                   />
-                  {formErrors.message && (
-                    <p className="text-[10px] text-rose-400 mt-0.5 flex items-center gap-1">
-                      <AlertCircle className="w-2.5 h-2.5" />
-                      <span>{formErrors.message}</span>
-                    </p>
-                  )}
                 </div>
 
                 {/* Submit Button */}
